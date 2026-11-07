@@ -1,0 +1,14 @@
+:host {
+  display: block;
+  direction: rtl;
+  font-family: 'IBM Plex Sans Arabic', sans-serif;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+button,
+input {
+  font: inherit;
+}

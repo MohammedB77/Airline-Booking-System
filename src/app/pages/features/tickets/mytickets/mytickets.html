@@ -1,0 +1,620 @@
+<!-- Header -->
+<header dir="rtl" class="fixed top-0 left-0 right-0 z-50 bg-white/95 backdrop-blur-xl border-b border-outline-variant/60 shadow-[0_2px_12px_rgba(11,27,61,0.04)]">
+  <div class="h-20 max-w-[1280px] mx-auto px-margin md:px-margin-tablet lg:px-margin-desktop flex items-center justify-between gap-space-md">
+
+    <!-- Logo and Navigation -->
+    <div class="flex items-center gap-space-lg">
+
+      <a routerLink="/" class="flex items-center gap-space-sm">
+        <div class="w-10 h-10 rounded-xl bg-primary flex items-center justify-center text-tertiary font-headline-sm text-headline-sm shadow-inner ring-1 ring-white/10">
+          مـ
+        </div>
+
+        <div class="flex flex-col">
+          <span class="font-headline-sm text-headline-sm text-primary leading-none font-bold">مَدار</span>
+          <span class="font-label-sm text-label-sm text-on-surface-variant leading-tight mt-1">رحلتك تبدأ من هنا</span>
+        </div>
+      </a>
+
+      <nav class="hidden lg:flex items-center gap-space-xs">
+        <a routerLink="/home" class="font-label-lg text-label-lg text-on-surface-variant hover:text-primary hover:bg-surface-container-low px-space-md py-space-sm rounded-lg transition-colors">الرئيسية</a>
+
+        <a routerLink="/flights" class="font-label-lg text-label-lg text-on-surface-variant hover:text-primary hover:bg-surface-container-low px-space-md py-space-sm rounded-lg transition-colors">استكشف الرحلات</a>
+
+        <a routerLink="/mytickets" class="bg-primary/10 text-primary font-label-lg text-label-lg px-space-md py-space-sm rounded-lg font-bold">تذاكري</a>
+
+        <a routerLink="/about" class="font-label-lg text-label-lg text-on-surface-variant hover:text-primary hover:bg-surface-container-low px-space-md py-space-sm rounded-lg transition-colors">حول مدار</a>
+      </nav>
+    </div>
+
+    <!-- Account Buttons -->
+    <div class="flex items-center gap-space-sm">
+      <a routerLink="/login" class="hidden sm:inline-flex items-center justify-center px-space-md py-space-sm font-label-lg text-label-lg text-primary hover:bg-primary/5 rounded-lg transition-colors">
+        تسجيل الدخول
+      </a>
+
+      <a routerLink="/register" class="inline-flex items-center justify-center px-space-lg py-space-sm font-label-lg text-label-lg bg-tertiary hover:bg-amber-500 text-secondary font-bold rounded-lg transition-all shadow-sm">
+        إنشاء حساب
+      </a>
+    </div>
+
+  </div>
+</header>
+
+<!-- Main Content -->
+<main dir="rtl" class="w-full pt-20 bg-surface min-h-[calc(100vh-280px)]">
+
+  <div class="flex flex-col w-full">
+
+    <!-- Hero Section -->
+    <section class="relative w-full overflow-hidden bg-primary-container text-on-primary">
+
+      <div class="absolute -top-24 -left-24 w-96 h-96 rounded-full bg-tertiary/10 blur-3xl pointer-events-none"></div>
+      <div class="absolute bottom-0 right-1/4 w-80 h-80 rounded-full bg-white/5 blur-2xl pointer-events-none"></div>
+
+      <div class="max-w-[1280px] mx-auto px-margin md:px-margin-tablet lg:px-margin-desktop pt-space-xl pb-space-xl relative z-10">
+
+        <div class="flex flex-col md:flex-row md:items-end justify-between gap-space-md">
+
+          <div class="space-y-space-xs">
+
+            <div class="inline-flex items-center gap-space-xs bg-white/10 backdrop-blur-md px-space-sm py-1 rounded-full text-on-primary">
+              <span class="material-symbols-outlined text-sm text-tertiary">confirmation_number</span>
+              <span class="font-label-sm text-label-sm tracking-widest">سجل الحجوزات الرسمي</span>
+            </div>
+
+            <h1 class="font-headline-lg text-headline-lg font-bold text-on-primary tracking-tight">
+              تذاكري
+            </h1>
+
+            <p class="font-body-md text-body-md text-on-primary-container max-w-xl">
+              استعراض وإدارة جميع وثائق السفر الصادرة عبر خطوط مَدار الجوية بدقة وتفاصيل مسارات الرحلات المعتمدة.
+            </p>
+
+          </div>
+
+          <!-- Ticket Filters -->
+          <div class="flex items-center gap-1.5 bg-white/10 backdrop-blur-md p-1.5 rounded-xl border border-white/10">
+
+            <button
+              type="button"
+              (click)="filterTickets('all')"
+              [ngClass]="selectedFilter === 'all'
+                ? 'bg-white/20 text-white font-bold shadow-sm'
+                : 'text-on-primary-container hover:text-white'"
+              class="font-label-md text-label-md px-space-md py-1.5 rounded-lg transition-all">
+              الكل ({{ tickets.length }})
+            </button>
+
+            <button
+              type="button"
+              (click)="filterTickets('confirmed')"
+              [ngClass]="selectedFilter === 'confirmed'
+                ? 'bg-white/20 text-white font-bold shadow-sm'
+                : 'text-on-primary-container hover:text-white'"
+              class="font-label-md text-label-md px-space-md py-1.5 rounded-lg transition-all">
+              المؤكدة ({{ confirmedCount }})
+            </button>
+
+            <button
+              type="button"
+              (click)="filterTickets('cancelled')"
+              [ngClass]="selectedFilter === 'cancelled'
+                ? 'bg-white/20 text-white font-bold shadow-sm'
+                : 'text-on-primary-container hover:text-white'"
+              class="font-label-md text-label-md px-space-md py-1.5 rounded-lg transition-all">
+              الملغاة ({{ cancelledCount }})
+            </button>
+
+          </div>
+
+        </div>
+
+        <!-- Total Tickets -->
+        <div class="mt-space-lg max-w-md">
+
+          <div class="bg-white/10 backdrop-blur-md rounded-xl p-space-md border border-white/10">
+
+            <div class="flex items-center justify-between">
+              <span class="font-label-sm text-label-sm text-on-primary-container">إجمالي التذاكر</span>
+              <span class="material-symbols-outlined text-tertiary text-lg">airplane_ticket</span>
+            </div>
+
+            <div class="mt-space-sm flex items-baseline gap-space-xs">
+              <span class="font-headline-lg text-headline-lg font-bold text-on-primary">
+                {{ tickets.length }}
+              </span>
+              <span class="font-body-sm text-body-sm text-on-primary-container">تذاكر مسجلة</span>
+            </div>
+
+          </div>
+
+        </div>
+
+      </div>
+    </section>
+
+    <!-- Tickets List -->
+    <section class="max-w-[1280px] mx-auto w-full px-margin md:px-margin-tablet lg:px-margin-desktop py-space-xl">
+
+      <div class="flex flex-col gap-space-lg">
+
+        <!-- Ticket Cards -->
+        <div class="flex flex-col gap-space-lg">
+
+          <article
+            *ngFor="let ticket of filteredTickets"
+            class="bg-surface-container-lowest rounded-xl shadow-md hover:shadow-xl transition-all duration-300 overflow-hidden border border-outline-variant/60"
+            [ngClass]="ticket.statusKey === 'cancelled' ? 'opacity-90' : ''">
+
+            <!-- Ticket Header -->
+            <div
+              class="px-space-md md:px-space-lg py-space-sm flex flex-wrap items-center justify-between gap-space-sm"
+              [ngClass]="ticket.statusKey === 'confirmed'
+                ? 'bg-primary text-on-primary'
+                : 'bg-secondary-container text-on-secondary-container'">
+
+              <div class="flex items-center gap-space-md">
+
+                <span
+                  class="w-2.5 h-2.5 rounded-full"
+                  [ngClass]="ticket.statusKey === 'confirmed' ? 'bg-amber-400' : 'bg-error'">
+                </span>
+
+                <div class="flex items-baseline gap-space-xs">
+                  <span class="font-label-sm text-label-sm text-on-primary-container">رقم التذكرة:</span>
+                  <span class="font-headline-sm text-headline-sm font-bold tracking-wider">
+                    {{ ticket.id }}
+                  </span>
+                </div>
+
+                <span class="text-white/20">/</span>
+
+                <div class="flex items-center gap-1.5">
+                  <span class="font-label-sm text-label-sm">الناقل:</span>
+                  <span class="font-label-md text-label-md font-medium">
+                    {{ ticket.airline }}
+                  </span>
+                </div>
+
+              </div>
+
+              <div class="flex items-center gap-space-md">
+
+                <span
+                  class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full font-label-sm text-label-sm"
+                  [ngClass]="ticket.statusKey === 'confirmed'
+                    ? 'bg-emerald-500/20 text-emerald-300'
+                    : 'bg-error/15 text-error'">
+
+                  <span
+                    class="w-1.5 h-1.5 rounded-full"
+                    [ngClass]="ticket.statusKey === 'confirmed' ? 'bg-emerald-400' : 'bg-error'">
+                  </span>
+
+                  {{ ticket.status }}
+                </span>
+
+                <span
+                  class="font-headline-sm text-headline-sm font-bold"
+                  [ngClass]="ticket.statusKey === 'confirmed'
+                    ? 'text-amber-400'
+                    : 'text-on-secondary-container line-through'">
+                  ${{ ticket.price }}
+                </span>
+
+              </div>
+
+            </div>
+
+            <!-- Ticket Details -->
+            <div class="p-space-md md:p-space-lg grid grid-cols-1 lg:grid-cols-12 gap-space-lg items-center">
+
+              <!-- Flight Route -->
+              <div class="lg:col-span-8 grid grid-cols-1 md:grid-cols-3 gap-space-md items-center">
+
+                <!-- Departure -->
+                <div class="text-right">
+
+                  <div class="font-label-sm text-label-sm text-on-surface-variant">مطار المغادرة</div>
+
+                  <div class="font-headline-md text-headline-md font-bold text-on-surface mt-0.5">
+                    {{ ticket.origin }}
+                  </div>
+
+                  <div class="font-label-lg text-label-lg font-medium text-on-surface">
+                    {{ ticket.originName }}
+                  </div>
+
+                  <div class="inline-flex items-center gap-1 mt-2 text-primary font-bold font-headline-sm text-headline-sm bg-surface-container-low px-2.5 py-1 rounded">
+                    <span class="material-symbols-outlined text-sm text-tertiary">schedule</span>
+                    {{ ticket.departureTime }}
+                  </div>
+
+                </div>
+
+                <!-- Flight Path -->
+                <div class="flex flex-col items-center justify-center p-space-sm bg-surface-container-low/60 rounded-xl relative">
+
+                  <div class="flex items-center justify-center gap-2 text-primary font-bold mb-1">
+
+                    <span class="font-label-md text-label-md">
+                      {{ ticket.flightNumber }}
+                    </span>
+
+                    <span
+                      class="material-symbols-outlined text-base"
+                      [ngClass]="ticket.statusKey === 'confirmed' ? 'text-tertiary' : 'text-error'">
+                      {{ ticket.statusKey === 'confirmed' ? 'flight_takeoff' : 'cancel' }}
+                    </span>
+
+                  </div>
+
+                  <div class="w-full flex items-center justify-between px-3 text-xs text-on-surface-variant">
+
+                    <span class="w-2 h-2 rounded-full bg-primary"></span>
+
+                    <span class="flex-1 h-0.5 bg-outline mx-2 border-b border-dashed border-primary"></span>
+
+                    <span class="w-2 h-2 rounded-full bg-primary"></span>
+
+                  </div>
+
+                  <div class="mt-2 font-label-sm text-label-sm text-on-surface-variant flex items-center gap-1">
+
+                    <span class="material-symbols-outlined text-xs text-secondary">timelapse</span>
+
+                    {{ ticket.duration }}
+
+                    <span *ngIf="ticket.statusKey === 'confirmed'">• مباشر</span>
+
+                  </div>
+
+                </div>
+
+                <!-- Arrival -->
+                <div class="text-right md:text-left">
+
+                  <div class="font-label-sm text-label-sm text-on-surface-variant">مطار الوصول</div>
+
+                  <div class="font-headline-md text-headline-md font-bold text-on-surface mt-0.5">
+                    {{ ticket.destination }}
+                  </div>
+
+                  <div class="font-label-lg text-label-lg font-medium text-on-surface">
+                    {{ ticket.destinationName }}
+                  </div>
+
+                  <div class="inline-flex items-center gap-1 mt-2 text-primary font-bold font-headline-sm text-headline-sm bg-surface-container-low px-2.5 py-1 rounded">
+                    <span class="material-symbols-outlined text-sm text-tertiary">schedule</span>
+                    {{ ticket.arrivalTime }}
+                  </div>
+
+                </div>
+
+              </div>
+
+              <!-- Cabin and Seat -->
+              <div class="lg:col-span-4 bg-surface-container-low p-space-md rounded-xl flex flex-col justify-between gap-space-md">
+
+                <div class="grid grid-cols-2 gap-space-sm">
+
+                  <div class="bg-surface-container-lowest p-space-sm rounded-lg shadow-sm border border-outline-variant/60">
+
+                    <span class="font-label-sm text-label-sm text-on-surface-variant block">
+                      درجة السفر
+                    </span>
+
+                    <span
+                      class="font-label-lg text-label-lg font-bold mt-1 flex items-center gap-1"
+                      [ngClass]="ticket.cabin === 'رجال الأعمال' ? 'text-amber-700' : 'text-primary'">
+
+                      <span class="material-symbols-outlined text-sm">
+                        {{ ticket.cabin === 'رجال الأعمال' ? 'workspace_premium' : 'airline_seat_recline_normal' }}
+                      </span>
+
+                      {{ ticket.cabin }}
+
+                    </span>
+
+                  </div>
+
+                  <div class="bg-surface-container-lowest p-space-sm rounded-lg shadow-sm border border-outline-variant/60">
+
+                    <span class="font-label-sm text-label-sm text-on-surface-variant block">
+                      رقم المقعد
+                    </span>
+
+                    <span class="font-headline-sm text-headline-sm font-bold text-primary mt-0.5 block text-center">
+                      {{ ticket.seat }}
+                    </span>
+
+                  </div>
+
+                </div>
+
+                <!-- Ticket Details Button -->
+                <button
+                  type="button"
+                  (click)="openTicketModal(ticket)"
+                  class="w-full bg-primary hover:bg-secondary text-on-primary py-2.5 px-space-md rounded-lg font-label-lg text-label-lg transition-colors flex items-center justify-center gap-2 group shadow-sm">
+
+                  عرض تفاصيل التذكرة
+
+                  <span class="material-symbols-outlined text-sm group-hover:-translate-x-1 transition-transform">
+                    arrow_forward
+                  </span>
+
+                </button>
+
+              </div>
+
+            </div>
+
+          </article>
+
+        </div>
+
+        <!-- No Tickets -->
+        <div
+          *ngIf="filteredTickets.length === 0"
+          class="bg-surface-container-lowest p-space-xl rounded-xl text-center flex flex-col items-center gap-space-md shadow-sm border border-outline-variant/60">
+
+          <div class="w-16 h-16 rounded-full bg-surface-container-low flex items-center justify-center text-on-surface-variant">
+            <span class="material-symbols-outlined text-3xl">airplane_ticket</span>
+          </div>
+
+          <h3 class="font-headline-sm text-headline-sm font-bold text-primary">
+            لا توجد تذاكر في هذه القائمة
+          </h3>
+
+          <p class="font-body-md text-body-md text-on-surface-variant">
+            لا توجد تذاكر تطابق حالة التصفية المحددة.
+          </p>
+
+        </div>
+
+      </div>
+
+    </section>
+
+  </div>
+
+  <!-- Ticket Details Modal -->
+  <div
+    *ngIf="isModalOpen && selectedTicket as ticket"
+    class="fixed inset-0 z-[60] flex items-center justify-center bg-black/60 backdrop-blur-sm p-4"
+    (click)="closeTicketModal()">
+
+    <div
+      class="bg-surface-container-lowest w-full max-w-lg rounded-2xl shadow-2xl overflow-hidden"
+      (click)="$event.stopPropagation()">
+
+      <!-- Modal Header -->
+      <div class="bg-primary px-space-lg py-space-md text-on-primary flex items-center justify-between">
+
+        <div class="flex items-center gap-space-sm">
+
+          <div class="w-8 h-8 rounded-lg bg-white/10 flex items-center justify-center text-amber-400">
+            <span class="material-symbols-outlined text-base">flight_takeoff</span>
+          </div>
+
+          <div>
+            <h3 class="font-headline-sm text-headline-sm font-bold">
+              تفاصيل وثيقة السفر
+            </h3>
+
+            <p class="font-label-sm text-label-sm text-on-primary-container">
+              {{ ticket.id }}
+            </p>
+          </div>
+
+        </div>
+
+        <button
+          type="button"
+          (click)="closeTicketModal()"
+          class="w-8 h-8 flex items-center justify-center rounded-full hover:bg-white/10 transition-colors text-on-primary">
+
+          <span class="material-symbols-outlined text-lg">close</span>
+
+        </button>
+
+      </div>
+
+      <!-- Modal Content -->
+      <div class="p-space-lg space-y-space-md">
+
+        <div class="flex items-center justify-between bg-surface-container-low p-space-md rounded-xl">
+
+          <div>
+            <span class="font-label-sm text-label-sm text-on-surface-variant block">
+              شركة الطيران
+            </span>
+
+            <span class="font-label-lg text-label-lg font-bold text-primary">
+              {{ ticket.airline }}
+            </span>
+          </div>
+
+          <div>
+            <span class="font-label-sm text-label-sm text-on-surface-variant block">
+              رقم الرحلة
+            </span>
+
+            <span class="font-headline-sm text-headline-sm font-bold text-primary">
+              {{ ticket.flightNumber }}
+            </span>
+          </div>
+
+          <div class="text-left">
+            <span class="font-label-sm text-label-sm text-on-surface-variant block">
+              الحالة
+            </span>
+
+            <span
+              class="inline-flex px-2 py-0.5 rounded-full font-label-sm text-label-sm"
+              [ngClass]="ticket.statusKey === 'confirmed'
+                ? 'bg-emerald-100 text-emerald-800'
+                : 'bg-red-100 text-red-800'">
+
+              {{ ticket.status }}
+
+            </span>
+          </div>
+
+        </div>
+
+        <!-- Route Information -->
+        <div class="space-y-space-sm border-y border-surface-container py-space-md">
+
+          <div class="flex justify-between items-center">
+            <span class="font-body-md text-body-md text-on-surface-variant">مطار المغادرة</span>
+            <span class="font-label-lg text-label-lg font-bold text-on-surface">{{ ticket.originName }} ({{ ticket.origin }})</span>
+          </div>
+
+          <div class="flex justify-between items-center">
+            <span class="font-body-md text-body-md text-on-surface-variant">وقت المغادرة</span>
+            <span class="font-label-lg text-label-lg font-bold text-primary">{{ ticket.departureTime }}</span>
+          </div>
+
+          <div class="flex justify-between items-center">
+            <span class="font-body-md text-body-md text-on-surface-variant">مطار الوصول</span>
+            <span class="font-label-lg text-label-lg font-bold text-on-surface">{{ ticket.destinationName }} ({{ ticket.destination }})</span>
+          </div>
+
+          <div class="flex justify-between items-center">
+            <span class="font-body-md text-body-md text-on-surface-variant">وقت الوصول</span>
+            <span class="font-label-lg text-label-lg font-bold text-primary">{{ ticket.arrivalTime }}</span>
+          </div>
+
+        </div>
+
+        <!-- Cabin, Seat and Price -->
+        <div class="grid grid-cols-3 gap-space-sm text-center">
+
+          <div class="bg-surface-container-low p-space-sm rounded-lg">
+            <span class="font-label-sm text-label-sm text-on-surface-variant block">درجة السفر</span>
+            <span class="font-label-md text-label-md font-bold text-primary mt-1 block">
+              {{ ticket.cabin }}
+            </span>
+          </div>
+
+          <div class="bg-surface-container-low p-space-sm rounded-lg">
+            <span class="font-label-sm text-label-sm text-on-surface-variant block">رقم المقعد</span>
+            <span class="font-headline-sm text-headline-sm font-bold text-primary mt-1 block">
+              {{ ticket.seat }}
+            </span>
+          </div>
+
+          <div class="bg-surface-container-low p-space-sm rounded-lg">
+            <span class="font-label-sm text-label-sm text-on-surface-variant block">سعر التذكرة</span>
+            <span class="font-headline-sm text-headline-sm font-bold text-amber-600 mt-1 block">
+              ${{ ticket.price }}
+            </span>
+          </div>
+
+        </div>
+
+      </div>
+
+      <!-- Modal Footer -->
+      <div class="bg-surface-container-low px-space-lg py-space-md flex justify-end">
+
+        <button
+          type="button"
+          (click)="closeTicketModal()"
+          class="w-full bg-primary hover:bg-secondary text-on-primary py-2.5 rounded-lg font-label-lg text-label-lg transition-colors">
+
+          إغلاق النافذة
+
+        </button>
+
+      </div>
+
+    </div>
+
+  </div>
+
+</main>
+
+<!-- Footer -->
+<footer class="w-full bg-[#070F23] text-white pt-space-xl pb-space-lg border-t border-white/10">
+
+  <div class="max-w-[1280px] mx-auto px-margin md:px-margin-tablet lg:px-margin-desktop">
+
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-space-xl pb-space-xl border-b border-white/10">
+
+      <div class="md:col-span-2 flex flex-col gap-space-sm">
+
+        <div class="flex items-center gap-space-sm">
+
+          <div class="w-9 h-9 rounded-xl bg-tertiary flex items-center justify-center text-secondary font-headline-sm text-headline-sm font-bold shadow-sm">
+            مـ
+          </div>
+
+          <span class="font-headline-md text-headline-md text-white font-bold">
+            مَدار – MADAR
+          </span>
+        </div>
+
+        <p class="font-body-md text-body-md text-slate-400 max-w-md">
+          بوابة الطيران اليمنية الحديثة بتصميم مستوحى من عمق التراث المعماري الساحر لليمن وتقنيات السفر الرقمية المعاصرة. رحلات آمنة، تجربة حجز سلسة، وهوية راسخة.
+        </p>
+
+      </div>
+
+      <div class="flex flex-col gap-space-sm">
+
+        <h3 class="font-headline-sm text-headline-sm text-tertiary font-bold">
+          روابط سريعة
+        </h3>
+
+        <ul class="flex flex-col gap-space-xs font-body-md text-body-md">
+
+          <li><a routerLink="/" class="text-slate-300 hover:text-tertiary transition-colors">الرئيسية</a></li>
+
+          <li><a routerLink="/flights" class="text-slate-300 hover:text-tertiary transition-colors">استكشف الرحلات</a></li>
+
+          <li><a routerLink="/my-bookings" class="text-slate-300 hover:text-tertiary transition-colors">إدارة التذاكر والحجوزات</a></li>
+
+          <li><a routerLink="/about" class="text-slate-300 hover:text-tertiary transition-colors">عن مدار وفلسفتنا</a></li>
+
+        </ul>
+
+      </div>
+
+      <div class="flex flex-col gap-space-sm">
+
+        <h3 class="font-headline-sm text-headline-sm text-tertiary font-bold">
+          الحساب والدعم
+        </h3>
+
+        <ul class="flex flex-col gap-space-xs font-body-md text-body-md">
+
+          <li><a routerLink="/login" class="text-slate-300 hover:text-tertiary transition-colors">تسجيل الدخول</a></li>
+
+          <li><a routerLink="/register" class="text-slate-300 hover:text-tertiary transition-colors">إنشاء حساب جديد</a></li>
+
+          <li><a routerLink="/help" class="text-slate-300 hover:text-tertiary transition-colors">مركز المساعدة والاستفسارات</a></li>
+
+        </ul>
+
+      </div>
+
+    </div>
+
+    <div class="pt-space-lg flex flex-col sm:flex-row items-center justify-between gap-space-sm font-label-md text-label-md text-slate-400">
+
+      <p>جميع الحقوق محفوظة لمنصة مَدار © 2025</p>
+
+      <div class="flex items-center gap-space-lg">
+        <a routerLink="/terms" class="hover:text-tertiary transition-colors">شروط الاستخدام</a>
+        <a routerLink="/privacy" class="hover:text-tertiary transition-colors">سياسة الخصوصية</a>
+      </div>
+
+    </div>
+
+  </div>
+
+</footer>

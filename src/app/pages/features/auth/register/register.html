@@ -1,0 +1,569 @@
+
+<!-- Header -->
+<header dir="rtl" class="fixed top-0 left-0 right-0 z-50 bg-[#f8fafc]/90 backdrop-blur-xl border-b border-slate-200/80 shadow-sm">
+  <div class="h-20 max-w-[1280px] mx-auto px-4 md:px-8 lg:px-12 flex items-center justify-between gap-4">
+
+    <div class="flex items-center gap-6">
+      <a routerLink="/" class="flex items-center gap-2">
+        <div class="w-10 h-10 rounded-lg bg-[#0b1b3d] flex items-center justify-center text-white font-semibold">
+          مـ
+        </div>
+        <div class="flex flex-col">
+          <span class="text-lg font-semibold text-[#0b1b3d]">مَدار</span>
+          <span class="text-xs text-slate-500">رحلتك تبدأ من هنا</span>
+        </div>
+      </a>
+
+      <nav class="hidden lg:flex items-center gap-1">
+        <a routerLink="/home" class="px-4 py-2 text-slate-600 hover:bg-slate-100 rounded-lg">الرئيسية</a>
+        <a routerLink="/flights" class="px-4 py-2 text-slate-600 hover:bg-slate-100 rounded-lg">استكشف الرحلات</a>
+        <a routerLink="/mytickets" class="px-4 py-2 text-slate-600 hover:bg-slate-100 rounded-lg">تذاكري</a>
+        <a routerLink="/about" class="px-4 py-2 text-slate-600 hover:bg-slate-100 rounded-lg">حول مدار</a>
+      </nav>
+    </div>
+
+    <div class="flex items-center gap-2">
+      <a routerLink="/login" class="hidden sm:inline-flex px-4 py-2 text-[#0b1b3d] hover:bg-slate-100 rounded-lg">
+        تسجيل الدخول
+      </a>
+
+      <a routerLink="/register" class="px-5 py-2 bg-[#0b1b3d] text-white rounded-lg">
+        إنشاء حساب
+      </a>
+    </div>
+
+  </div>
+</header>
+
+
+<!-- Main -->
+<main dir="rtl" class="w-full pt-20 bg-[#f8fafc] min-h-screen">
+
+  <div class="relative w-full overflow-hidden py-10 lg:py-16 px-4 md:px-8 lg:px-12 flex items-center justify-center">
+
+    <!-- شبكة التصميم -->
+    <div dir="ltr" class="w-full max-w-[1140px] grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-10 items-stretch relative z-10">
+
+      <!-- الجانب التعريفي -->
+      <div dir="rtl" class="lg:col-span-5 hidden lg:flex flex-col justify-between bg-[#0b1b3d] text-white rounded-xl p-8 relative overflow-hidden shadow-xl">
+
+        <svg class="absolute inset-0 w-full h-full opacity-10 pointer-events-none"
+             fill="none"
+             stroke="currentColor"
+             viewBox="0 0 400 600"
+             xmlns="http://www.w3.org/2000/svg">
+
+          <circle cx="200" cy="180" r="140" stroke-dasharray="4 4" stroke-width="1.5"></circle>
+          <circle cx="200" cy="180" r="100" stroke-width="2"></circle>
+
+          <path d="M200 40 L200 320 M60 180 L340 180 M100 80 L300 280 M100 280 L300 80" stroke-width="1.2"></path>
+
+          <path d="M200 80 C170 120 170 160 200 180 C230 160 230 120 200 80 Z" stroke-width="1.5"></path>
+          <path d="M200 280 C170 240 170 200 200 180 C230 200 230 240 200 280 Z" stroke-width="1.5"></path>
+          <path d="M100 180 C140 150 180 150 200 180 C180 210 140 210 100 180 Z" stroke-width="1.5"></path>
+          <path d="M300 180 C260 150 220 150 200 180 C220 210 260 210 300 180 Z" stroke-width="1.5"></path>
+
+          <path d="M30 460 Q 200 380 370 490" stroke-dasharray="6 6" stroke-width="2"></path>
+          <path d="M20 520 L380 520" stroke-width="1"></path>
+
+        </svg>
+
+
+        <!-- Upper Banner -->
+        <div class="relative z-10 flex flex-col gap-3">
+
+          <span class="inline-flex items-center gap-2 px-3 py-1 bg-white/10 rounded-lg w-fit text-sm">
+            <span class="w-2 h-2 rounded-full bg-[#f59e0b]"></span>
+            مرحباً بك في مَدار
+          </span>
+
+          <h2 class="text-3xl font-bold leading-tight mt-2">
+            رحلتك القادمة تبدأ من هنا.
+          </h2>
+
+          <p class="text-[#f59e0b] font-semibold mt-1">
+            احجز بثقة، وسافر براحة.
+          </p>
+
+          <p class="text-sm text-slate-300 leading-relaxed max-w-sm">
+            اكتشف وجهات السفر، واستعرض الرحلات المتاحة، واحجز تذكرتك بكل سهولة من مكان واحد.
+          </p>
+
+        </div>
+
+
+        <!-- مسار الرحلات -->
+        <div class="relative z-10 my-6 rounded-lg overflow-hidden shadow-lg bg-white/5 p-4 border border-white/10">
+
+          <div class="flex items-center justify-between mb-5">
+
+            <div class="flex items-center gap-2 text-[#f59e0b] text-sm">
+              <span class="material-symbols-outlined">flight_takeoff</span>
+              <span>مسار الرحلات الذكي</span>
+            </div>
+
+            <span class="text-xs text-slate-300">تحديث لحظي</span>
+
+          </div>
+
+          <div class="flex items-center justify-between py-2">
+
+            <div class="flex flex-col items-center gap-2">
+              <span class="w-2.5 h-2.5 rounded-full bg-[#f59e0b]"></span>
+              <span class="text-xs text-slate-300">صنعاء</span>
+            </div>
+
+            <div class="flex-1 border-b border-dashed border-slate-500 mx-3"></div>
+
+            <div class="flex flex-col items-center gap-2">
+              <span class="w-2.5 h-2.5 rounded-full bg-white"></span>
+              <span class="text-xs text-slate-300">عدن</span>
+            </div>
+
+            <div class="flex-1 border-b border-dashed border-slate-500 mx-3"></div>
+
+            <div class="flex flex-col items-center gap-2">
+              <span class="w-2.5 h-2.5 rounded-full bg-[#f59e0b]"></span>
+              <span class="text-xs text-slate-300">سقطرى</span>
+            </div>
+
+          </div>
+
+          <div class="pt-3 mt-3 border-t border-slate-700 flex items-center justify-between text-xs text-slate-300">
+            <span>حجوزات فورية مؤكدة</span>
+            <span class="text-[#f59e0b]">أمان كامل 100%</span>
+          </div>
+
+        </div>
+
+
+        <!-- معلومات المنصة -->
+        <div class="relative z-10 bg-white/5 rounded-lg p-4 flex items-center justify-between">
+
+          <div class="flex items-center gap-3">
+
+            <div class="w-10 h-10 rounded-lg bg-[#f59e0b]/20 flex items-center justify-center text-[#f59e0b]">
+              <span class="material-symbols-outlined">flight_takeoff</span>
+            </div>
+
+            <div>
+              <p class="text-sm font-semibold">مَدار .. وجهتك نحو رحلة أسهل</p>
+              <p class="text-xs text-slate-300 mt-1">تجربة سفر يمنية متكاملة برؤية عصرية</p>
+            </div>
+
+          </div>
+
+          <div class="text-left text-xs text-[#f59e0b]">
+            <span class="block">MADAR</span>
+            <span class="text-slate-300">AIRWAYS</span>
+          </div>
+
+        </div>
+
+      </div>
+
+
+      <!-- نموذج التسجيل -->
+      <div dir="rtl" class="lg:col-span-7 bg-white rounded-xl shadow-md p-6 md:p-10 flex flex-col justify-center relative overflow-hidden">
+
+        <div class="absolute top-0 right-0 left-0 h-1.5 bg-gradient-to-l from-[#f59e0b] via-[#0b1b3d] to-[#121316]"></div>
+
+
+        <!-- عنوان الصفحة -->
+        <div class="flex flex-col gap-2 mb-6">
+
+          <div class="flex items-center justify-between">
+
+            <div class="inline-flex items-center gap-2">
+              <span class="w-2.5 h-2.5 rounded-sm bg-[#f59e0b]"></span>
+              <span class="text-xs text-slate-500 tracking-wider">إنشاء حساب ركاب جديد</span>
+            </div>
+
+            <span class="text-xs text-slate-500">4 حقول مطلوبة</span>
+
+          </div>
+
+          <h1 class="text-3xl font-bold text-[#0b1b3d] mt-2">
+            سجّل عضويتك في مَدار
+          </h1>
+
+          <p class="text-sm text-slate-500">
+            أدخل بيانات حسابك الملاحي لتأكيد حجوزاتك وإدارة تذاكرك بكل أمان ومرونة.
+          </p>
+
+        </div>
+
+
+        <!-- Registration Form -->
+        <form
+          [formGroup]="registerForm"
+          (ngSubmit)="onSubmit()"
+          class="flex flex-col gap-4"
+          novalidate
+        >
+
+          <!-- اسم المستخدم -->
+          <div class="flex flex-col gap-2">
+
+            <label for="username" class="flex items-center justify-between text-sm font-semibold text-slate-900">
+
+              <span class="flex items-center gap-2">
+                <span class="material-symbols-outlined text-[#0b1b3d]">badge</span>
+                اسم المستخدم
+              </span>
+
+              <span class="text-xs text-slate-500 font-normal">بالأحرف أو الأرقام</span>
+
+            </label>
+
+            <div class="relative flex items-center">
+
+              <input
+                id="username"
+                type="text"
+                formControlName="username"
+                dir="rtl"
+                placeholder="مثال: yemen_voyager"
+                class="w-full h-[52px] px-4 pr-11 bg-slate-50 text-[#0b1b3d] rounded-lg text-sm shadow-inner focus:outline-none focus:bg-white focus:ring-2 focus:ring-[#0b1b3d]/20"
+              />
+
+              <span class="material-symbols-outlined absolute right-3.5 text-slate-500 pointer-events-none">person</span>
+
+            </div>
+
+            @if (registerForm.get('username')?.touched && registerForm.get('username')?.invalid) {
+              <p class="text-red-500 text-xs">اسم المستخدم مطلوب</p>
+            }
+
+          </div>
+
+
+          <!-- البريد الإلكتروني -->
+          <div class="flex flex-col gap-2">
+
+            <label for="email" class="flex items-center justify-between text-sm font-semibold text-slate-900">
+
+              <span class="flex items-center gap-2">
+                <span class="material-symbols-outlined text-[#0b1b3d]">alternate_email</span>
+                البريد الإلكتروني
+              </span>
+
+              <span class="text-xs text-slate-500 font-normal">لاستلام التذاكر الرقمية</span>
+
+            </label>
+
+            <div class="relative flex items-center">
+
+              <input
+                id="email"
+                type="email"
+                formControlName="email"
+                dir="ltr"
+                placeholder="name@domain.com"
+                class="w-full h-[52px] px-4 pr-11 bg-slate-50 text-[#0b1b3d] rounded-lg text-sm shadow-inner focus:outline-none focus:bg-white focus:ring-2 focus:ring-[#0b1b3d]/20"
+              />
+
+              <span class="material-symbols-outlined absolute right-3.5 text-slate-500 pointer-events-none">mail</span>
+
+            </div>
+
+            @if (registerForm.get('email')?.touched && registerForm.get('email')?.invalid) {
+              <p class="text-red-500 text-xs">
+                @if (registerForm.get('email')?.hasError('required')) {
+                  البريد الإلكتروني مطلوب
+                } @else if (registerForm.get('email')?.hasError('email')) {
+                  يرجى إدخال بريد إلكتروني صحيح
+                }
+              </p>
+            }
+
+          </div>
+
+
+          <!-- كلمة المرور -->
+          <div class="flex flex-col gap-2">
+
+            <label for="password" class="flex items-center justify-between text-sm font-semibold text-slate-900">
+
+              <span class="flex items-center gap-2">
+                <span class="material-symbols-outlined text-[#0b1b3d]">lock</span>
+                كلمة المرور
+              </span>
+
+              <span class="text-xs text-slate-500 font-normal">8 رموز كحد أدنى</span>
+
+            </label>
+
+            <div class="relative flex items-center">
+
+              <input
+                id="password"
+                formControlName="password"
+                [type]="showPassword ? 'text' : 'password'"
+                dir="rtl"
+                placeholder="••••••••••••"
+                class="w-full h-[52px] px-11 bg-slate-50 text-[#0b1b3d] rounded-lg text-sm shadow-inner focus:outline-none focus:bg-white focus:ring-2 focus:ring-[#0b1b3d]/20"
+              />
+
+              <span class="material-symbols-outlined absolute right-3.5 text-slate-500 pointer-events-none">key</span>
+
+              <button
+                type="button"
+                (click)="togglePassword()"
+                class="absolute left-3 text-slate-500 hover:text-[#0b1b3d] p-1"
+                [attr.aria-label]="showPassword ? 'إخفاء كلمة المرور' : 'إظهار كلمة المرور'"
+              >
+                <span class="material-symbols-outlined">
+                  {{ showPassword ? 'visibility_off' : 'visibility' }}
+                </span>
+              </button>
+
+            </div>
+
+            @if (registerForm.get('password')?.touched && registerForm.get('password')?.invalid) {
+              <p class="text-red-500 text-xs">
+                @if (registerForm.get('password')?.hasError('required')) {
+                  كلمة المرور مطلوبة
+                } @else if (registerForm.get('password')?.hasError('minlength')) {
+                  يجب ألا تقل كلمة المرور عن 8 أحرف
+                }
+              </p>
+            }
+
+          </div>
+
+
+          <!-- تأكيد كلمة المرور -->
+          <div class="flex flex-col gap-2">
+
+            <label for="confirmPassword" class="flex items-center justify-between text-sm font-semibold text-slate-900">
+
+              <span class="flex items-center gap-2">
+                <span class="material-symbols-outlined text-[#0b1b3d]">verified_user</span>
+                تأكيد كلمة المرور
+              </span>
+
+              <span class="text-xs text-slate-500 font-normal">مطابقة كلمة المرور</span>
+
+            </label>
+
+            <div class="relative flex items-center">
+
+              <input
+                id="confirmPassword"
+                formControlName="confirmPassword"
+                [type]="showConfirmPassword ? 'text' : 'password'"
+                dir="rtl"
+                placeholder="••••••••••••"
+                class="w-full h-[52px] px-11 bg-slate-50 text-[#0b1b3d] rounded-lg text-sm shadow-inner focus:outline-none focus:bg-white focus:ring-2 focus:ring-[#0b1b3d]/20"
+              />
+
+              <span class="material-symbols-outlined absolute right-3.5 text-slate-500 pointer-events-none">lock_reset</span>
+
+              <button
+                type="button"
+                (click)="toggleConfirmPassword()"
+                class="absolute left-3 text-slate-500 hover:text-[#0b1b3d] p-1"
+                [attr.aria-label]="showConfirmPassword ? 'إخفاء تأكيد كلمة المرور' : 'إظهار تأكيد كلمة المرور'"
+              >
+                <span class="material-symbols-outlined">
+                  {{ showConfirmPassword ? 'visibility_off' : 'visibility' }}
+                </span>
+              </button>
+
+            </div>
+
+            @if (registerForm.get('confirmPassword')?.touched && registerForm.get('confirmPassword')?.invalid) {
+              <p class="text-red-500 text-xs">تأكيد كلمة المرور مطلوب</p>
+            }
+
+            @if (registerForm.get('confirmPassword')?.touched && registerForm.get('confirmPassword')?.valid && !passwordsMatch) {
+              <p class="text-red-500 text-xs">كلمتا المرور غير متطابقتين</p>
+            }
+
+          </div>
+
+
+          <!-- زر إنشاء الحساب -->
+          <div class="pt-2">
+
+            <button
+              type="submit"
+              class="w-full h-12 bg-[#f59e0b] hover:bg-[#d97706] text-[#00020a] font-bold rounded-lg shadow-md transition-all flex items-center justify-center gap-2 active:scale-[0.99]"
+            >
+              <span>إنشاء الحساب</span>
+              <span class="material-symbols-outlined text-xl">arrow_forward</span>
+            </button>
+
+          </div>
+
+        </form>
+
+
+        <!-- رابط تسجيل الدخول -->
+        <div class="relative my-8 flex items-center justify-center">
+
+          <div class="w-full h-px bg-slate-200"></div>
+
+          <div class="absolute px-4 bg-white text-slate-500 text-xs">
+            مسجل مسبقاً؟
+          </div>
+
+        </div>
+
+        <div class="flex flex-col sm:flex-row items-center justify-center gap-2 text-center">
+
+          <span class="text-sm text-slate-500">
+            هل تمتلك حساباً نشطاً في مدار؟
+          </span>
+
+          <a
+            routerLink="/login"
+            class="text-sm font-bold text-[#0b1b3d] hover:text-[#f59e0b] flex items-center gap-1"
+          >
+            تسجيل الدخول إلى حسابك
+            <span class="material-symbols-outlined text-lg">login</span>
+          </a>
+
+        </div>
+
+      </div>
+
+    </div>
+
+  </div>
+
+
+  <!-- مميزات المنصة -->
+  <div dir="rtl" class="w-full max-w-[1140px] mx-auto px-4 md:px-8 lg:px-12 pb-10">
+
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+
+      <div class="bg-white p-5 rounded-lg shadow-sm flex flex-col gap-3 border border-slate-200/80">
+
+        <div class="flex items-center gap-4">
+          <div class="w-12 h-12 rounded-lg bg-[#0b1b3d] text-[#f59e0b] flex items-center justify-center">
+            <span class="material-symbols-outlined text-2xl">travel_explore</span>
+          </div>
+
+          <h3 class="text-lg font-semibold text-[#0b1b3d]">اكتشف رحلتك بسهولة</h3>
+        </div>
+
+        <p class="text-sm text-slate-500 leading-relaxed">
+          ابحث عن الرحلات المتاحة، وقارن بين مواعيد المغادرة والوصول، واختر الرحلة المناسبة لك.
+        </p>
+
+      </div>
+
+
+      <div class="bg-white p-5 rounded-lg shadow-sm flex flex-col gap-3 border border-slate-200/80">
+
+        <div class="flex items-center gap-4">
+          <div class="w-12 h-12 rounded-lg bg-amber-100 text-[#f59e0b] flex items-center justify-center">
+            <span class="material-symbols-outlined text-2xl">confirmation_number</span>
+          </div>
+
+          <h3 class="text-lg font-semibold text-[#0b1b3d]">حجز تذكرتك في خطوات</h3>
+        </div>
+
+        <p class="text-sm text-slate-500 leading-relaxed">
+          اختر رحلتك والمسافر ودرجة السفر، وأكمل حجز تذكرتك بسهولة.
+        </p>
+
+      </div>
+
+
+      <div class="bg-white p-5 rounded-lg shadow-sm flex flex-col gap-3 border border-slate-200/80">
+
+        <div class="flex items-center gap-4">
+          <div class="w-12 h-12 rounded-lg bg-slate-100 text-[#0b1b3d] flex items-center justify-center">
+            <span class="material-symbols-outlined text-2xl">airplane_ticket</span>
+          </div>
+
+          <h3 class="text-lg font-semibold text-[#0b1b3d]">تذاكرك دائماً بين يديك</h3>
+        </div>
+
+        <p class="text-sm text-slate-500 leading-relaxed">
+          استعرض تذاكرك وتفاصيل رحلاتك ومعلومات الحجز من حسابك الشخصي.
+        </p>
+
+      </div>
+
+    </div>
+
+  </div>
+
+</main>
+
+
+<!-- Footer -->
+<footer dir="rtl" class="w-full bg-[#0b1b3d] text-white pt-10 pb-8 border-t border-slate-800">
+
+  <div class="max-w-[1280px] mx-auto px-4 md:px-8 lg:px-12">
+
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-8 pb-10">
+
+      <div class="md:col-span-2 flex flex-col gap-3">
+
+        <div class="flex items-center gap-2">
+
+          <div class="w-9 h-9 rounded-lg bg-[#f59e0b] flex items-center justify-center text-[#0b1b3d] font-bold">
+            مـ
+          </div>
+
+          <span class="text-xl font-semibold">
+            مَدار – MADAR
+          </span>
+
+        </div>
+
+        <p class="text-sm text-slate-300 max-w-md">
+          بوابة الطيران اليمنية الحديثة بتصميم مستوحى من عمق التراث المعماري الساحر لليمن وتقنيات السفر الرقمية المعاصرة. رحلات آمنة، تجربة حجز سلسة، وهوية راسخة.
+        </p>
+
+      </div>
+
+
+      <div class="flex flex-col gap-3">
+
+        <h3 class="font-semibold text-[#f59e0b]">روابط سريعة</h3>
+
+        <ul class="flex flex-col gap-2 text-sm">
+          <li><a routerLink="/" class="text-slate-300 hover:text-white">الرئيسية</a></li>
+          <li><a routerLink="/flights" class="text-slate-300 hover:text-white">استكشف الرحلات</a></li>
+          <li><a routerLink="/my-bookings" class="text-slate-300 hover:text-white">إدارة التذاكر والحجوزات</a></li>
+          <li><a routerLink="/about" class="text-slate-300 hover:text-white">عن مدار وفلسفتنا</a></li>
+        </ul>
+
+      </div>
+
+
+      <div class="flex flex-col gap-3">
+
+        <h3 class="font-semibold text-[#f59e0b]">الحساب والدعم</h3>
+
+        <ul class="flex flex-col gap-2 text-sm">
+          <li><a routerLink="/login" class="text-slate-300 hover:text-white">تسجيل الدخول</a></li>
+          <li><a routerLink="/register" class="text-slate-300 hover:text-white">إنشاء حساب جديد</a></li>
+          <li><a routerLink="/help" class="text-slate-300 hover:text-white">مركز المساعدة والاستفسارات</a></li>
+        </ul>
+
+      </div>
+
+    </div>
+
+
+    <div class="pt-6 border-t border-slate-800/80 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-slate-400">
+
+      <p>جميع الحقوق محفوظة لمنصة مَدار © 2025</p>
+
+      <div class="flex items-center gap-6">
+        <a href="#" class="hover:text-white">شروط الاستخدام</a>
+        <a href="#" class="hover:text-white">سياسة الخصوصية</a>
+      </div>
+
+    </div>
+
+  </div>
+
+</footer>

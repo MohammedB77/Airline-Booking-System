@@ -1,0 +1,371 @@
+
+<!-- Header -->
+<header class="fixed top-0 left-0 right-0 z-50 bg-white/95 backdrop-blur-xl border-b border-outline-variant/60 shadow-[0_2px_12px_rgba(11,27,61,0.04)]">
+  <div class="h-20 max-w-[1280px] mx-auto px-margin md:px-margin-tablet lg:px-margin-desktop flex items-center justify-between gap-space-md">
+
+    <div class="flex items-center gap-space-lg">
+      <a routerLink="/" class="flex items-center gap-space-sm">
+        <div class="w-10 h-10 rounded-xl bg-primary flex items-center justify-center text-tertiary font-headline-sm text-headline-sm shadow-inner ring-1 ring-white/10">
+          مـ
+        </div>
+
+        <div class="flex flex-col">
+          <span class="font-headline-sm text-headline-sm text-primary leading-none font-bold">مَدار</span>
+          <span class="font-label-sm text-label-sm text-on-surface-variant leading-tight mt-1">رحلتك تبدأ من هنا</span>
+        </div>
+      </a>
+
+      <nav class="hidden lg:flex items-center gap-space-xs">
+        <a routerLink="/" class="font-label-lg text-label-lg text-on-surface-variant hover:text-primary hover:bg-surface-container-low px-space-md py-space-sm rounded-lg transition-colors">الرئيسية</a>
+        <a routerLink="/flights" class="font-label-lg text-label-lg text-on-surface-variant hover:text-primary hover:bg-surface-container-low px-space-md py-space-sm rounded-lg transition-colors">استكشف الرحلات</a>
+        <a routerLink="/my-bookings" class="font-label-lg text-label-lg text-on-surface-variant hover:text-primary hover:bg-surface-container-low px-space-md py-space-sm rounded-lg transition-colors">تذاكري</a>
+        <a routerLink="/about" class="font-label-lg text-label-lg text-on-surface-variant hover:text-primary hover:bg-surface-container-low px-space-md py-space-sm rounded-lg transition-colors">حول مدار</a>
+      </nav>
+    </div>
+
+    <div class="flex items-center gap-space-sm">
+      <a routerLink="/login" class="hidden sm:inline-flex items-center justify-center px-space-md py-space-sm font-label-lg text-label-lg text-primary hover:bg-primary/5 rounded-lg transition-colors">تسجيل الدخول</a>
+      <a routerLink="/register" class="inline-flex items-center justify-center px-space-lg py-space-sm font-label-lg text-label-lg bg-tertiary hover:bg-amber-500 text-secondary font-bold rounded-lg transition-all shadow-sm">إنشاء حساب</a>
+    </div>
+
+  </div>
+</header>
+
+<main class="w-full pt-20 bg-surface min-h-[calc(100vh-280px)]" dir="rtl">
+
+  <div class="flex flex-col w-full">
+
+    <div class="max-w-[1280px] mx-auto w-full px-margin md:px-margin-tablet lg:px-margin-desktop py-space-xl">
+
+      <!-- Breadcrumb and Flight Status -->
+      <div class="flex flex-wrap items-center justify-between gap-space-md mb-space-lg">
+
+        <div class="flex items-center gap-space-sm text-on-surface-variant font-label-md text-label-md">
+          <a routerLink="/flights" class="hover:text-primary transition-colors">استكشف الرحلات</a>
+          <span class="material-symbols-outlined text-base">chevron_left</span>
+          <span class="text-on-surface font-label-lg text-label-lg">تفاصيل الرحلة {{ flight.number }}</span>
+        </div>
+
+        <div class="inline-flex items-center gap-space-xs px-space-md py-1.5 bg-surface-container-low rounded-lg shadow-sm">
+          <span class="w-2.5 h-2.5 rounded-full bg-[#f59e0b] animate-pulse"></span>
+          <span class="font-label-md text-label-md text-on-surface-variant uppercase">حالة الرحلة:</span>
+          <span class="font-label-lg text-label-lg text-primary font-bold">{{ flight.status }}</span>
+        </div>
+
+      </div>
+
+      <!-- Main Layout -->
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-space-xl items-start">
+
+        <!-- Main Flight Information -->
+        <div class="lg:col-span-8 flex flex-col gap-space-lg">
+
+          <!-- Flight Identity Card -->
+          <div class="bg-surface-container-lowest rounded-xl p-space-lg md:p-space-xl shadow-md relative overflow-hidden">
+
+            <div class="absolute top-0 right-0 left-0 h-1.5 bg-primary-container"></div>
+
+            <div class="flex flex-col md:flex-row md:items-center justify-between gap-space-lg pb-space-lg">
+
+              <div class="flex items-center gap-space-md">
+                <div class="w-14 h-14 rounded-xl bg-primary-container text-tertiary flex items-center justify-center font-headline-md text-headline-md font-bold shadow-inner">
+                  MDR
+                </div>
+
+                <div class="flex flex-col">
+                  <span class="font-label-md text-label-md text-on-surface-variant uppercase tracking-wider">شركة الطيران الرسمية</span>
+                  <h1 class="font-headline-md text-headline-md text-primary font-bold">طيران مَدار (Madar Airlines)</h1>
+                  <span class="font-body-sm text-body-sm text-on-surface-variant">الرمز التشغيلي: MDR • الناقل الوطني الحديث</span>
+                </div>
+              </div>
+
+              <div class="flex flex-col md:items-end bg-surface-container-low p-space-md rounded-lg">
+                <span class="font-label-md text-label-md text-on-surface-variant">رقم الرحلة الرسمي</span>
+                <span class="font-headline-sm text-headline-sm text-primary font-bold tracking-tight">{{ flight.number }}</span>
+              </div>
+
+            </div>
+
+            <!-- Aircraft Technical Specifications -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-space-md pt-space-lg bg-surface-container-low/60 rounded-xl p-space-md">
+
+              <div class="flex items-center gap-space-md">
+                <div class="w-10 h-10 rounded-lg bg-surface-container-lowest flex items-center justify-center text-primary shadow-sm">
+                  <span class="material-symbols-outlined text-xl">flight</span>
+                </div>
+
+                <div class="flex flex-col">
+                  <span class="font-label-md text-label-md text-on-surface-variant">طراز الطائرة</span>
+                  <span class="text-lg text-primary font-semibold">{{ flight.aircraft }}</span>
+                </div>
+              </div>
+
+              <div class="flex items-center gap-space-md">
+                <div class="w-10 h-10 rounded-lg bg-surface-container-lowest flex items-center justify-center text-primary shadow-sm">
+                  <span class="material-symbols-outlined text-xl">tag</span>
+                </div>
+
+                <div class="flex flex-col">
+                  <span class="font-label-md text-label-md text-on-surface-variant">رقم تسجيل الطائرة</span>
+                  <span class="text-lg text-primary font-semibold tracking-wider">{{ flight.registration }}</span>
+                </div>
+              </div>
+
+            </div>
+          </div>
+
+          <!-- Route and Timing Information -->
+          <div class="bg-surface-container-lowest rounded-xl p-space-lg md:p-space-xl shadow-md">
+
+            <div class="flex items-center justify-between mb-space-lg">
+              <span class="font-label-md text-label-md text-on-surface-variant uppercase tracking-wider">معلومات المسار والجدول الزمني</span>
+              <span class="font-label-sm text-label-sm text-on-surface-variant bg-surface-container-low px-space-sm py-0.5 rounded">توقيت محلي دقيق</span>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-space-xl relative">
+
+              <!-- Departure -->
+              <div class="flex flex-col gap-space-xs relative">
+                <div class="flex items-center gap-space-xs text-[#f59e0b]">
+                  <span class="material-symbols-outlined text-lg">flight_takeoff</span>
+                  <span class="font-label-md text-label-md font-bold uppercase">محطة الإقلاع</span>
+                </div>
+
+                <span class="font-headline-lg text-headline-lg text-primary font-bold mt-1">{{ flight.departureTime }}</span>
+                <span class="font-headline-sm text-headline-sm text-on-surface font-semibold">{{ flight.originName }}</span>
+
+                <div class="inline-flex items-center gap-space-xs mt-1">
+                  <span class="px-2 py-0.5 bg-surface-container text-primary font-label-md text-label-md font-bold rounded">{{ flight.originCode }}</span>
+                  <span class="font-body-sm text-body-sm text-on-surface-variant">{{ flight.originCity }}</span>
+                </div>
+              </div>
+
+              <!-- Arrival -->
+              <div class="flex flex-col gap-space-xs md:items-end md:text-left relative">
+                <div class="flex items-center gap-space-xs text-primary-container">
+                  <span class="material-symbols-outlined text-lg">flight_land</span>
+                  <span class="font-label-md text-label-md font-bold uppercase">محطة الوصول</span>
+                </div>
+
+                <span class="font-headline-lg text-headline-lg text-primary font-bold mt-1">{{ flight.arrivalTime }}</span>
+                <span class="font-headline-sm text-headline-sm text-on-surface font-semibold">{{ flight.destinationName }}</span>
+
+                <div class="inline-flex items-center gap-space-xs mt-1">
+                  <span class="px-2 py-0.5 bg-surface-container text-primary font-label-md text-label-md font-bold rounded">{{ flight.destinationCode }}</span>
+                  <span class="font-body-sm text-body-sm text-on-surface-variant">{{ flight.destinationCity }}</span>
+                </div>
+              </div>
+
+            </div>
+
+            <!-- Departure Date -->
+            <div class="mt-space-xl pt-space-lg flex flex-wrap items-center justify-between gap-space-md bg-surface-container-low/40 p-space-md rounded-lg">
+              <div class="flex items-center gap-space-sm">
+                <span class="material-symbols-outlined text-primary text-xl">event_available</span>
+                <span class="font-label-md text-label-md text-on-surface-variant">تاريخ المغادرة:</span>
+                <span class="font-label-lg text-label-lg text-primary font-bold">{{ flight.departureDate }}</span>
+              </div>
+            </div>
+
+          </div>
+
+          <!-- Cabin Classes and Seat Availability -->
+          <div class="bg-surface-container-lowest rounded-xl p-space-lg md:p-space-xl shadow-md">
+
+            <div class="flex items-center justify-between mb-space-lg">
+              <div>
+                <span class="font-label-md text-label-md text-on-surface-variant uppercase tracking-wider block">سعة الطائرة والمقاعد المتاحة</span>
+                <h2 class="font-headline-sm text-headline-sm text-primary font-bold mt-0.5">درجات السفر المتوفرة</h2>
+              </div>
+
+              <span class="material-symbols-outlined text-on-surface-variant">airline_seat_recline_extra</span>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-space-lg">
+
+              <!-- Business Class -->
+              <div class="bg-[#0b1b3d] text-white p-space-lg rounded-xl shadow-lg flex flex-col justify-between relative overflow-hidden">
+
+                <div class="flex items-center justify-between mb-space-md">
+                  <span class="font-label-md text-label-md text-[#f59e0b] uppercase font-bold tracking-wider">درجة رجال الأعمال (Business)</span>
+                  <span class="material-symbols-outlined text-[#f59e0b]">workspace_premium</span>
+                </div>
+
+                <div class="my-space-md">
+                  <span class="font-label-md text-label-md text-slate-300 block mb-1">المقاعد المتبقية للحجز</span>
+
+                  <div class="flex items-baseline gap-space-xs">
+                    <span class="font-headline-lg text-headline-lg font-bold text-white">{{ flight.businessSeats }}</span>
+                    <span class="font-body-md text-body-md text-slate-300">مقاعد متاحة فقط</span>
+                  </div>
+                </div>
+
+                <div class="pt-space-md bg-white/5 px-space-md py-space-sm rounded-lg flex items-center justify-between">
+                  <span class="font-body-sm text-body-sm text-slate-300">المقصورة الأمامية</span>
+                  <span class="font-label-md text-label-md text-emerald-400 font-bold">{{ flight.businessSeats > 0 ? 'مؤكد ومتاح' : 'غير متاح' }}</span>
+                </div>
+
+              </div>
+
+              <!-- Economy Class -->
+              <div class="bg-surface-container-low p-space-lg rounded-xl flex flex-col justify-between shadow-sm">
+
+                <div class="flex items-center justify-between mb-space-md">
+                  <span class="font-label-md text-label-md text-on-surface-variant uppercase font-bold tracking-wider">الدرجة الاقتصادية (Economy)</span>
+                  <span class="material-symbols-outlined text-primary">event_seat</span>
+                </div>
+
+                <div class="my-space-md">
+                  <span class="font-label-md text-label-md text-on-surface-variant block mb-1">المقاعد المتبقية للحجز</span>
+
+                  <div class="flex items-baseline gap-space-xs">
+                    <span class="font-headline-lg text-headline-lg font-bold text-primary">{{ flight.economySeats }}</span>
+                    <span class="font-body-md text-body-md text-on-surface-variant">مقعداً متاحاً</span>
+                  </div>
+                </div>
+
+                <div class="pt-space-md bg-surface-container px-space-md py-space-sm rounded-lg flex items-center justify-between">
+                  <span class="font-body-sm text-body-sm text-on-surface-variant">المقصورة الرئيسية</span>
+                  <span class="font-label-md text-label-md text-emerald-700 font-bold">{{ flight.economySeats > 0 ? 'متاح حالياً' : 'غير متاح' }}</span>
+                </div>
+
+              </div>
+
+            </div>
+          </div>
+
+        </div>
+
+        <!-- Booking Summary Panel -->
+        <div class="lg:col-span-4 flex flex-col gap-space-lg sticky top-28">
+
+          <div class="bg-surface-container-lowest rounded-xl p-space-lg shadow-xl relative overflow-hidden">
+
+            <div class="flex items-center justify-between pb-space-md mb-space-md">
+              <span class="font-label-md text-label-md text-on-surface-variant uppercase tracking-wider">تأكيد حجز التذكرة</span>
+
+              <div class="flex items-center gap-1 text-[#f59e0b]">
+                <span class="material-symbols-outlined text-sm">verified</span>
+                <span class="font-label-md text-label-md font-bold">رحلة رسمية</span>
+              </div>
+            </div>
+
+            <!-- Flight Summary -->
+            <div class="space-y-space-sm mb-space-lg">
+
+              <div class="flex items-center justify-between py-2 bg-surface-container-low px-space-md rounded">
+                <span class="font-body-sm text-body-sm text-on-surface-variant">الناقل الجوي</span>
+                <span class="font-label-lg text-label-lg text-primary font-bold">{{ flight.airline }}</span>
+              </div>
+
+              <div class="flex items-center justify-between py-2 bg-surface-container-low px-space-md rounded">
+                <span class="font-body-sm text-body-sm text-on-surface-variant">رقم الرحلة</span>
+                <span class="font-label-lg text-label-lg text-primary font-bold">{{ flight.number }}</span>
+              </div>
+
+              <div class="flex items-center justify-between py-2 bg-surface-container-low px-space-md rounded">
+                <span class="font-body-sm text-body-sm text-on-surface-variant">طراز الطائرة</span>
+                <span class="font-label-lg text-label-lg text-primary font-bold">{{ flight.aircraft }}</span>
+              </div>
+
+              <div class="flex items-center justify-between py-2 bg-surface-container-low px-space-md rounded">
+                <span class="font-body-sm text-body-sm text-on-surface-variant">تسجيل الطائرة</span>
+                <span class="font-label-lg text-label-lg text-primary font-bold">{{ flight.registration }}</span>
+              </div>
+
+              <div class="flex items-center justify-between py-2 bg-surface-container-low px-space-md rounded">
+                <span class="font-body-sm text-body-sm text-on-surface-variant">حالة الجدولة</span>
+                <span class="font-label-lg text-label-lg text-emerald-700 font-bold">{{ flight.status }}</span>
+              </div>
+
+            </div>
+
+            <!-- Booking Button -->
+            <button
+              type="button"
+              (click)="bookFlight()"
+              [disabled]="!canBook"
+              class="w-full h-14 bg-[#f59e0b] hover:bg-amber-500 active:scale-[0.99] text-[#121316] font-headline-sm text-headline-sm font-bold rounded-lg shadow-lg flex items-center justify-center gap-space-sm transition-all cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed">
+
+              <span>{{ canBook ? 'احجز هذه الرحلة' : 'الحجز غير متاح' }}</span>
+              <span class="material-symbols-outlined text-2xl">arrow_back</span>
+            </button>
+
+            <p class="font-label-sm text-label-sm text-on-surface-variant text-center mt-space-md">
+              يمكنك متابعة خطوات الحجز واختيار درجة السفر.
+            </p>
+
+          </div>
+
+          <!-- Trust Note -->
+          <div class="bg-primary-container text-white p-space-md rounded-xl flex items-center gap-space-md shadow-md">
+
+            <div class="w-10 h-10 rounded-lg bg-white/10 flex items-center justify-center shrink-0 text-[#f59e0b]">
+              <span class="material-symbols-outlined">shield</span>
+            </div>
+
+            <div class="flex flex-col">
+              <span class="font-label-lg text-label-lg font-bold">سفر آمن ومعتمد</span>
+              <span class="font-body-sm text-body-sm text-slate-300">بيانات الرحلة المعروضة لأغراض تجريبية.</span>
+            </div>
+
+          </div>
+
+        </div>
+
+      </div>
+    </div>
+  </div>
+</main>
+
+<!-- Footer -->
+<footer class="w-full bg-[#070F23] text-white pt-space-xl pb-space-lg border-t border-white/10">
+  <div class="max-w-[1280px] mx-auto px-margin md:px-margin-tablet lg:px-margin-desktop">
+
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-space-xl pb-space-xl border-b border-white/10">
+
+      <div class="md:col-span-2 flex flex-col gap-space-sm">
+        <div class="flex items-center gap-space-sm">
+          <div class="w-9 h-9 rounded-xl bg-tertiary flex items-center justify-center text-secondary font-headline-sm text-headline-sm font-bold shadow-sm">مـ</div>
+          <span class="font-headline-md text-headline-md text-white font-bold">مَدار – MADAR</span>
+        </div>
+
+        <p class="font-body-md text-body-md text-slate-400 max-w-md">
+          بوابة الطيران اليمنية الحديثة بتصميم مستوحى من عمق التراث المعماري الساحر لليمن وتقنيات السفر الرقمية المعاصرة. رحلات آمنة، تجربة حجز سلسة، وهوية راسخة.
+        </p>
+      </div>
+
+      <div class="flex flex-col gap-space-sm">
+        <h3 class="font-headline-sm text-headline-sm text-tertiary font-bold">روابط سريعة</h3>
+
+        <ul class="flex flex-col gap-space-xs font-body-md text-body-md">
+          <li><a routerLink="/" class="text-slate-300 hover:text-tertiary transition-colors">الرئيسية</a></li>
+          <li><a routerLink="/flights" class="text-slate-300 hover:text-tertiary transition-colors">استكشف الرحلات</a></li>
+          <li><a routerLink="/my-bookings" class="text-slate-300 hover:text-tertiary transition-colors">إدارة التذاكر والحجوزات</a></li>
+          <li><a routerLink="/about" class="text-slate-300 hover:text-tertiary transition-colors">عن مدار وفلسفتنا</a></li>
+        </ul>
+      </div>
+
+      <div class="flex flex-col gap-space-sm">
+        <h3 class="font-headline-sm text-headline-sm text-tertiary font-bold">الحساب والدعم</h3>
+
+        <ul class="flex flex-col gap-space-xs font-body-md text-body-md">
+          <li><a routerLink="/login" class="text-slate-300 hover:text-tertiary transition-colors">تسجيل الدخول</a></li>
+          <li><a routerLink="/register" class="text-slate-300 hover:text-tertiary transition-colors">إنشاء حساب جديد</a></li>
+          <li><a routerLink="/help" class="text-slate-300 hover:text-tertiary transition-colors">مركز المساعدة والاستفسارات</a></li>
+        </ul>
+      </div>
+
+    </div>
+
+    <div class="pt-space-lg flex flex-col sm:flex-row items-center justify-between gap-space-sm font-label-md text-label-md text-slate-400">
+      <p>جميع الحقوق محفوظة لمنصة مَدار © 2025</p>
+
+      <div class="flex items-center gap-space-lg">
+        <a routerLink="/terms" class="hover:text-tertiary transition-colors">شروط الاستخدام</a>
+        <a routerLink="/privacy" class="hover:text-tertiary transition-colors">سياسة الخصوصية</a>
+      </div>
+    </div>
+
+  </div>
+</footer>

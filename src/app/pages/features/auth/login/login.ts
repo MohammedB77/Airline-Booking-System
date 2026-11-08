@@ -11,10 +11,12 @@ import {
 
 // استيراد أداة التنقل بين الصفحات
 import { RouterLink } from '@angular/router';
+import { Router } from '@angular/router';
 
 // استيراد خدمة تغيير اسم تبويب المتصفح
 import { Title } from '@angular/platform-browser';
 
+import { UserService } from '../../../../core/services/user.service';
 
 // تعريف إعدادات مكون تسجيل الدخول
 @Component({
@@ -27,12 +29,12 @@ import { Title } from '@angular/platform-browser';
 
 // إنشاء كلاس صفحة تسجيل الدخول
 export class Login {
-
   // التحكم في إظهار وإخفاء كلمة المرور
   showPassword = false;
 
   // التحكم في حالة إرسال النموذج
   isSubmitting = false;
+  errorMessage = '';
 
   // متغير يمثل نموذج تسجيل الدخول
   loginForm: FormGroup;
@@ -41,7 +43,9 @@ export class Login {
   // إنشاء النموذج وتحديد عنوان الصفحة
   constructor(
     private fb: FormBuilder,
-    private title: Title
+    private title: Title,
+    private userService: UserService,
+    private router: Router
   ) {
 
     // تغيير اسم تبويب المتصفح
@@ -68,7 +72,7 @@ export class Login {
 
 
   // تنفيذ عملية تسجيل الدخول
-  onSubmit() {
+  onSubmit(): void {
 
     // التحقق من صحة البيانات
     if (this.loginForm.invalid) {
@@ -81,8 +85,26 @@ export class Login {
 
     // عرض البيانات مؤقتاً
     // لاحقاً سنربطها مع ASP.NET Core Web API
-    console.log(loginData);
+    const user = {
+      email: loginData.email,
+      password: loginData.password
+    };
 
+    this.isSubmitting = true;
+    this.errorMessage = '';
+    this.userService.login(user).subscribe({
+      next: (loggedInUser) => {
+        this.isSubmitting = false;
+        const destination = loggedInUser.role.toLowerCase() === 'passenger'
+          ? '/home'
+          : '/home';
+        void this.router.navigateByUrl(destination);
+      },
+      error: (error: Error) => {
+        this.isSubmitting = false;
+        this.errorMessage = error.message || 'تعذر تسجيل الدخول. تحقق من البيانات وحاول مرة أخرى.';
+      }
+    });
   }
 
 }

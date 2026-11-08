@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
+import { UserService } from '../../../core/services/user.service';
 
 @Component({
   selector: 'app-home',
@@ -15,7 +16,10 @@ export class HomeComponent {
   arrivalAirport = 'CAI';
   departureDate = '2025-06-15';
 
-  constructor(private router: Router) {}
+  constructor(
+    private router: Router,
+    readonly userService: UserService
+  ) {}
 
   // تبديل مطار المغادرة والوصول إذا كان الخياران متاحين في القائمتين.
   swapAirports(): void {

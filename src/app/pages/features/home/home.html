@@ -36,6 +36,17 @@
       </div>
 
       <div class="flex items-center gap-space-sm">
+        @if (userService.currentUser(); as user) {
+        <div class="flex items-center gap-2 text-primary">
+          <div class="text-right">
+            <div class="font-label-lg text-label-lg font-bold">{{ user.username || user.email }}</div>
+            <div class="text-xs text-on-surface-variant">{{ user.role }}</div>
+          </div>
+          <button type="button" class="px-space-md py-space-sm hover:bg-primary/5 rounded-lg" (click)="userService.logout()">
+            تسجيل الخروج
+          </button>
+        </div>
+        } @else {
         <a class="hidden sm:inline-flex items-center justify-center px-space-md py-space-sm font-label-lg text-label-lg text-primary hover:bg-primary/5 rounded-lg transition-colors" data-path="login" routerLink="/login">
           تسجيل الدخول
         </a>
@@ -43,6 +54,7 @@
         <a class="inline-flex items-center justify-center px-space-lg py-space-sm font-label-lg text-label-lg bg-tertiary hover:bg-amber-500 text-secondary font-bold rounded-lg transition-all shadow-sm" data-path="register" routerLink="/register">
           إنشاء حساب
         </a>
+        }
 
         <img
           alt="Profile"

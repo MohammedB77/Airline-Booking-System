@@ -387,11 +387,20 @@
           <!-- زر إنشاء الحساب -->
           <div class="pt-2">
 
+            @if (errorMessage) {
+              <p class="mb-3 text-red-500 text-sm" role="alert">{{ errorMessage }}</p>
+            }
+
+            @if (successMessage) {
+              <p class="mb-3 text-green-600 text-sm" role="status">{{ successMessage }}</p>
+            }
+
             <button
               type="submit"
-              class="w-full h-12 bg-[#f59e0b] hover:bg-[#d97706] text-[#00020a] font-bold rounded-lg shadow-md transition-all flex items-center justify-center gap-2 active:scale-[0.99]"
+              [disabled]="isSubmitting"
+              class="w-full h-12 bg-[#f59e0b] hover:bg-[#d97706] disabled:opacity-60 text-[#00020a] font-bold rounded-lg shadow-md transition-all flex items-center justify-center gap-2 active:scale-[0.99]"
             >
-              <span>إنشاء الحساب</span>
+              <span>{{ isSubmitting ? 'جاري إنشاء الحساب...' : 'إنشاء الحساب' }}</span>
               <span class="material-symbols-outlined text-xl">arrow_forward</span>
             </button>
 

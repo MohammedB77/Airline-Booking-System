@@ -32,7 +32,7 @@ type TicketFilter = 'all' | 'confirmed' | 'cancelled';
 @Component({
   selector: 'app-mytickets',
   standalone: true,
-  imports: [CommonModule, RouterLink],
+  imports: [CommonModule],
   templateUrl: './mytickets.html'
 })
 export class MyticketsComponent {

@@ -1,0 +1,64 @@
+
+<!-- Header -->
+<header dir="rtl" class="fixed top-0 left-0 right-0 z-50 bg-white/95 backdrop-blur-xl border-b border-outline-variant/60 shadow-[0_2px_12px_rgba(11,27,61,0.04)]">
+  <div class="h-20 max-w-[1280px] mx-auto px-margin md:px-margin-tablet lg:px-margin-desktop flex items-center justify-between gap-space-md">
+
+    <div class="flex items-center gap-space-lg">
+      <a routerLink="/home" class="flex items-center gap-space-sm">
+        <div class="w-10 h-10 rounded-xl bg-primary flex items-center justify-center text-tertiary font-headline-sm text-headline-sm shadow-inner">
+          مـ
+        </div>
+
+        <div class="flex flex-col">
+          <span class="font-headline-sm text-headline-sm text-primary leading-none font-bold">مَدار</span>
+          <span class="font-label-sm text-label-sm text-on-surface-variant leading-tight mt-1">رحلتك تبدأ من هنا</span>
+        </div>
+      </a>
+
+      <nav class="hidden lg:flex items-center gap-space-xs">
+        <a routerLink="/home" routerLinkActive="bg-primary/10 text-primary" [routerLinkActiveOptions]="{ exact: true }"
+           class="font-label-lg text-label-lg text-on-surface-variant hover:text-primary px-space-md py-space-sm rounded-lg transition-colors">
+          الرئيسية
+        </a>
+
+        <a routerLink="/flights" routerLinkActive="bg-primary/10 text-primary"
+           class="font-label-lg text-label-lg text-on-surface-variant hover:text-primary px-space-md py-space-sm rounded-lg transition-colors">
+          استكشف الرحلات
+        </a>
+
+        <a routerLink="/mytickets" routerLinkActive="bg-primary/10 text-primary"
+           class="font-label-lg text-label-lg text-on-surface-variant hover:text-primary px-space-md py-space-sm rounded-lg transition-colors">
+          تذاكري
+        </a>
+
+       
+      </nav>
+    </div>
+
+    <div class="flex items-center gap-space-sm">
+
+      @if (userService.currentUser(); as user) {
+        <span class="hidden sm:inline text-sm font-semibold text-primary">
+          مرحباً، {{ user.username || user.email }}
+        </span>
+
+        <button (click)="logout()"
+          class="inline-flex items-center justify-center px-space-lg py-space-sm font-label-lg text-label-lg bg-tertiary hover:bg-amber-500 text-secondary font-bold rounded-lg transition-all shadow-sm">
+          تسجيل الخروج
+        </button>
+      } @else {
+        <a routerLink="/login"
+          class="hidden sm:inline-flex items-center justify-center px-space-md py-space-sm font-label-lg text-label-lg text-primary hover:bg-primary/5 rounded-lg transition-colors">
+          تسجيل الدخول
+        </a>
+
+        <a routerLink="/register"
+          class="inline-flex items-center justify-center px-space-lg py-space-sm font-label-lg text-label-lg bg-tertiary hover:bg-amber-500 text-secondary font-bold rounded-lg transition-all shadow-sm">
+          إنشاء حساب
+        </a>
+      }
+
+    </div>
+
+  </div>
+</header>

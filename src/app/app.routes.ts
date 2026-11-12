@@ -23,20 +23,21 @@ export const routes: Routes = [
     component: MainLayoutComponent,
     children: [
       
-       {
-      path: '',
-      redirectTo: 'home',
-      pathMatch: 'full'
-    },
       {
-    path: 'register',
-    component: Register
-  },
+        path: '',
+        redirectTo: 'home',
+        pathMatch: 'full'
+      },
 
-  {
-    path: 'login',
-    component: Login
-  },
+      {
+        path: 'register',
+        component: Register
+      },
+
+      {
+        path: 'login',
+        component: Login
+      },
 
       {
         path: 'home',
@@ -52,30 +53,33 @@ export const routes: Routes = [
         path: 'booking',
         component: BookingComponent
       },
-     {
-         path: 'mytickets',
-      component: MyticketsComponent
+
+      {
+        path: 'mytickets',
+        component: MyticketsComponent
       },
+
       {
         path: 'ticket-details/:ticketNumber',
         component: TicketdetailsComponent
       },
+
       {
-  path: 'flight-details/:flightNumber',
-  component: FlightdetailsComponent
-},
+        path: 'flight-details/:flightNumber',
+        component: FlightdetailsComponent
+      }
 
     ]
   },
 
-{
-  path: '',
-  redirectTo: 'register',
-  pathMatch: 'full'
-},
-{
-  path: '**',
-  redirectTo: 'register'
-}
+  {
+    path: '',
+    redirectTo: 'register',
+    pathMatch: 'full'
+  },
+  {
+    path: '**',
+    redirectTo: 'register'
+  }
 
 ];

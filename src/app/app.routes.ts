@@ -13,6 +13,7 @@ import { BookingComponent } from './pages/features/tickets/booking/booking';
 import { MainLayoutComponent } from './Layout/main-layout';
 import { FlightdetailsComponent } from './pages/features/availableflights/flightdetails/flightdetails';
 import { MyticketsComponent } from './pages/features/tickets/mytickets/mytickets';
+import { PassengerComponent } from './pages/features/auth/passenger/passenger';
 
 export const routes: Routes = [
 
@@ -42,6 +43,10 @@ export const routes: Routes = [
       {
         path: 'home',
         component: HomeComponent
+      },
+      {
+        path: 'passenger',
+        component: PassengerComponent
       },
 
       {

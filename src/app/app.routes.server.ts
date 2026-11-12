@@ -9,6 +9,10 @@ export const serverRoutes: ServerRoute[] = [
     path: 'ticket-details/:ticketNumber',
     renderMode: RenderMode.Server
   },
+   {
+    path: 'passenger',
+    renderMode: RenderMode.Client
+  },
   {
     path: '**',
     renderMode: RenderMode.Prerender

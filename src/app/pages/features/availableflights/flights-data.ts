@@ -1,5 +1,6 @@
 // تعريف شكل بيانات الرحلة المشتركة بين الصفحتين.
 export interface Flight {
+  id?: number;
   number: string;
   airline: string;
   code: string;

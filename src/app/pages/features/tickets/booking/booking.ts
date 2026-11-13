@@ -1,151 +1,301 @@
+
 import { CommonModule } from '@angular/common';
-import { Component, OnInit } from '@angular/core';
+import { HttpErrorResponse } from '@angular/common/http';
+import { Component, OnInit, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, RouterLink } from '@angular/router';
-import { Flight, flightsData } from '../../availableflights/flights-data';
+import { forkJoin } from 'rxjs';
 
-// بيانات المسافر المسجل
-interface Passenger {
-  id: string;
-  fullName: string;
-  passport: string;
-}
+import {
+  FlightService,
+  type BackendFlight,
+  type Ticket
+} from '../../../../core/services/flight.service';
 
-// خيارات درجات السفر
-interface CabinClass {
-  id: string;
-  name: string;
-  shortName: string;
-  price: number;
-}
+import {
+  PassengerService,
+  type Passenger
+} from '../../../../core/services/passenger.service';
+
+import {
+  TicketBookingService,
+  type TicketBooking
+} from '../../../../core/services/ticketbooking.service';
+
+import { UserService } from '../../../../core/services/user.service';
 
 @Component({
   selector: 'app-booking',
   standalone: true,
-imports: [CommonModule, FormsModule, RouterLink],
+  imports: [CommonModule, FormsModule, RouterLink],
   templateUrl: './booking.html'
 })
 export class BookingComponent implements OnInit {
 
-  // بيانات الرحلة المختارة
-  flight: Flight | null = null;
+  private readonly route = inject(ActivatedRoute);
+  private readonly flightService = inject(FlightService);
+  private readonly passengerService = inject(PassengerService);
+  private readonly ticketBookingService = inject(TicketBookingService);
+  private readonly userService = inject(UserService);
 
-  // قائمة المسافرين التجريبية
-  passengers: Passenger[] = [
-    {
-      id: 'p1',
-      fullName: 'عمر أحمد باعباد',
-      passport: '08492019A'
-    },
-    {
-      id: 'p2',
-      fullName: 'فاطمة سالم الكاف',
-      passport: '07119430B'
-    },
-    {
-      id: 'p3',
-      fullName: 'أحمد علي المقطري',
-      passport: '05128490C'
-    }
-  ];
+  // Data
+  flight: BackendFlight | null = null;
+  passengers: Passenger[] = [];
+  tickets: Ticket[] = [];
 
-  // درجات السفر وأسعارها
-  cabinClasses: CabinClass[] = [
-    {
-      id: 'economy',
-      name: 'الدرجة الاقتصادية',
-      shortName: 'اقتصادية',
-      price: 350
-    },
-    {
-      id: 'business',
-      name: 'درجة رجال الأعمال',
-      shortName: 'رجال أعمال',
-      price: 680
-    }
-  ];
+  // Selections
+  selectedPassengerId: number | null = null;
+  selectedTicketId: number | null = null;
 
-  // المسافر المحدد
-  selectedPassengerId = 'p1';
+  // Booking information
+  seatNumber = '';
+  ticketNumber = this.generateTicketNumber();
+  bookingDate = '';
 
-  // درجة السفر المحددة
-  selectedCabinId = 'economy';
+  // UI states
+  isLoading = true;
+  isSubmitting = false;
 
-  // رقم المقعد
-  seatNumber = '12A';
+  loadError = '';
+  bookingError = '';
 
-  // رقم التذكرة التجريبي
-  ticketNumber = 'TKT-2026-98214';
-
-  // تاريخ الحجز
-  bookingDate = '2026-11-07';
-
-  // حالة نافذة تأكيد الحجز
   showConfirmationModal = false;
-
-  // رسالة التحقق من رقم المقعد
-  seatError = '';
-
-  constructor(private route: ActivatedRoute) {}
+  createdBooking: TicketBooking | null = null;
 
   ngOnInit(): void {
-    // قراءة بيانات الرحلة من الرابط
     this.route.queryParamMap.subscribe(params => {
-      const flightNumber = params.get('flightNumber');
-      const selectedDate = params.get('date');
 
-      if (selectedDate) {
-        this.bookingDate = selectedDate;
+      // Read the database flight ID from the URL.
+      const flightId = Number(params.get('flightId'));
+
+      if (!Number.isInteger(flightId) || flightId <= 0) {
+        this.isLoading = false;
+        this.loadError = 'لم يتم تحديد رحلة صحيحة.';
+        return;
       }
 
-      // البحث عن الرحلة المختارة
-      if (flightNumber) {
-        this.flight =
-          flightsData.find(flight => flight.number === flightNumber) ?? null;
-      }
+      this.loadFlight(flightId);
     });
   }
 
-  // الحصول على بيانات المسافر المحدد
+  /**
+   * Load one flight directly from the backend using its database ID.
+   */
+  private loadFlight(flightId: number): void {
+
+    this.isLoading = true;
+    this.loadError = '';
+
+    this.flightService.getFlightRecordById(flightId).subscribe({
+
+      next: flight => {
+        this.flight = flight;
+
+        // Once the flight is loaded, load its booking options.
+        this.loadBookingOptions();
+      },
+
+      error: (error: HttpErrorResponse) => {
+        this.isLoading = false;
+        this.loadError = this.getApiErrorMessage(error);
+      }
+
+    });
+  }
+
+  /**
+   * Load passengers and available tickets for the selected flight.
+   */
+  private loadBookingOptions(): void {
+
+    const userId = this.userService.currentUser()?.id;
+    const flightId = this.flight?.id;
+
+    if (!userId) {
+      this.isLoading = false;
+      this.loadError = 'يرجى تسجيل الدخول أولاً.';
+      return;
+    }
+
+    if (!flightId) {
+      this.isLoading = false;
+      this.loadError = 'معرّف الرحلة غير متوفر من الخادم.';
+      return;
+    }
+
+    forkJoin({
+      passengers: this.passengerService.getAll(),
+      tickets: this.flightService.getTicketsForFlight(flightId)
+    }).subscribe({
+
+      next: ({ passengers, tickets }) => {
+
+        // Development-only filtering.
+        // This is not a security boundary.
+        this.passengers = passengers.filter(
+          passenger => passenger.userId === userId
+        );
+
+        this.tickets = tickets.filter(
+          ticket => ticket.availableTickets > 0
+        );
+
+        this.selectedPassengerId = this.passengers[0]?.id ?? null;
+        this.selectedTicketId = this.tickets[0]?.id ?? null;
+
+        this.isLoading = false;
+      },
+
+      error: (error: HttpErrorResponse) => {
+        this.isLoading = false;
+        this.loadError = this.getApiErrorMessage(error);
+      }
+
+    });
+  }
+
   get selectedPassenger(): Passenger | undefined {
     return this.passengers.find(
       passenger => passenger.id === this.selectedPassengerId
     );
   }
 
-  // الحصول على درجة السفر المحددة
-  get selectedCabin(): CabinClass {
-    return this.cabinClasses.find(
-      cabin => cabin.id === this.selectedCabinId
-    ) ?? this.cabinClasses[0];
+  get selectedTicket(): Ticket | undefined {
+    return this.tickets.find(
+      ticket => ticket.id === this.selectedTicketId
+    );
   }
 
-  // تحديث درجة السفر والسعر يتم تلقائياً عبر Angular
-  selectCabin(cabinId: string): void {
-    this.selectedCabinId = cabinId;
+  getPassengerName(passenger: Passenger): string {
+    return `${passenger.firstName} ${passenger.lastName}`;
   }
 
-  // تأكيد الحجز وعرض نافذة التأكيد
+  getCabinName(flightClass: string): string {
+
+    switch (flightClass.trim().toLowerCase()) {
+
+      case 'economy':
+        return 'الدرجة الاقتصادية';
+
+      case 'business':
+        return 'درجة رجال الأعمال';
+
+      case 'first':
+      case 'first class':
+        return 'الدرجة الأولى';
+
+      default:
+        return flightClass;
+    }
+  }
+
+  private generateTicketNumber(): string {
+
+    const randomPart = Math.random()
+      .toString(36)
+      .slice(2, 7)
+      .toUpperCase();
+
+    return `TKT-${Date.now()}-${randomPart}`;
+  }
+
+  /**
+   * Submit the booking to the backend.
+   */
   confirmBooking(): void {
-    this.seatError = '';
+
+    this.bookingError = '';
+
+    const passenger = this.selectedPassenger;
+    const ticket = this.selectedTicket;
 
     if (!this.flight) {
+      this.bookingError = 'بيانات الرحلة غير متوفرة.';
       return;
     }
 
-    if (!this.selectedPassenger) {
+    if (!passenger) {
+      this.bookingError = 'لا توجد بيانات مسافر مرتبطة بحسابك.';
+      return;
+    }
+
+    if (!ticket) {
+      this.bookingError = 'لا توجد تذاكر متاحة لهذه الرحلة.';
       return;
     }
 
     if (!this.seatNumber.trim()) {
-      this.seatError = 'يرجى إدخال رقم المقعد.';
+      this.bookingError = 'يرجى إدخال رقم المقعد.';
       return;
     }
 
-    this.showConfirmationModal = true;
+    if (this.isSubmitting) {
+      return;
+    }
+
+    const bookingRequest = {
+      ticketId: ticket.id,
+      passengerId: passenger.id,
+      ticketNumber: this.ticketNumber,
+      seatNumber: this.seatNumber.trim()
+    };
+
+    this.isSubmitting = true;
+
+    this.ticketBookingService.create(bookingRequest).subscribe({
+
+      next: response => {
+
+        this.createdBooking = response;
+        this.ticketNumber = response.ticketNumber;
+        this.bookingDate = response.bookingDate;
+
+        // Update the displayed availability.
+        this.tickets = this.tickets.map(item =>
+          item.id === ticket.id
+            ? {
+              ...item,
+              availableTickets: Math.max(
+                0,
+                item.availableTickets - 1
+              )
+            }
+            : item
+        );
+
+        this.isSubmitting = false;
+        this.showConfirmationModal = true;
+      },
+
+      error: (error: HttpErrorResponse) => {
+        this.isSubmitting = false;
+        this.bookingError = this.getApiErrorMessage(error);
+      }
+
+    });
   }
 
-  // إغلاق نافذة التأكيد
+  private getApiErrorMessage(error: HttpErrorResponse): string {
+
+    if (error.status === 0) {
+      return 'تعذر الاتصال بالخادم. تأكد من تشغيل Web API.';
+    }
+
+    if (typeof error.error === 'string' && error.error.trim()) {
+      return error.error;
+    }
+
+    if (error.status === 400) {
+      return 'تعذر إتمام الحجز. تحقق من البيانات أو توفر المقاعد.';
+    }
+
+    if (error.status === 401) {
+      return 'يرجى تسجيل الدخول مرة أخرى.';
+    }
+
+    return 'حدث خطأ غير متوقع. حاول مرة أخرى.';
+  }
+
   closeConfirmation(): void {
     this.showConfirmationModal = false;
   }

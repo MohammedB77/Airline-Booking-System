@@ -2,6 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable, inject, PLATFORM_ID, signal } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
 import { catchError, map, Observable, of, tap } from 'rxjs';
+import { environment } from '../../../environments/environment';
 
 export interface TicketBooking {
   id: number;
@@ -194,7 +195,7 @@ export const SEED_BOOKINGS: TicketBooking[] = [
 
 @Injectable({ providedIn: 'root' })
 export class TicketBookingService {
-  private readonly baseUrl = 'https://localhost:7210/api/TicketBooking';
+  private readonly baseUrl = `${environment.apiUrl}/TicketBooking`;
   private readonly storageKey = 'airline-ticket-bookings';
   private readonly platformId = inject(PLATFORM_ID);
   private readonly http = inject(HttpClient);

@@ -63,10 +63,19 @@ export const routes: Routes = [
         component: FlightdetailsComponent
       },
       {
+        path: 'flightdetails/:flightId',
+        component: FlightdetailsComponent
+      },
+      {
         path: 'flight-details',
         redirectTo: 'flights',
         pathMatch: 'full'
-      }
+      },
+      // {
+      //   path: 'flightdetails',
+      //   redirectTo: 'flights',
+      //   pathMatch: 'full'
+      // }
     ]
   },
   {

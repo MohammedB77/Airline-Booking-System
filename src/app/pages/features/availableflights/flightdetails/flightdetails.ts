@@ -13,6 +13,7 @@ export class FlightdetailsComponent implements OnInit {
   flight: Flight | null = null;
   tickets: Ticket[] = [];
   isLoading = true;
+  isLoadingTickets = false;
   errorMessage = '';
 
   constructor(
@@ -22,31 +23,77 @@ export class FlightdetailsComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    const param = this.route.snapshot.paramMap.get('flightId') || '';
+    const param =
+      this.route.snapshot.paramMap.get('flightId') ||
+      this.route.snapshot.paramMap.get('id') ||
+      this.route.snapshot.queryParamMap.get('flightId') ||
+      this.route.snapshot.queryParamMap.get('id') ||
+      this.route.snapshot.queryParamMap.get('flightNumber') ||
+      '';
     const numericId = Number(param);
 
     if (Number.isInteger(numericId) && numericId > 0) {
+      // 1. فحص فوري للذاكرة المؤقتة (عرض فوري في 0ms دون أي انتظار)
+      const cached = this.flightService.getCachedFlight(numericId);
+      if (cached) {
+        this.flight = cached;
+        if (cached.tickets && cached.tickets.length > 0) {
+          this.tickets = cached.tickets;
+        }
+        this.isLoading = false;
+      }
+
+      // 2. طلب تفاصيل الرحلة وفئات التذاكر من السيرفر
+      this.isLoadingTickets = true;
       this.flightService.getFlightById(numericId).subscribe({
         next: response => {
           this.flight = response.flight;
           this.tickets = response.tickets;
           this.isLoading = false;
+          this.isLoadingTickets = false;
         },
-        error: error => this.handleError(error)
+        error: error => {
+          this.isLoadingTickets = false;
+          // إذا كانت الرحلة معروضة بالفعل من الكاش لا نظهر شاشة الخطأ
+          if (!this.flight) {
+            this.handleError(error);
+          } else {
+            this.isLoading = false;
+          }
+        }
       });
     } else if (param.trim()) {
+      // البحث برقم الرحلة
+      const cached = this.flightService.getCachedFlightByNumber(param);
+      if (cached) {
+        this.flight = cached;
+        if (cached.tickets && cached.tickets.length > 0) {
+          this.tickets = cached.tickets;
+        }
+        this.isLoading = false;
+      }
+
+      this.isLoadingTickets = true;
       this.flightService.getFlightByNumber(param).subscribe({
         next: response => {
           if (response) {
             this.flight = response.flight;
             this.tickets = response.tickets;
             this.isLoading = false;
-          } else {
+          } else if (!this.flight) {
             this.isLoading = false;
             this.errorMessage = 'لم يتم العثور على تفاصيل الرحلة المطلوبة.';
           }
+          this.isLoadingTickets = false;
         },
-        error: error => this.handleError(error)
+        error: error => {
+          this.isLoadingTickets = false;
+          if (!this.flight) {
+            this.handleError(error);
+          } else {
+            this.isLoading = false;
+          }
+        }
       });
     } else {
       this.isLoading = false;
@@ -59,7 +106,7 @@ export class FlightdetailsComponent implements OnInit {
       !!this.flight &&
       this.flight.status !== 'Cancelled' &&
       this.flight.status !== 'ملغاة' &&
-      this.tickets.some(ticket => ticket.availableTickets > 0)
+      (this.tickets.length === 0 || this.tickets.some(ticket => ticket.availableTickets > 0))
     );
   }
 
@@ -68,6 +115,7 @@ export class FlightdetailsComponent implements OnInit {
       return;
     }
 
+    this.flightService.cacheFlight(this.flight);
     void this.router.navigate(['/booking'], {
       queryParams: {
         flightId: this.flight.id,
@@ -79,6 +127,6 @@ export class FlightdetailsComponent implements OnInit {
   private handleError(error: { error?: { message?: string }; message?: string }): void {
     this.isLoading = false;
     this.errorMessage =
-      error.error?.message || error.message || 'تعذر تحميل تفاصيل الرحلة.';
+      error.error?.message || error.message || 'تعذر تحميل تفاصيل الرحلة من الخادم.';
   }
 }

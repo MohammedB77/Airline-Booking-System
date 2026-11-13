@@ -1,6 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { catchError, map, Observable, of } from 'rxjs';
+import { environment } from '../../../environments/environment';
 
 export interface Passenger {
   id: number;
@@ -67,10 +68,10 @@ export const INITIAL_PASSENGERS: Passenger[] = [
 
 @Injectable({ providedIn: 'root' })
 export class PassengerService {
-  private readonly baseUrl = 'https://localhost:7210/api/Passenger';
+  private readonly baseUrl = `${environment.apiUrl}/Passenger`;
   private localPassengers: Passenger[] = [...INITIAL_PASSENGERS];
 
-  constructor(private readonly http: HttpClient) {}
+  constructor(private readonly http: HttpClient) { }
 
   /**
    * جلب جميع المسافرين المعتمدين.

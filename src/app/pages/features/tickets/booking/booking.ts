@@ -223,29 +223,52 @@ export class BookingComponent implements OnInit {
     this.isLoadingFlight = true;
 
     if (flightIdParam && Number(flightIdParam) > 0) {
-      this.flightService.getFlightById(Number(flightIdParam)).subscribe({
+      const flightId = Number(flightIdParam);
+      const cached = this.flightService.getCachedFlight(flightId);
+      if (cached) {
+        this.flight = cached;
+        this.setupCabinClasses(cached.tickets || []);
+        this.isLoadingFlight = false;
+      }
+
+      this.flightService.getFlightById(flightId).subscribe({
         next: details => {
           this.flight = details.flight;
           this.setupCabinClasses(details.tickets);
           this.isLoadingFlight = false;
         },
         error: () => {
-          this.loadDefaultFlight();
+          if (!this.flight) {
+            this.loadDefaultFlight();
+          } else {
+            this.isLoadingFlight = false;
+          }
         }
       });
     } else if (flightNumberParam) {
+      const cached = this.flightService.getCachedFlightByNumber(flightNumberParam);
+      if (cached) {
+        this.flight = cached;
+        this.setupCabinClasses(cached.tickets || []);
+        this.isLoadingFlight = false;
+      }
+
       this.flightService.getFlightByNumber(flightNumberParam).subscribe({
         next: details => {
           if (details) {
             this.flight = details.flight;
             this.setupCabinClasses(details.tickets);
-          } else {
+          } else if (!this.flight) {
             this.loadDefaultFlight();
           }
           this.isLoadingFlight = false;
         },
         error: () => {
-          this.loadDefaultFlight();
+          if (!this.flight) {
+            this.loadDefaultFlight();
+          } else {
+            this.isLoadingFlight = false;
+          }
         }
       });
     } else {
@@ -258,11 +281,7 @@ export class BookingComponent implements OnInit {
       next: flights => {
         this.flight = flights.length > 0 ? flights[0] : null;
         if (this.flight) {
-          const defaultTickets = this.flightService.createDefaultTicketsForFlight(
-            this.flight.id ?? 1,
-            this.flight.number
-          );
-          this.setupCabinClasses(defaultTickets);
+          this.setupCabinClasses(this.flight.tickets || []);
         }
         this.isLoadingFlight = false;
       },

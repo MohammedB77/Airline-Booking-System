@@ -1,10 +1,10 @@
 
-@if (isLoading) {
+@if (isLoading && !flight) {
   <main class="min-h-[60vh] flex flex-col items-center justify-center p-8" dir="rtl">
     <div class="w-12 h-12 border-4 border-primary border-t-tertiary rounded-full animate-spin mb-4"></div>
     <p class="text-on-surface-variant font-medium">جاري تحميل تفاصيل الرحلة المعتمدة...</p>
   </main>
-} @else if (errorMessage) {
+} @else if (errorMessage && !flight) {
   <main class="min-h-[60vh] flex flex-col items-center justify-center p-8 text-center" dir="rtl">
     <div class="w-16 h-16 rounded-full bg-red-100 text-error flex items-center justify-center mb-4">
       <span class="material-symbols-outlined text-3xl">error</span>
@@ -289,7 +289,12 @@
               <span class="text-sm text-on-surface-variant">{{ tickets.length }} فئات</span>
             </div>
 
-            @if (tickets.length) {
+            @if (isLoadingTickets && !tickets.length) {
+              <div class="flex items-center justify-center p-8 text-on-surface-variant gap-3">
+                <span class="inline-block w-5 h-5 border-2 border-primary border-t-tertiary rounded-full animate-spin"></span>
+                <span class="text-sm font-medium">جاري فحص وتحديث فئات التذاكر المتاحة...</span>
+              </div>
+            } @else if (tickets.length) {
               <div class="grid grid-cols-1 md:grid-cols-2 gap-space-md">
                 @for (ticket of tickets; track ticket.id) {
                   <div class="border border-outline-variant rounded-lg p-space-md flex flex-col gap-2">
@@ -309,7 +314,7 @@
                 }
               </div>
             } @else {
-              <p class="text-sm text-on-surface-variant">لا توجد معلومات تذاكر متاحة لهذه الرحلة.</p>
+              <p class="text-sm text-on-surface-variant">لا توجد معلومات تذاكر إضافية مسجلة لهذه الرحلة حالياً.</p>
             }
           </div>
 
@@ -322,7 +327,7 @@
 
             <div class="flex flex-col">
               <span class="font-label-lg text-label-lg font-bold">سفر آمن ومعتمد</span>
-              <span class="font-body-sm text-body-sm text-slate-300">بيانات الرحلة المعروضة لأغراض تجريبية.</span>
+              <span class="font-body-sm text-body-sm text-slate-300">رحلات معتمدة ومسجلة رسمياً عبر مركز العمليات الجوية.</span>
             </div>
 
           </div>

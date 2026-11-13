@@ -1,6 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { catchError, map, Observable, of } from 'rxjs';
+import { environment } from '../../../environments/environment';
 import { Ticket } from './flight.service';
 export type { Ticket } from './flight.service';
 
@@ -69,7 +70,7 @@ export const DEFAULT_TICKETS: Ticket[] = [
 
 @Injectable({ providedIn: 'root' })
 export class TicketService {
-  private readonly baseUrl = 'https://localhost:7210/api/Ticket';
+  private readonly baseUrl = `${environment.apiUrl}/Ticket`;
   private localTickets: Ticket[] = [...DEFAULT_TICKETS];
 
   constructor(private readonly http: HttpClient) {}

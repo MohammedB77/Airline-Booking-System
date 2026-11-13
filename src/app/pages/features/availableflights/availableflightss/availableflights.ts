@@ -55,13 +55,13 @@ export class AvailableFlightsComponent implements OnInit {
   ];
 
   // Flights initially loaded from shared mock data.
-  flights: Flight[] = flightsData;
+  flights: Flight[] = [];
 
   // Flights displayed to the user.
-  filteredFlights: Flight[] = [...this.flights];
+  filteredFlights: Flight[] = [];
 
   // API loading state.
-  isLoading = false;
+  isLoading = true;
 
   // API error message.
   loadError = '';

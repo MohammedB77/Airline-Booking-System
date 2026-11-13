@@ -175,7 +175,9 @@
       </div>
 
       <!-- Flight Cards -->
-      <div class="flex flex-col gap-space-md">
+      <div 
+      *ngIf="!isLoading
+      "class="flex flex-col gap-space-md">
 
         <article
           *ngFor="let flight of filteredFlights"

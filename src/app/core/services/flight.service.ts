@@ -17,8 +17,8 @@ export interface BackendFlight {
     number: string;
     airline: string;
     code: string;
-    logo: string;
-    logoClass: string;
+    // logo: string;
+    // logoClass: string;
 
     status: string;
     statusClass: string;
@@ -105,8 +105,34 @@ export class FlightService {
     getFlightRecordById(flightId: number): Observable<BackendFlight> {
         const url = `${this.flightUrl.replace('/GetAll', '/GetById')}/${flightId}`;
 
-        return this.http.get<BackendFlight>(url);
+        return this.http.get<any>(url).pipe(
+            map((raw: any) => ({
+                id: raw.id ?? raw.Id,
+                number: raw.number ?? raw.Number ?? raw.flightNumber ?? raw.FlightNumber,
+                airline: raw.airline ?? raw.Airline,
+                code: raw.code ?? raw.Code,
+                status: raw.status ?? raw.Status,
+                statusClass: raw.statusClass ?? raw.StatusClass,
+                statusDot: raw.statusDot ?? raw.StatusDot,
+                origin: raw.origin ?? raw.Origin,
+                originCode: raw.originCode ?? raw.OriginCode,
+                originName: raw.originName ?? raw.OriginName,
+                originCity: raw.originCity ?? raw.OriginCity,
+                destination: raw.destination ?? raw.Destination,
+                destinationCode: raw.destinationCode ?? raw.DestinationCode,
+                destinationName: raw.destinationName ?? raw.DestinationName,
+                destinationCity: raw.destinationCity ?? raw.DestinationCity,
+                departureTime: raw.departureTime ?? raw.DepartureTime,
+                arrivalTime: raw.arrivalTime ?? raw.ArrivalTime,
+                departureDate: raw.departureDate ?? raw.DepartureDate,
+                aircraft: raw.aircraft ?? raw.Aircraft,
+                registration: raw.registration ?? raw.Registration,
+                economySeats: raw.economySeats ?? raw.EconomySeats ?? 0,
+                businessSeats: raw.businessSeats ?? raw.BusinessSeats ?? 0,
+            }))
+        );
     }
+    
     /**
      * جلب تفاصيل الرحلة والتذاكر المرتبطة بها بواسطة المعرف.
      */

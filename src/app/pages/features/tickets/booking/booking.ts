@@ -81,25 +81,20 @@ export class BookingComponent implements OnInit {
   /**
    * Load one flight directly from the backend using its database ID.
    */
-  private loadFlight(flightId: number): void {
-
-    this.isLoading = true;
-    this.loadError = '';
-
+  loadFlight(flightId: number): void {
     this.flightService.getFlightRecordById(flightId).subscribe({
-
-      next: flight => {
+      next: (flight) => {
         this.flight = flight;
 
-        // Once the flight is loaded, load its booking options.
+        console.log('Flight received:', flight);
+        console.log('Flight ID:', this.flight?.id);
+        console.log('Flight number:', this.flight?.number);
+
         this.loadBookingOptions();
       },
-
-      error: (error: HttpErrorResponse) => {
-        this.isLoading = false;
-        this.loadError = this.getApiErrorMessage(error);
+      error: (error) => {
+        console.error('Failed to receive flight:', error);
       }
-
     });
   }
 
@@ -108,8 +103,13 @@ export class BookingComponent implements OnInit {
    */
   private loadBookingOptions(): void {
 
+    console.log('3. Entered loadBookingOptions');
+
     const userId = this.userService.currentUser()?.id;
     const flightId = this.flight?.id;
+
+    console.log('4. Current user ID:', userId);
+    console.log('5. Flight ID:', flightId);
 
     if (!userId) {
       this.isLoading = false;
@@ -123,6 +123,8 @@ export class BookingComponent implements OnInit {
       return;
     }
 
+    console.log('6. Starting passenger and ticket requests');
+
     forkJoin({
       passengers: this.passengerService.getAll(),
       tickets: this.flightService.getTicketsForFlight(flightId)
@@ -130,8 +132,9 @@ export class BookingComponent implements OnInit {
 
       next: ({ passengers, tickets }) => {
 
-        // Development-only filtering.
-        // This is not a security boundary.
+        console.log('7. Passengers received:', passengers);
+        console.log('8. Tickets received:', tickets);
+
         this.passengers = passengers.filter(
           passenger => passenger.userId === userId
         );
@@ -144,13 +147,17 @@ export class BookingComponent implements OnInit {
         this.selectedTicketId = this.tickets[0]?.id ?? null;
 
         this.isLoading = false;
+
+        console.log('9. Booking options loaded successfully');
+        console.log(this.isLoading)
       },
 
       error: (error: HttpErrorResponse) => {
+        console.error('Booking options error:', error);
+
         this.isLoading = false;
         this.loadError = this.getApiErrorMessage(error);
       }
-
     });
   }
 

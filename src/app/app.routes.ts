@@ -9,7 +9,6 @@ import { AvailableFlightsComponent } from './pages/features/availableflights/ava
 
 import { TicketdetailsComponent } from './pages/features/tickets/ticketdetails/ticketdetails';
 import { BookingComponent } from './pages/features/tickets/booking/booking';
-
 import { MainLayoutComponent } from './Layout/main-layout';
 import { FlightdetailsComponent } from './pages/features/availableflights/flightdetails/flightdetails';
 import { MyticketsComponent } from './pages/features/tickets/mytickets/mytickets';

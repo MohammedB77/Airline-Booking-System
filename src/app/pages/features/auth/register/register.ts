@@ -111,20 +111,23 @@ export class Register {
     this.errorMessage = '';
     this.successMessage = '';
 
-    this.userService.register(userInfo).subscribe({
-      next: () => {
-        this.isSubmitting = false;
-        this.successMessage = 'تم إنشاء الحساب بنجاح. سيتم نقلك إلى تسجيل الدخول.';
-        void this.router.navigate(['/login']);
-      },
-      error: (error: { error?: { message?: string }; message?: string }) => {
-        this.isSubmitting = false;
-        this.errorMessage =
-          error.error?.message ||
-          error.message ||
-          'تعذر إنشاء الحساب. تحقق من البيانات وحاول مرة أخرى.';
+this.userService.register(userInfo).subscribe({
+next: (response: any) => {
+      this.isSubmitting = false;
+    this.successMessage = 'تم إنشاء الحساب بنجاح. سيتم نقلك لاستكمال بيانات المسافر.';
+
+    void this.router.navigate(['/passenger'], {
+      state: {
+        userId: response.id
       }
     });
+  },
+  error: (error: { error?: { message?: string }; message?: string }) => {
+    this.isSubmitting = false;
+    this.errorMessage =
+      error.error?.message ||
+      error.message ||
+      'تعذر إنشاء الحساب. تحقق من البيانات وحاول مرة أخرى.';
   }
-
-}
+});
+ } }

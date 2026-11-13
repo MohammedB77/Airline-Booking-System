@@ -1,9 +1,18 @@
 
-import { Component } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { RouterLink } from '@angular/router';
+import { Component, inject } from '@angular/core';
+import { CommonModule, Location } from '@angular/common';
+import { HttpErrorResponse } from '@angular/common/http';
+import { Router, RouterLink } from '@angular/router';
 import { FormsModule, NgForm } from '@angular/forms';
 
+import {
+  PassengerService,
+  type PassengerCreateRequest
+} from '../../../../core/services/passenger.service';
+
+import { UserService } from '../../../../core/services/user.service';
+
+// Passenger Form Data
 interface PassengerForm {
   firstName: string;
   lastName: string;
@@ -17,11 +26,17 @@ interface PassengerForm {
 @Component({
   selector: 'app-passenger',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, RouterLink],
   templateUrl: './passenger.html',
 })
 export class PassengerComponent {
 
+  private readonly passengerService = inject(PassengerService);
+  private readonly userService = inject(UserService);
+  private readonly router = inject(Router);
+  private readonly location = inject(Location);
+
+  // Passenger Form
   passenger: PassengerForm = {
     firstName: '',
     lastName: '',
@@ -32,41 +47,151 @@ export class PassengerComponent {
     phoneNumber: ''
   };
 
-  // منع اختيار تاريخ في المستقبل
-  maxDate: string = new Date().toISOString().split('T')[0];
+  // Prevent future dates
+  maxDate: string = new Date(
+    Date.now() - new Date().getTimezoneOffset() * 60000
+  ).toISOString().split('T')[0];
 
-  // حالة إرسال النموذج
+  // Form Status
   submitted = false;
-
-  // رسالة التحقق
+  isSaving = false;
   formMessage = '';
+  messageType: 'success' | 'error' = 'error';
 
+  // Get User ID
+  private getUserId(): number | null {
+
+    const state = this.location.getState();
+
+    const navigationUserId =
+      state && typeof state === 'object'
+        ? (state as { userId?: unknown }).userId
+        : undefined;
+
+    const currentUserId = this.userService.currentUser()?.id;
+
+    const rawId = navigationUserId ?? currentUserId;
+
+    if (rawId === null || rawId === undefined || rawId === '') {
+      return null;
+    }
+
+    const id = Number(rawId);
+
+    return Number.isInteger(id) && id > 0 ? id : null;
+  }
+
+  // Save Passenger
   onSubmit(form: NgForm): void {
-    this.submitted = true;
-    this.formMessage = '';
 
-    if (form.invalid) {
-      form.control.markAllAsTouched();
-      this.formMessage = 'يرجى التأكد من إدخال جميع البيانات المطلوبة بشكل صحيح.';
+    if (this.isSaving) {
       return;
     }
 
-    // الواجهة جاهزة، وسيتم ربط عملية الحفظ بالـ API لاحقاً.
-    this.formMessage = 'تم التحقق من البيانات بنجاح. الواجهة جاهزة لربط خدمة الحفظ.';
+    this.submitted = true;
+    this.formMessage = '';
+
+    // Validate Form
+    if (
+      form.invalid ||
+      !this.passenger.dateOfBirth ||
+      this.passenger.dateOfBirth > this.maxDate
+    ) {
+      form.control.markAllAsTouched();
+
+      this.messageType = 'error';
+      this.formMessage =
+        'يرجى التأكد من إدخال جميع البيانات المطلوبة بشكل صحيح.';
+
+      return;
+    }
+
+    // Get Registered User ID
+    const userId = this.getUserId();
+
+    if (userId === null) {
+      this.messageType = 'error';
+      this.formMessage =
+        'لم يتم العثور على حساب المستخدم. يرجى إكمال إنشاء الحساب أولاً.';
+
+      return;
+    }
+
+    // Prepare Passenger Data
+    const passengerData: PassengerCreateRequest = {
+
+      firstName: this.passenger.firstName.trim(),
+
+      lastName: this.passenger.lastName.trim(),
+
+      dateOfBirth: `${this.passenger.dateOfBirth}T00:00:00`,
+
+      gender: this.passenger.gender,
+
+      nationality: this.passenger.nationality,
+
+      passportNumber: this.passenger.passportNumber.trim(),
+
+      phoneNumber: this.passenger.phoneNumber.trim(),
+
+      userId: userId
+    };
+
+    this.isSaving = true;
+
+    // Send Passenger Data To API
+    this.passengerService.create(passengerData).subscribe({
+
+      next: (response) => {
+
+        this.isSaving = false;
+
+        this.messageType = 'success';
+
+        this.formMessage =
+          'تم حفظ بيانات المسافر بنجاح.';
+
+        console.log('Passenger Created:', response);
+
+        // Navigate to Home Page
+        void this.router.navigateByUrl('/home');
+      },
+
+      error: (error: HttpErrorResponse) => {
+
+        this.isSaving = false;
+
+        this.messageType = 'error';
+
+        if (error.status === 0) {
+
+          this.formMessage =
+            'تعذر الاتصال بالخادم. تأكد من تشغيل API.';
+
+        } else if (error.status === 400) {
+
+          this.formMessage =
+            'تعذر حفظ البيانات. تحقق من صحة البيانات ورقم المستخدم.';
+
+        } else {
+
+          this.formMessage =
+            'حدث خطأ أثناء حفظ بيانات المسافر. حاول مرة أخرى.';
+        }
+
+        console.error('Passenger Error:', error);
+      }
+    });
   }
 
+  // Reset Passenger Form
   resetForm(form: NgForm): void {
-    form.resetForm({
-      firstName: '',
-      lastName: '',
-      dateOfBirth: '',
-      gender: '',
-      nationality: 'YEM',
-      passportNumber: '',
-      phoneNumber: ''
-    });
 
-    this.passenger = {
+    if (this.isSaving) {
+      return;
+    }
+
+    const initialData: PassengerForm = {
       firstName: '',
       lastName: '',
       dateOfBirth: '',
@@ -76,7 +201,12 @@ export class PassengerComponent {
       phoneNumber: ''
     };
 
+    form.resetForm(initialData);
+
+    this.passenger = { ...initialData };
+
     this.submitted = false;
     this.formMessage = '';
+    this.messageType = 'error';
   }
 }

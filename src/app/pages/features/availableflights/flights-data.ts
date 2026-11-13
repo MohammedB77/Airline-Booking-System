@@ -1,5 +1,6 @@
 // تعريف شكل بيانات الرحلة المشتركة بين الصفحتين.
 export interface Flight {
+  id?: number;
   number: string;
   airline: string;
   code: string;
@@ -14,11 +15,13 @@ export interface Flight {
   originCode: string;
   originName: string;
   originCity: string;
+  originCountry?: string;
 
   destination: string;
   destinationCode: string;
   destinationName: string;
   destinationCity: string;
+  destinationCountry?: string;
 
   departureTime: string;
   arrivalTime: string;
@@ -36,6 +39,7 @@ export const flightsData: Flight[] = [
 
   // الرحلة الأولى.
   {
+    id: 1,
     number: 'MDR-101',
     airline: 'طيران مَدار',
     code: 'MDR',
@@ -69,6 +73,7 @@ export const flightsData: Flight[] = [
 
   // الرحلة الثانية.
   {
+    id: 2,
     number: 'IY-602',
     airline: 'الخطوط الجوية اليمنية',
     code: 'IY',
@@ -102,6 +107,7 @@ export const flightsData: Flight[] = [
 
   // الرحلة الثالثة.
   {
+    id: 3,
     number: 'BQ-310',
     airline: 'بلقيس للطيران',
     code: 'BQ',
@@ -135,6 +141,7 @@ export const flightsData: Flight[] = [
 
   // الرحلة الرابعة.
   {
+    id: 4,
     number: 'MDR-204',
     airline: 'طيران مَدار',
     code: 'MDR',
@@ -168,6 +175,7 @@ export const flightsData: Flight[] = [
 
   // الرحلة الخامسة.
   {
+    id: 5,
     number: 'IY-448',
     airline: 'الخطوط الجوية اليمنية',
     code: 'IY',

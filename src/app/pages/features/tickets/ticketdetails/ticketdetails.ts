@@ -1,9 +1,13 @@
 import { CommonModule } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, RouterLink } from '@angular/router';
+import {
+  TicketBooking,
+  TicketBookingService
+} from '../../../../core/services/ticketbooking.service';
 
 // شكل بيانات التذكرة المعروضة في الصفحة
-interface TicketDetails {
+export interface TicketDetails {
   ticketNumber: string;
   flightNumber: string;
   airline: string;
@@ -47,7 +51,6 @@ interface TicketDetails {
   currency: string;
 }
 
-// مكوّن صفحة تفاصيل التذكرة
 @Component({
   selector: 'app-ticketdetails',
   standalone: true,
@@ -55,155 +58,39 @@ interface TicketDetails {
   templateUrl: './ticketdetails.html'
 })
 export class TicketdetailsComponent implements OnInit {
-
-  // بيانات التذكرة الحالية
   ticket: TicketDetails | null = null;
+  isLoading = true;
+  errorMessage = '';
 
-  // بيانات تجريبية للتذاكر
-  private ticketsData: TicketDetails[] = [
-    {
-      ticketNumber: 'TKT-10492',
-      flightNumber: 'MDR-101',
-      airline: 'طيران مَدار',
-      airlineCode: 'MDR',
-      status: 'مؤكدة',
-      statusClass: 'confirmed',
-
-      originCode: 'SAH',
-      originCity: 'صنعاء',
-      originAirport: 'مطار صنعاء الدولي',
-      departureTime: '08:00 ص',
-
-      destinationCode: 'CAI',
-      destinationCity: 'القاهرة',
-      destinationAirport: 'مطار القاهرة الدولي',
-      arrivalTime: '11:30 ص',
-
-      aircraft: 'Airbus A320neo',
-      aircraftModel: 'Airbus A320neo',
-      registration: '7O-MDR',
-
-      checkInTime: '06:30 ص',
-      boardingTime: '07:15 ص',
-      gate: 'بوابة G04',
-      terminal: 'الصالة الدولية 1',
-
-      firstName: 'أحمد',
-      familyName: 'الزبيدي',
-      nationality: 'يمني',
-      birthDate: '1990/03/15',
-      gender: 'ذكر',
-      passportNumber: 'YEM789456',
-      phone: '+967 771 234 567',
-
-      bookingDate: '2025/05/10',
-      ticketStatus: 'مؤكدة ومدفوعة بالكامل',
-      travelClass: 'الدرجة الاقتصادية',
-      seat: '14B',
-      seatType: 'ممر طائرة (Aisle)',
-      price: 280,
-      currency: 'USD'
-    },
-    {
-      ticketNumber: 'TKT-10884',
-      flightNumber: 'MDR-204',
-      airline: 'طيران مَدار',
-      airlineCode: 'MDR',
-      status: 'مؤكدة',
-      statusClass: 'confirmed',
-
-      originCode: 'ADE',
-      originCity: 'عدن',
-      originAirport: 'مطار عدن الدولي',
-      departureTime: '02:15 م',
-
-      destinationCode: 'DXB',
-      destinationCity: 'دبي',
-      destinationAirport: 'مطار دبي الدولي',
-      arrivalTime: '06:30 م',
-
-      aircraft: 'Airbus A321neo',
-      aircraftModel: 'Airbus A321neo',
-      registration: '7O-MDB',
-
-      checkInTime: '12:45 م',
-      boardingTime: '01:30 م',
-      gate: 'غير محددة',
-      terminal: 'غير محددة',
-
-      firstName: '—',
-      familyName: '—',
-      nationality: '—',
-      birthDate: '—',
-      gender: '—',
-      passportNumber: '—',
-      phone: '—',
-
-      bookingDate: '—',
-      ticketStatus: 'مؤكدة',
-      travelClass: 'درجة رجال الأعمال',
-      seat: '02A',
-      seatType: 'غير محدد',
-      price: 640,
-      currency: 'USD'
-    },
-    {
-      ticketNumber: 'TKT-09311',
-      flightNumber: 'MDR-305',
-      airline: 'طيران مَدار',
-      airlineCode: 'MDR',
-      status: 'ملغاة',
-      statusClass: 'cancelled',
-
-      originCode: 'SAH',
-      originCity: 'صنعاء',
-      originAirport: 'مطار صنعاء الدولي',
-      departureTime: '10:00 ص',
-
-      destinationCode: 'AMM',
-      destinationCity: 'عمّان',
-      destinationAirport: 'مطار الملكة علياء الدولي',
-      arrivalTime: '01:45 م',
-
-      aircraft: '—',
-      aircraftModel: '—',
-      registration: '—',
-
-      checkInTime: '—',
-      boardingTime: '—',
-      gate: '—',
-      terminal: '—',
-
-      firstName: '—',
-      familyName: '—',
-      nationality: '—',
-      birthDate: '—',
-      gender: '—',
-      passportNumber: '—',
-      phone: '—',
-
-      bookingDate: '—',
-      ticketStatus: 'تم إلغاء التذكرة',
-      travelClass: 'الدرجة الاقتصادية',
-      seat: '21C',
-      seatType: '—',
-      price: 310,
-      currency: 'USD'
-    }
-  ];
-
-  constructor(private route: ActivatedRoute) {}
+  constructor(
+    private readonly route: ActivatedRoute,
+    private readonly bookingService: TicketBookingService
+  ) {}
 
   ngOnInit(): void {
-    // قراءة رقم التذكرة من الرابط
     this.route.paramMap.subscribe(params => {
-      const ticketNumber = params.get('ticketNumber');
+      const ticketNumber = params.get('ticketNumber') || '';
 
-      // البحث عن التذكرة المطلوبة
-      this.ticket =
-        this.ticketsData.find(
-          item => item.ticketNumber === ticketNumber
-        ) ?? null;
+      if (!ticketNumber) {
+        this.isLoading = false;
+        this.errorMessage = 'رقم التذكرة غير محدد.';
+        return;
+      }
+
+      this.bookingService.getBookingByTicketNumber(ticketNumber).subscribe({
+        next: booking => {
+          if (booking) {
+            this.ticket = this.mapBookingToTicketDetails(booking);
+          } else {
+            this.errorMessage = 'لم يتم العثور على التذكرة المطلوبة.';
+          }
+          this.isLoading = false;
+        },
+        error: () => {
+          this.isLoading = false;
+          this.errorMessage = 'تعذر تحميل بيانات التذكرة.';
+        }
+      });
     });
   }
 
@@ -221,12 +108,12 @@ export class TicketdetailsComponent implements OnInit {
     if (navigator.share) {
       try {
         await navigator.share({
-          title: 'تفاصيل التذكرة',
+          title: 'تفاصيل التذكرة الإلكترونية',
           text: `تذكرة رقم ${this.ticket.ticketNumber}`,
           url: ticketUrl
         });
-      } catch (error) {
-        // تجاهل إلغاء المستخدم لعملية المشاركة
+      } catch {
+        // تم إلغاء المشاركة من قبل المستخدم
       }
     } else if (navigator.clipboard) {
       await navigator.clipboard.writeText(ticketUrl);
@@ -236,29 +123,37 @@ export class TicketdetailsComponent implements OnInit {
     }
   }
 
-  // تنزيل تفاصيل التذكرة كملف نصي مؤقت
+  // تنزيل تفاصيل التذكرة كملف نصي
   downloadTicket(): void {
     if (!this.ticket) return;
 
     const content = `
-تفاصيل التذكرة الإلكترونية
+تفاصيل التذكرة الإلكترونية - مَدار
+===============================
 رقم التذكرة: ${this.ticket.ticketNumber}
 رقم الرحلة: ${this.ticket.flightNumber}
 شركة الطيران: ${this.ticket.airline}
-الحالة: ${this.ticket.status}
-من: ${this.ticket.originCity} (${this.ticket.originCode})
-إلى: ${this.ticket.destinationCity} (${this.ticket.destinationCode})
-وقت المغادرة: ${this.ticket.departureTime}
+حالة التذكرة: ${this.ticket.status}
+المسافر: ${this.ticket.firstName} ${this.ticket.familyName}
+رقم الجواز: ${this.ticket.passportNumber}
+الجنسية: ${this.ticket.nationality}
+
+مسار الرحلة:
+من: ${this.ticket.originCity} (${this.ticket.originCode}) - ${this.ticket.originAirport}
+إلى: ${this.ticket.destinationCity} (${this.ticket.destinationCode}) - ${this.ticket.destinationAirport}
+وقت الإقلاع: ${this.ticket.departureTime}
 وقت الوصول: ${this.ticket.arrivalTime}
+
+بيانات السفر:
 درجة السفر: ${this.ticket.travelClass}
 رقم المقعد: ${this.ticket.seat}
+البوابة: ${this.ticket.gate}
+الصالة: ${this.ticket.terminal}
 السعر: ${this.ticket.price} ${this.ticket.currency}
-    `;
+تاريخ الحجز: ${this.ticket.bookingDate}
+    `.trim();
 
-    const file = new Blob([content], {
-      type: 'text/plain;charset=utf-8'
-    });
-
+    const file = new Blob([content], { type: 'text/plain;charset=utf-8' });
     const url = URL.createObjectURL(file);
     const link = document.createElement('a');
 
@@ -267,5 +162,66 @@ export class TicketdetailsComponent implements OnInit {
     link.click();
 
     URL.revokeObjectURL(url);
+  }
+
+  private mapBookingToTicketDetails(booking: TicketBooking): TicketDetails {
+    const isCancelled =
+      booking.statusKey === 'cancelled' ||
+      booking.status === 'ملغاة' ||
+      booking.status === 'Cancelled' ||
+      booking.status === 'ملغي';
+
+    const rawName = (booking.passengerName || 'أحمد الزبيدي').trim();
+    const parts = rawName.split(' ');
+    const firstName = parts[0] || '—';
+    const familyName = parts.slice(1).join(' ') || '—';
+
+    return {
+      ticketNumber: booking.ticketNumber,
+      flightNumber: booking.flightNumber || 'MDR-101',
+      airline: booking.airline || 'طيران مَدار',
+      airlineCode: booking.airlineCode || 'MDR',
+      status: isCancelled ? 'ملغاة' : 'مؤكدة',
+      statusClass: isCancelled ? 'cancelled' : 'confirmed',
+
+      originCode: booking.originCode || 'SAH',
+      originCity: booking.originCity || 'صنعاء',
+      originAirport: booking.originName || 'مطار صنعاء الدولي',
+      departureTime: booking.departureTime || '08:00 ص',
+
+      destinationCode: booking.destinationCode || 'CAI',
+      destinationCity: booking.destinationCity || 'القاهرة',
+      destinationAirport: booking.destinationName || 'مطار القاهرة الدولي',
+      arrivalTime: booking.arrivalTime || '11:30 ص',
+
+      aircraft: booking.aircraft || 'Airbus A320neo',
+      aircraftModel: booking.aircraftModel || booking.aircraft || 'Airbus A320neo',
+      registration: booking.registration || '7O-MDR',
+
+      checkInTime: 'قبل ساعتين',
+      boardingTime: 'قبل 45 دقيقة',
+      gate: booking.gate || 'بوابة G04',
+      terminal: booking.terminal || 'الصالة 1',
+
+      firstName,
+      familyName,
+      nationality: booking.passengerNationality || 'يمني',
+      birthDate: booking.passengerBirthDate || '1990/03/15',
+      gender: booking.passengerGender || 'ذكر',
+      passportNumber: booking.passengerPassport || 'YEM789456',
+      phone: booking.passengerPhone || '+967 771 234 567',
+
+      bookingDate: booking.bookingDate || '2026/11/07',
+      ticketStatus: isCancelled ? 'تم إلغاء التذكرة' : 'مؤكدة ومدفوعة بالكامل',
+      travelClass: booking.cabin || 'الدرجة الاقتصادية',
+      seat: booking.seatNumber || '14B',
+      seatType:
+        booking.seatNumber &&
+        (booking.seatNumber.endsWith('A') || booking.seatNumber.endsWith('F'))
+          ? 'نافذة (Window)'
+          : 'ممر (Aisle)',
+      price: booking.price || 350,
+      currency: booking.currency || 'USD'
+    };
   }
 }

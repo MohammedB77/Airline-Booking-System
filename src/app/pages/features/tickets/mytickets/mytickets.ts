@@ -1,157 +1,130 @@
-
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
+import {
+  TicketBooking,
+  TicketBookingService
+} from '../../../../core/services/ticketbooking.service';
 
-// تحديد شكل بيانات التذكرة.
-interface Ticket {
-  id: string;
+export interface TicketCardView {
+  id: string; // يُعرض كرقم التذكرة (TKT-XXXX)
+  bookingId: number;
+  ticketNumber: string;
   flightNumber: string;
   airline: string;
-
   origin: string;
   originName: string;
   destination: string;
   destinationName: string;
-
   departureTime: string;
   arrivalTime: string;
   duration: string;
-
   cabin: string;
   seat: string;
   price: number;
-
   status: string;
   statusKey: 'confirmed' | 'cancelled';
 }
 
-// تحديد أنواع الفلاتر.
-type TicketFilter = 'all' | 'confirmed' | 'cancelled';
+export type TicketFilter = 'all' | 'confirmed' | 'cancelled';
 
 @Component({
   selector: 'app-mytickets',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, RouterLink],
   templateUrl: './mytickets.html'
 })
-export class MyticketsComponent {
-
-  // الفلتر المحدد حالياً.
+export class MyticketsComponent implements OnInit {
   selectedFilter: TicketFilter = 'all';
-
-  // التذكرة المحددة لعرض تفاصيلها.
-  selectedTicket: Ticket | null = null;
-
-  // التحكم في ظهور نافذة تفاصيل التذكرة.
+  selectedTicket: TicketCardView | null = null;
   isModalOpen = false;
+  tickets: TicketCardView[] = [];
+  isLoading = true;
 
-  // بيانات التذاكر التجريبية.
-  tickets: Ticket[] = [
-    {
-      id: 'TKT-10492',
-      flightNumber: 'MDR-101',
-      airline: 'طيران مَدار',
+  constructor(private readonly bookingService: TicketBookingService) {}
 
-      origin: 'SAH',
-      originName: 'مطار صنعاء الدولي',
-      destination: 'CAI',
-      destinationName: 'مطار القاهرة الدولي',
+  ngOnInit(): void {
+    this.loadTickets();
+  }
 
-      departureTime: '08:00 ص',
-      arrivalTime: '11:30 ص',
-      duration: '3 ساعات و30 دقيقة',
+  loadTickets(): void {
+    this.isLoading = true;
+    this.bookingService.getBookings().subscribe({
+      next: bookings => {
+        this.tickets = bookings.map(b => this.toCardView(b));
+        this.isLoading = false;
+      },
+      error: () => {
+        this.isLoading = false;
+      }
+    });
+  }
 
-      cabin: 'الدرجة الاقتصادية',
-      seat: '14B',
-      price: 280,
-
-      status: 'مؤكدة',
-      statusKey: 'confirmed'
-    },
-    {
-      id: 'TKT-10884',
-      flightNumber: 'MDR-204',
-      airline: 'طيران مَدار',
-
-      origin: 'ADE',
-      originName: 'مطار عدن الدولي',
-      destination: 'DXB',
-      destinationName: 'مطار دبي الدولي',
-
-      departureTime: '02:15 م',
-      arrivalTime: '06:30 م',
-      duration: '4 ساعات و15 دقيقة',
-
-      cabin: 'رجال الأعمال',
-      seat: '02A',
-      price: 640,
-
-      status: 'مؤكدة',
-      statusKey: 'confirmed'
-    },
-    {
-      id: 'TKT-09311',
-      flightNumber: 'MDR-305',
-      airline: 'طيران مَدار',
-
-      origin: 'SAH',
-      originName: 'مطار صنعاء الدولي',
-      destination: 'AMM',
-      destinationName: 'مطار الملكة علياء (عَمّان)',
-
-      departureTime: '10:00 ص',
-      arrivalTime: '01:45 م',
-      duration: 'تم إلغاء الرحلة مسبقاً',
-
-      cabin: 'الدرجة الاقتصادية',
-      seat: '21C',
-      price: 310,
-
-      status: 'ملغاة',
-      statusKey: 'cancelled'
-    }
-  ];
-
-  // حساب عدد التذاكر المؤكدة.
   get confirmedCount(): number {
-    return this.tickets.filter(
-      ticket => ticket.statusKey === 'confirmed'
-    ).length;
+    return this.tickets.filter(t => t.statusKey === 'confirmed').length;
   }
 
-  // حساب عدد التذاكر الملغاة.
   get cancelledCount(): number {
-    return this.tickets.filter(
-      ticket => ticket.statusKey === 'cancelled'
-    ).length;
+    return this.tickets.filter(t => t.statusKey === 'cancelled').length;
   }
 
-  // عرض التذاكر حسب الفلتر المحدد.
-  get filteredTickets(): Ticket[] {
+  get filteredTickets(): TicketCardView[] {
     if (this.selectedFilter === 'all') {
       return this.tickets;
     }
-
-    return this.tickets.filter(
-      ticket => ticket.statusKey === this.selectedFilter
-    );
+    return this.tickets.filter(t => t.statusKey === this.selectedFilter);
   }
 
-  // تغيير فلتر التذاكر.
   filterTickets(filter: TicketFilter): void {
     this.selectedFilter = filter;
   }
 
-  // فتح نافذة تفاصيل التذكرة.
-  openTicketModal(ticket: Ticket): void {
+  openTicketModal(ticket: TicketCardView): void {
     this.selectedTicket = ticket;
     this.isModalOpen = true;
   }
 
-  // إغلاق نافذة تفاصيل التذكرة.
   closeTicketModal(): void {
     this.isModalOpen = false;
     this.selectedTicket = null;
+  }
+
+  cancelTicket(ticket: TicketCardView): void {
+    if (!confirm(`هل أنت متأكد من رغبتك في إلغاء التذكرة رقم ${ticket.ticketNumber}؟`)) {
+      return;
+    }
+
+    this.bookingService.cancelBooking(ticket.bookingId).subscribe({
+      next: () => {
+        ticket.status = 'ملغاة';
+        ticket.statusKey = 'cancelled';
+        if (this.selectedTicket && this.selectedTicket.bookingId === ticket.bookingId) {
+          this.selectedTicket.status = 'ملغاة';
+          this.selectedTicket.statusKey = 'cancelled';
+        }
+      }
+    });
+  }
+
+  private toCardView(booking: TicketBooking): TicketCardView {
+    return {
+      id: booking.ticketNumber,
+      bookingId: booking.id,
+      ticketNumber: booking.ticketNumber,
+      flightNumber: booking.flightNumber || 'MDR-101',
+      airline: booking.airline || 'طيران مَدار',
+      origin: booking.originCode || booking.origin || 'SAH',
+      originName: booking.originName || 'مطار صنعاء الدولي',
+      destination: booking.destinationCode || booking.destination || 'CAI',
+      destinationName: booking.destinationName || 'مطار القاهرة الدولي',
+      departureTime: booking.departureTime || '08:00 ص',
+      arrivalTime: booking.arrivalTime || '11:30 ص',
+      duration: booking.duration || '3 ساعات و30 دقيقة',
+      cabin: booking.cabin || 'الدرجة الاقتصادية',
+      seat: booking.seatNumber || '12A',
+      price: booking.price || 350,
+      status: booking.status || 'مؤكدة',
+      statusKey: booking.statusKey || 'confirmed'
+    };
   }
 }

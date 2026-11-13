@@ -478,16 +478,31 @@
       </div>
 
       <!-- Modal Footer -->
-      <div class="bg-surface-container-low px-space-lg py-space-md flex justify-end">
+      <div class="bg-surface-container-low px-space-lg py-space-md flex flex-col sm:flex-row items-center gap-space-sm justify-between">
 
-        <button
-          type="button"
-          (click)="closeTicketModal()"
-          class="w-full bg-primary hover:bg-secondary text-on-primary py-2.5 rounded-lg font-label-lg text-label-lg transition-colors">
+        <a
+          [routerLink]="['/ticket-details', ticket.ticketNumber || ticket.id]"
+          class="w-full sm:w-auto inline-flex items-center justify-center gap-1.5 px-space-md py-2.5 bg-tertiary hover:bg-amber-500 text-secondary font-bold font-label-md text-label-md rounded-lg shadow-sm transition-all">
+          <span class="material-symbols-outlined text-base">receipt_long</span>
+          <span>عرض صفحة التذكرة والطباعة</span>
+        </a>
 
-          إغلاق النافذة
+        <div class="flex items-center gap-2 w-full sm:w-auto justify-end">
+          <button
+            *ngIf="ticket.statusKey === 'confirmed'"
+            type="button"
+            (click)="cancelTicket(ticket)"
+            class="w-full sm:w-auto px-space-md py-2 bg-red-50 hover:bg-red-100 text-error font-semibold font-label-sm text-label-sm rounded-lg transition-colors">
+            إلغاء التذكرة
+          </button>
 
-        </button>
+          <button
+            type="button"
+            (click)="closeTicketModal()"
+            class="w-full sm:w-auto bg-surface-container hover:bg-surface-container-high text-primary px-space-md py-2 rounded-lg font-label-sm text-label-sm transition-colors">
+            إغلاق
+          </button>
+        </div>
 
       </div>
 

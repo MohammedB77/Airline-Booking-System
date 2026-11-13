@@ -1,32 +1,5 @@
-<!-- شريط التنقل -->
-<header dir="rtl" class="fixed top-0 left-0 right-0 z-50 bg-white/95 backdrop-blur-xl border-b border-outline-variant/60 shadow-[0_2px_12px_rgba(11,27,61,0.04)]">
-  <div class="h-20 max-w-[1280px] mx-auto px-4 md:px-8 lg:px-12 flex items-center justify-between gap-4">
-    <div class="flex items-center gap-6">
-      <a routerLink="/" class="flex items-center gap-2">
-        <div class="w-10 h-10 rounded-xl bg-primary flex items-center justify-center text-tertiary font-semibold text-lg">
-          مـ
-        </div>
-        <div class="flex flex-col">
-          <span class="font-semibold text-lg text-primary leading-none">مَدار</span>
-          <span class="text-xs text-on-surface-variant leading-tight mt-1">رحلتك تبدأ من هنا</span>
-        </div>
-      </a>
-      <nav class="hidden lg:flex items-center gap-1">
-        <a routerLink="/home" class="text-sm text-on-surface-variant hover:text-primary hover:bg-surface-container-low px-4 py-2 rounded-lg transition-colors">الرئيسية</a>
-        <a routerLink="/flights" class="text-sm text-on-surface-variant hover:text-primary hover:bg-surface-container-low px-4 py-2 rounded-lg transition-colors">استكشف الرحلات</a>
-        <a routerLink="/mytickets" class="text-sm text-on-surface-variant hover:text-primary hover:bg-surface-container-low px-4 py-2 rounded-lg transition-colors">تذاكري</a>
-        <a href="#" class="text-sm text-on-surface-variant hover:text-primary hover:bg-surface-container-low px-4 py-2 rounded-lg transition-colors">حول مدار</a>
-      </nav>
-    </div>
-    <div class="flex items-center gap-2">
-      <a routerLink="/login" class="hidden sm:inline-flex items-center justify-center px-4 py-2 text-sm text-primary hover:bg-primary/5 rounded-lg transition-colors">تسجيل الدخول</a>
-      <a routerLink="/register" class="inline-flex items-center justify-center px-5 py-2 bg-tertiary hover:bg-amber-500 text-secondary text-sm font-bold rounded-lg transition-all shadow-sm">إنشاء حساب</a>
-    </div>
-  </div>
-</header>
-
 <!-- المحتوى الرئيسي -->
-<main dir="rtl" lang="ar" class="w-full pt-20 bg-surface min-h-screen text-right">
+<main dir="rtl" lang="ar" class="w-full bg-surface min-h-screen text-right">
   <div class="max-w-[1280px] w-full mx-auto px-4 md:px-8 lg:px-12 py-8 lg:py-10">
 
     <!-- عنوان الصفحة ومراحل الحجز -->
@@ -170,7 +143,7 @@
                 [(ngModel)]="selectedPassengerId"
                 class="w-full bg-slate-50 border border-slate-200 rounded-lg px-4 py-3 text-sm text-primary font-bold shadow-sm focus:outline-none focus:ring-2 focus:ring-primary/20 appearance-none cursor-pointer">
                 <option *ngFor="let passenger of passengers" [value]="passenger.id">
-                  {{ passenger.fullName }} – جواز سفر: {{ passenger.passport }}
+                  {{ passenger.fullName }} – جواز سفر: {{ passenger.passportNumber || '—' }}
                 </option>
               </select>
               <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none text-on-surface-variant">expand_more</span>
@@ -378,56 +351,29 @@
       </div>
     </div>
 
-    <button
-      type="button"
-      (click)="closeConfirmation()"
-      class="w-full bg-primary-container hover:bg-primary text-white py-3 px-4 rounded-lg text-sm font-bold transition-colors">
-      إغلاق نافذة التأكيد
-    </button>
+    <div class="flex flex-col gap-2 w-full">
+      <button
+        type="button"
+        (click)="goToTicketDetails()"
+        class="w-full bg-tertiary hover:bg-amber-500 text-secondary py-3 px-4 rounded-lg text-sm font-bold shadow-md transition-all flex items-center justify-center gap-2 cursor-pointer">
+        <span class="material-symbols-outlined text-base">receipt_long</span>
+        <span>عرض التذكرة الإلكترونية</span>
+      </button>
+
+      <button
+        type="button"
+        (click)="goToMyTickets()"
+        class="w-full bg-primary-container hover:bg-primary text-white py-3 px-4 rounded-lg text-sm font-bold transition-colors flex items-center justify-center gap-2 cursor-pointer">
+        <span class="material-symbols-outlined text-base">confirmation_number</span>
+        <span>الانتقال إلى تذاكري</span>
+      </button>
+
+      <button
+        type="button"
+        (click)="closeConfirmation()"
+        class="w-full bg-slate-100 hover:bg-slate-200 text-on-surface py-2.5 px-4 rounded-lg text-xs font-semibold transition-colors cursor-pointer">
+        إغلاق
+      </button>
+    </div>
   </div>
 </div>
-
-<!-- تذييل الصفحة -->
-<footer class="w-full bg-[#070F23] text-white pt-10 pb-6 border-t border-white/10">
-  <div class="max-w-[1280px] mx-auto px-4 md:px-8 lg:px-12">
-    <div class="grid grid-cols-1 md:grid-cols-4 gap-8 pb-8 border-b border-white/10">
-
-      <div class="md:col-span-2 flex flex-col gap-3">
-        <div class="flex items-center gap-2">
-          <div class="w-9 h-9 rounded-xl bg-tertiary flex items-center justify-center text-secondary font-bold shadow-sm">مـ</div>
-          <span class="text-lg text-white font-bold">مَدار – MADAR</span>
-        </div>
-        <p class="text-sm text-slate-400 max-w-md leading-relaxed">
-          بوابة الطيران اليمنية الحديثة بتصميم مستوحى من عمق التراث المعماري الساحر لليمن وتقنيات السفر الرقمية المعاصرة. رحلات آمنة، تجربة حجز سلسة، وهوية راسخة.
-        </p>
-      </div>
-
-      <div class="flex flex-col gap-3">
-        <h3 class="text-base text-tertiary font-bold">روابط سريعة</h3>
-        <ul class="flex flex-col gap-2 text-sm">
-          <li><a routerLink="/" class="text-slate-300 hover:text-tertiary transition-colors">الرئيسية</a></li>
-          <li><a routerLink="/flights" class="text-slate-300 hover:text-tertiary transition-colors">استكشف الرحلات</a></li>
-          <li><a routerLink="/my-tickets" class="text-slate-300 hover:text-tertiary transition-colors">إدارة التذاكر والحجوزات</a></li>
-          <li><a href="#" class="text-slate-300 hover:text-tertiary transition-colors">عن مدار وفلسفتنا</a></li>
-        </ul>
-      </div>
-
-      <div class="flex flex-col gap-3">
-        <h3 class="text-base text-tertiary font-bold">الحساب والدعم</h3>
-        <ul class="flex flex-col gap-2 text-sm">
-          <li><a routerLink="/login" class="text-slate-300 hover:text-tertiary transition-colors">تسجيل الدخول</a></li>
-          <li><a routerLink="/register" class="text-slate-300 hover:text-tertiary transition-colors">إنشاء حساب جديد</a></li>
-          <li><a href="#" class="text-slate-300 hover:text-tertiary transition-colors">مركز المساعدة والاستفسارات</a></li>
-        </ul>
-      </div>
-    </div>
-
-    <div class="pt-6 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-slate-400">
-      <p>جميع الحقوق محفوظة لمنصة مَدار © 2025</p>
-      <div class="flex items-center gap-6">
-        <a href="#" class="hover:text-tertiary transition-colors">شروط الاستخدام</a>
-        <a href="#" class="hover:text-tertiary transition-colors">سياسة الخصوصية</a>
-      </div>
-    </div>
-  </div>
-</footer>

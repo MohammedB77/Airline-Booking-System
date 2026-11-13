@@ -1,37 +1,22 @@
 
-<!-- Header -->
-<header class="fixed top-0 left-0 right-0 z-50 bg-white/95 backdrop-blur-xl border-b border-outline-variant/60 shadow-[0_2px_12px_rgba(11,27,61,0.04)]">
-  <div class="h-20 max-w-[1280px] mx-auto px-margin md:px-margin-tablet lg:px-margin-desktop flex items-center justify-between gap-space-md">
-
-    <div class="flex items-center gap-space-lg">
-      <a routerLink="/" class="flex items-center gap-space-sm">
-        <div class="w-10 h-10 rounded-xl bg-primary flex items-center justify-center text-tertiary font-headline-sm text-headline-sm shadow-inner ring-1 ring-white/10">
-          مـ
-        </div>
-
-        <div class="flex flex-col">
-          <span class="font-headline-sm text-headline-sm text-primary leading-none font-bold">مَدار</span>
-          <span class="font-label-sm text-label-sm text-on-surface-variant leading-tight mt-1">رحلتك تبدأ من هنا</span>
-        </div>
-      </a>
-
-      <nav class="hidden lg:flex items-center gap-space-xs">
-        <a routerLink="/" class="font-label-lg text-label-lg text-on-surface-variant hover:text-primary hover:bg-surface-container-low px-space-md py-space-sm rounded-lg transition-colors">الرئيسية</a>
-        <a routerLink="/flights" class="font-label-lg text-label-lg text-on-surface-variant hover:text-primary hover:bg-surface-container-low px-space-md py-space-sm rounded-lg transition-colors">استكشف الرحلات</a>
-        <a routerLink="/my-bookings" class="font-label-lg text-label-lg text-on-surface-variant hover:text-primary hover:bg-surface-container-low px-space-md py-space-sm rounded-lg transition-colors">تذاكري</a>
-        <a routerLink="/about" class="font-label-lg text-label-lg text-on-surface-variant hover:text-primary hover:bg-surface-container-low px-space-md py-space-sm rounded-lg transition-colors">حول مدار</a>
-      </nav>
+@if (isLoading) {
+  <main class="min-h-[60vh] flex flex-col items-center justify-center p-8" dir="rtl">
+    <div class="w-12 h-12 border-4 border-primary border-t-tertiary rounded-full animate-spin mb-4"></div>
+    <p class="text-on-surface-variant font-medium">جاري تحميل تفاصيل الرحلة المعتمدة...</p>
+  </main>
+} @else if (errorMessage) {
+  <main class="min-h-[60vh] flex flex-col items-center justify-center p-8 text-center" dir="rtl">
+    <div class="w-16 h-16 rounded-full bg-red-100 text-error flex items-center justify-center mb-4">
+      <span class="material-symbols-outlined text-3xl">error</span>
     </div>
-
-    <div class="flex items-center gap-space-sm">
-      <a routerLink="/login" class="hidden sm:inline-flex items-center justify-center px-space-md py-space-sm font-label-lg text-label-lg text-primary hover:bg-primary/5 rounded-lg transition-colors">تسجيل الدخول</a>
-      <a routerLink="/register" class="inline-flex items-center justify-center px-space-lg py-space-sm font-label-lg text-label-lg bg-tertiary hover:bg-amber-500 text-secondary font-bold rounded-lg transition-all shadow-sm">إنشاء حساب</a>
-    </div>
-
-  </div>
-</header>
-
-<main class="w-full pt-20 bg-surface min-h-[calc(100vh-280px)]" dir="rtl">
+    <h2 class="text-xl font-bold text-primary mb-2">تعذر عرض تفاصيل الرحلة</h2>
+    <p class="text-on-surface-variant mb-6 max-w-md">{{ errorMessage }}</p>
+    <a routerLink="/flights" class="px-6 py-2.5 bg-primary text-white rounded-lg font-semibold hover:bg-secondary transition-all">
+      العودة إلى جدول الرحلات
+    </a>
+  </main>
+} @else if (flight) {
+<main class="w-full bg-surface min-h-[calc(100vh-280px)]" dir="rtl">
 
   <div class="flex flex-col w-full">
 
@@ -69,13 +54,13 @@
 
               <div class="flex items-center gap-space-md">
                 <div class="w-14 h-14 rounded-xl bg-primary-container text-tertiary flex items-center justify-center font-headline-md text-headline-md font-bold shadow-inner">
-                  MDR
+                  {{ flight.code }}
                 </div>
 
                 <div class="flex flex-col">
                   <span class="font-label-md text-label-md text-on-surface-variant uppercase tracking-wider">شركة الطيران الرسمية</span>
-                  <h1 class="font-headline-md text-headline-md text-primary font-bold">طيران مَدار (Madar Airlines)</h1>
-                  <span class="font-body-sm text-body-sm text-on-surface-variant">الرمز التشغيلي: MDR • الناقل الوطني الحديث</span>
+                  <h1 class="font-headline-md text-headline-md text-primary font-bold">{{ flight.airline }}</h1>
+                  <span class="font-body-sm text-body-sm text-on-surface-variant">الرمز التشغيلي: {{ flight.code }}</span>
                 </div>
               </div>
 
@@ -136,7 +121,7 @@
 
                 <div class="inline-flex items-center gap-space-xs mt-1">
                   <span class="px-2 py-0.5 bg-surface-container text-primary font-label-md text-label-md font-bold rounded">{{ flight.originCode }}</span>
-                  <span class="font-body-sm text-body-sm text-on-surface-variant">{{ flight.originCity }}</span>
+                  <span class="font-body-sm text-body-sm text-on-surface-variant">{{ flight.originCity }} {{ flight.originCountry }}</span>
                 </div>
               </div>
 
@@ -152,7 +137,7 @@
 
                 <div class="inline-flex items-center gap-space-xs mt-1">
                   <span class="px-2 py-0.5 bg-surface-container text-primary font-label-md text-label-md font-bold rounded">{{ flight.destinationCode }}</span>
-                  <span class="font-body-sm text-body-sm text-on-surface-variant">{{ flight.destinationCity }}</span>
+                  <span class="font-body-sm text-body-sm text-on-surface-variant">{{ flight.destinationCity }} {{ flight.destinationCountry }}</span>
                 </div>
               </div>
 
@@ -297,6 +282,37 @@
 
           </div>
 
+          <!-- Ticket Information -->
+          <div class="bg-surface-container-lowest rounded-xl p-space-lg md:p-space-xl shadow-md">
+            <div class="flex items-center justify-between mb-space-lg">
+              <span class="font-label-md text-label-md text-on-surface-variant uppercase tracking-wider">التذاكر المتاحة</span>
+              <span class="text-sm text-on-surface-variant">{{ tickets.length }} فئات</span>
+            </div>
+
+            @if (tickets.length) {
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-space-md">
+                @for (ticket of tickets; track ticket.id) {
+                  <div class="border border-outline-variant rounded-lg p-space-md flex flex-col gap-2">
+                    <div class="flex items-center justify-between gap-2">
+                      <span class="font-bold text-primary">{{ ticket.ticketName }}</span>
+                      <span class="text-tertiary font-bold">{{ ticket.flightClass }}</span>
+                    </div>
+                    <p class="text-sm text-on-surface-variant">{{ ticket.ticketDescription }}</p>
+                    <div class="flex items-center justify-between text-sm">
+                      <span>المتاح: {{ ticket.availableTickets }}</span>
+                      <span class="font-bold text-primary">{{ ticket.ticketPrice }} ر.س</span>
+                    </div>
+                    @if (ticket.gateNumber) {
+                      <span class="text-xs text-on-surface-variant">البوابة: {{ ticket.gateNumber }}</span>
+                    }
+                  </div>
+                }
+              </div>
+            } @else {
+              <p class="text-sm text-on-surface-variant">لا توجد معلومات تذاكر متاحة لهذه الرحلة.</p>
+            }
+          </div>
+
           <!-- Trust Note -->
           <div class="bg-primary-container text-white p-space-md rounded-xl flex items-center gap-space-md shadow-md">
 
@@ -317,55 +333,4 @@
     </div>
   </div>
 </main>
-
-<!-- Footer -->
-<footer class="w-full bg-[#070F23] text-white pt-space-xl pb-space-lg border-t border-white/10">
-  <div class="max-w-[1280px] mx-auto px-margin md:px-margin-tablet lg:px-margin-desktop">
-
-    <div class="grid grid-cols-1 md:grid-cols-4 gap-space-xl pb-space-xl border-b border-white/10">
-
-      <div class="md:col-span-2 flex flex-col gap-space-sm">
-        <div class="flex items-center gap-space-sm">
-          <div class="w-9 h-9 rounded-xl bg-tertiary flex items-center justify-center text-secondary font-headline-sm text-headline-sm font-bold shadow-sm">مـ</div>
-          <span class="font-headline-md text-headline-md text-white font-bold">مَدار – MADAR</span>
-        </div>
-
-        <p class="font-body-md text-body-md text-slate-400 max-w-md">
-          بوابة الطيران اليمنية الحديثة بتصميم مستوحى من عمق التراث المعماري الساحر لليمن وتقنيات السفر الرقمية المعاصرة. رحلات آمنة، تجربة حجز سلسة، وهوية راسخة.
-        </p>
-      </div>
-
-      <div class="flex flex-col gap-space-sm">
-        <h3 class="font-headline-sm text-headline-sm text-tertiary font-bold">روابط سريعة</h3>
-
-        <ul class="flex flex-col gap-space-xs font-body-md text-body-md">
-          <li><a routerLink="/" class="text-slate-300 hover:text-tertiary transition-colors">الرئيسية</a></li>
-          <li><a routerLink="/flights" class="text-slate-300 hover:text-tertiary transition-colors">استكشف الرحلات</a></li>
-          <li><a routerLink="/my-bookings" class="text-slate-300 hover:text-tertiary transition-colors">إدارة التذاكر والحجوزات</a></li>
-          <li><a routerLink="/about" class="text-slate-300 hover:text-tertiary transition-colors">عن مدار وفلسفتنا</a></li>
-        </ul>
-      </div>
-
-      <div class="flex flex-col gap-space-sm">
-        <h3 class="font-headline-sm text-headline-sm text-tertiary font-bold">الحساب والدعم</h3>
-
-        <ul class="flex flex-col gap-space-xs font-body-md text-body-md">
-          <li><a routerLink="/login" class="text-slate-300 hover:text-tertiary transition-colors">تسجيل الدخول</a></li>
-          <li><a routerLink="/register" class="text-slate-300 hover:text-tertiary transition-colors">إنشاء حساب جديد</a></li>
-          <li><a routerLink="/help" class="text-slate-300 hover:text-tertiary transition-colors">مركز المساعدة والاستفسارات</a></li>
-        </ul>
-      </div>
-
-    </div>
-
-    <div class="pt-space-lg flex flex-col sm:flex-row items-center justify-between gap-space-sm font-label-md text-label-md text-slate-400">
-      <p>جميع الحقوق محفوظة لمنصة مَدار © 2025</p>
-
-      <div class="flex items-center gap-space-lg">
-        <a routerLink="/terms" class="hover:text-tertiary transition-colors">شروط الاستخدام</a>
-        <a routerLink="/privacy" class="hover:text-tertiary transition-colors">سياسة الخصوصية</a>
-      </div>
-    </div>
-
-  </div>
-</footer>
+}

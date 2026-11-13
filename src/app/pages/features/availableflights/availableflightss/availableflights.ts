@@ -1,10 +1,16 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { Router, RouterLink } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 
-// استيراد نوع الرحلة والبيانات المشتركة.
-import { Flight, flightsData } from '../flights-data';
+// استيراد نوع الرحلة والبيانات المشتركة والخدمة.
+import {
+  Airport,
+  Flight,
+  FlightFilters,
+  FlightStatus,
+  FlightService
+} from '../../../../core/services/flight.service';
 
 @Component({
   selector: 'app-available-flights',
@@ -12,115 +18,152 @@ import { Flight, flightsData } from '../flights-data';
   imports: [CommonModule, FormsModule, RouterLink],
   templateUrl: './availableflights.html'
 })
-export class AvailableFlightsComponent {
-
-  // قيم البحث الافتراضية.
+export class AvailableFlightsComponent implements OnInit {
+  // قيم البحث الافتراضية
   departureAirport = '';
   arrivalAirport = '';
-  departureDate = '2026-11-07';
+  departureDate = '';
+  airports: Airport[] = [];
+  isLoading = false;
+  errorMessage = '';
 
-  // حالة الفلتر المحدد.
+  // حالة الفلتر المحدد
   selectedStatus = 'all';
 
-  // حالات الرحلات المستخدمة في أزرار التصفية.
-  statuses = [
+  // حالات الرحلات المستخدمة في أزرار التصفية
+  readonly statuses = [
     {
       label: 'الكل',
       value: 'all',
       dotClass: ''
     },
     {
-      label: 'مؤكدة',
-      value: 'مؤكدة',
-      dotClass: 'bg-emerald-600'
-    },
-    {
       label: 'مجدولة',
-      value: 'مجدولة',
+      value: 'Scheduled',
       dotClass: 'bg-primary-container'
     },
     {
       label: 'متأخرة',
-      value: 'متأخرة',
+      value: 'Delayed',
       dotClass: 'bg-amber-500'
     },
     {
       label: 'ملغاة',
-      value: 'ملغاة',
+      value: 'Cancelled',
       dotClass: 'bg-error'
+    },
+    {
+      label: 'غادرت',
+      value: 'Departed',
+      dotClass: 'bg-emerald-600'
+    },
+    {
+      label: 'وصلت',
+      value: 'Arrived',
+      dotClass: 'bg-emerald-600'
     }
   ];
 
-  // قراءة الرحلات من مصدر البيانات المشترك.
-  flights: Flight[] = flightsData;
+  flights: Flight[] = [];
+  filteredFlights: Flight[] = [];
 
-  // قائمة الرحلات التي تظهر للمستخدم.
-  filteredFlights: Flight[] = [...this.flights];
+  constructor(
+    private readonly router: Router,
+    private readonly route: ActivatedRoute,
+    private readonly flightService: FlightService
+  ) {}
 
-  constructor(private router: Router) {}
+  ngOnInit(): void {
+    this.route.queryParamMap.subscribe(params => {
+      const departure = params.get('departure') || params.get('departureAirport');
+      const arrival = params.get('arrival') || params.get('arrivalAirport');
+      const date = params.get('date') || params.get('departureDate');
 
-  // تبديل مطار المغادرة مع مطار الوصول.
+      if (departure) this.departureAirport = departure;
+      if (arrival) this.arrivalAirport = arrival;
+      if (date) this.departureDate = date;
+    });
+
+    this.isLoading = true;
+    this.flightService.getAllAirports().subscribe({
+      next: airports => {
+        this.airports = airports;
+      },
+      error: error => this.showError(error)
+    });
+
+    this.loadFlights();
+  }
+
+  // تبديل مطار المغادرة مع مطار الوصول
   swapAirports(): void {
     const currentDeparture = this.departureAirport;
-
     this.departureAirport = this.arrivalAirport;
     this.arrivalAirport = currentDeparture;
-
     this.applyFilters();
   }
 
-  // البحث عن الرحلات حسب المطارات وحالة الرحلة.
+  // البحث عن الرحلات حسب المطارات وحالة الرحلة
   applyFilters(): void {
-    this.filteredFlights = this.flights.filter(flight => {
-
-      // التحقق من مطار المغادرة.
-      const originMatch =
-        !this.departureAirport ||
-        flight.origin === this.departureAirport;
-
-      // التحقق من مطار الوصول.
-      const destinationMatch =
-        !this.arrivalAirport ||
-        flight.destination === this.arrivalAirport;
-
-      // التحقق من حالة الرحلة.
-      const statusMatch =
-        this.selectedStatus === 'all' ||
-        flight.status === this.selectedStatus;
-
-      return originMatch && destinationMatch && statusMatch;
-    });
+    this.loadFlights();
   }
 
-  // تصفية الرحلات حسب الحالة المختارة.
+  // تصفية الرحلات حسب الحالة المختارة
   filterByStatus(status: string): void {
     this.selectedStatus = status;
     this.applyFilters();
   }
 
-  // إعادة البحث والفلاتر إلى الوضع الافتراضي.
+  // إعادة البحث والفلاتر إلى الوضع الافتراضي
   resetFilters(): void {
     this.departureAirport = '';
     this.arrivalAirport = '';
     this.selectedStatus = 'all';
-    this.departureDate = '2026-11-07';
-
-    this.applyFilters();
+    this.departureDate = '';
+    this.loadFlights();
   }
 
-  // الانتقال إلى صفحة حجز الرحلة.
+  // الانتقال إلى صفحة حجز الرحلة
   bookFlight(flight: Flight): void {
-
-    // منع حجز الرحلات الملغاة.
-    if (flight.status === 'ملغاة') {
+    if (flight.status === 'Cancelled' || flight.status === 'ملغاة') {
       return;
     }
 
     this.router.navigate(['/booking'], {
       queryParams: {
+        flightId: flight.id,
         flightNumber: flight.number,
-        date: this.departureDate
+        date: this.departureDate || flight.departureDate
       }
     });
+  }
+
+  private loadFlights(): void {
+    const filters: FlightFilters = {
+      departureAirportId: this.departureAirport || undefined,
+      arrivalAirportId: this.arrivalAirport || undefined,
+      flightStatus: this.selectedStatus === 'all'
+        ? undefined
+        : (this.selectedStatus as FlightStatus),
+      departureDate: this.departureDate || undefined
+    };
+
+    this.isLoading = true;
+    this.errorMessage = '';
+
+    this.flightService.getFlights(filters).subscribe({
+      next: flights => {
+        this.flights = flights;
+        this.filteredFlights = flights;
+        this.isLoading = false;
+      },
+      error: error => this.showError(error)
+    });
+  }
+
+  private showError(error: { error?: { message?: string }; message?: string }): void {
+    this.isLoading = false;
+    this.errorMessage =
+      error.error?.message || error.message || 'تعذر تحميل بيانات الرحلات.';
   }
 }

@@ -1,8 +1,9 @@
 import { CommonModule } from '@angular/common';
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { Flight, flightsData } from '../../availableflights/flights-data';
+import { TicketService } from '../../../../core/services/ticket.service';
 
 // بيانات المسافر المسجل
 interface Passenger {
@@ -22,10 +23,11 @@ interface CabinClass {
 @Component({
   selector: 'app-booking',
   standalone: true,
-imports: [CommonModule, FormsModule, RouterLink],
+  imports: [CommonModule, FormsModule, RouterLink],
   templateUrl: './booking.html'
 })
 export class BookingComponent implements OnInit {
+  private readonly ticketService = inject(TicketService);
 
   // بيانات الرحلة المختارة
   flight: Flight | null = null;
@@ -103,6 +105,12 @@ export class BookingComponent implements OnInit {
         this.flight =
           flightsData.find(flight => flight.number === flightNumber) ?? null;
       }
+    });
+
+    // اختبار مؤقت لجلب التذاكر من الـ API
+    this.ticketService.getAll().subscribe({
+      next: (tickets) => console.log('Tickets:', tickets),
+      error: (error) => console.error('Ticket request failed:', error)
     });
   }
 

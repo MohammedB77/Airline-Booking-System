@@ -1,20 +1,20 @@
-
 @if (isLoading && !flight) {
-  <main class="min-h-[60vh] flex flex-col items-center justify-center p-8" dir="rtl">
-    <div class="w-12 h-12 border-4 border-primary border-t-tertiary rounded-full animate-spin mb-4"></div>
-    <p class="text-on-surface-variant font-medium">جاري تحميل تفاصيل الرحلة المعتمدة...</p>
-  </main>
+<main class="min-h-[60vh] flex flex-col items-center justify-center p-8" dir="rtl">
+  <div class="w-12 h-12 border-4 border-primary border-t-tertiary rounded-full animate-spin mb-4"></div>
+  <p class="text-on-surface-variant font-medium">جاري تحميل تفاصيل الرحلة المعتمدة...</p>
+</main>
 } @else if (errorMessage && !flight) {
-  <main class="min-h-[60vh] flex flex-col items-center justify-center p-8 text-center" dir="rtl">
-    <div class="w-16 h-16 rounded-full bg-red-100 text-error flex items-center justify-center mb-4">
-      <span class="material-symbols-outlined text-3xl">error</span>
-    </div>
-    <h2 class="text-xl font-bold text-primary mb-2">تعذر عرض تفاصيل الرحلة</h2>
-    <p class="text-on-surface-variant mb-6 max-w-md">{{ errorMessage }}</p>
-    <a routerLink="/flights" class="px-6 py-2.5 bg-primary text-white rounded-lg font-semibold hover:bg-secondary transition-all">
-      العودة إلى جدول الرحلات
-    </a>
-  </main>
+<main class="min-h-[60vh] flex flex-col items-center justify-center p-8 text-center" dir="rtl">
+  <div class="w-16 h-16 rounded-full bg-red-100 text-error flex items-center justify-center mb-4">
+    <span class="material-symbols-outlined text-3xl">error</span>
+  </div>
+  <h2 class="text-xl font-bold text-primary mb-2">تعذر عرض تفاصيل الرحلة</h2>
+  <p class="text-on-surface-variant mb-6 max-w-md">{{ errorMessage }}</p>
+  <a routerLink="/flights"
+    class="px-6 py-2.5 bg-primary text-white rounded-lg font-semibold hover:bg-secondary transition-all">
+    العودة إلى جدول الرحلات
+  </a>
+</main>
 } @else if (flight) {
 <main class="w-full bg-surface min-h-[calc(100vh-280px)]" dir="rtl">
 
@@ -31,7 +31,8 @@
           <span class="text-on-surface font-label-lg text-label-lg">تفاصيل الرحلة {{ flight.number }}</span>
         </div>
 
-        <div class="inline-flex items-center gap-space-xs px-space-md py-1.5 bg-surface-container-low rounded-lg shadow-sm">
+        <div
+          class="inline-flex items-center gap-space-xs px-space-md py-1.5 bg-surface-container-low rounded-lg shadow-sm">
           <span class="w-2.5 h-2.5 rounded-full bg-[#f59e0b] animate-pulse"></span>
           <span class="font-label-md text-label-md text-on-surface-variant uppercase">حالة الرحلة:</span>
           <span class="font-label-lg text-label-lg text-primary font-bold">{{ flight.status }}</span>
@@ -46,36 +47,43 @@
         <div class="lg:col-span-8 flex flex-col gap-space-lg">
 
           <!-- Flight Identity Card -->
-          <div class="bg-surface-container-lowest rounded-xl p-space-lg md:p-space-xl shadow-md relative overflow-hidden">
+          <div
+            class="bg-surface-container-lowest rounded-xl p-space-lg md:p-space-xl shadow-md relative overflow-hidden">
 
             <div class="absolute top-0 right-0 left-0 h-1.5 bg-primary-container"></div>
 
             <div class="flex flex-col md:flex-row md:items-center justify-between gap-space-lg pb-space-lg">
 
               <div class="flex items-center gap-space-md">
-                <div class="w-14 h-14 rounded-xl bg-primary-container text-tertiary flex items-center justify-center font-headline-md text-headline-md font-bold shadow-inner">
+                <div
+                  class="w-14 h-14 rounded-xl bg-primary-container text-tertiary flex items-center justify-center font-headline-md text-headline-md font-bold shadow-inner">
                   {{ flight.code }}
                 </div>
 
                 <div class="flex flex-col">
-                  <span class="font-label-md text-label-md text-on-surface-variant uppercase tracking-wider">شركة الطيران الرسمية</span>
+                  <span class="font-label-md text-label-md text-on-surface-variant uppercase tracking-wider">شركة
+                    الطيران الرسمية</span>
                   <h1 class="font-headline-md text-headline-md text-primary font-bold">{{ flight.airline }}</h1>
-                  <span class="font-body-sm text-body-sm text-on-surface-variant">الرمز التشغيلي: {{ flight.code }}</span>
+                  <span class="font-body-sm text-body-sm text-on-surface-variant">الرمز التشغيلي: {{ flight.code
+                    }}</span>
                 </div>
               </div>
 
               <div class="flex flex-col md:items-end bg-surface-container-low p-space-md rounded-lg">
                 <span class="font-label-md text-label-md text-on-surface-variant">رقم الرحلة الرسمي</span>
-                <span class="font-headline-sm text-headline-sm text-primary font-bold tracking-tight">{{ flight.number }}</span>
+                <span class="font-headline-sm text-headline-sm text-primary font-bold tracking-tight">{{ flight.number
+                  }}</span>
               </div>
 
             </div>
 
             <!-- Aircraft Technical Specifications -->
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-space-md pt-space-lg bg-surface-container-low/60 rounded-xl p-space-md">
+            <div
+              class="grid grid-cols-1 sm:grid-cols-2 gap-space-md pt-space-lg bg-surface-container-low/60 rounded-xl p-space-md">
 
               <div class="flex items-center gap-space-md">
-                <div class="w-10 h-10 rounded-lg bg-surface-container-lowest flex items-center justify-center text-primary shadow-sm">
+                <div
+                  class="w-10 h-10 rounded-lg bg-surface-container-lowest flex items-center justify-center text-primary shadow-sm">
                   <span class="material-symbols-outlined text-xl">flight</span>
                 </div>
 
@@ -86,7 +94,8 @@
               </div>
 
               <div class="flex items-center gap-space-md">
-                <div class="w-10 h-10 rounded-lg bg-surface-container-lowest flex items-center justify-center text-primary shadow-sm">
+                <div
+                  class="w-10 h-10 rounded-lg bg-surface-container-lowest flex items-center justify-center text-primary shadow-sm">
                   <span class="material-symbols-outlined text-xl">tag</span>
                 </div>
 
@@ -103,8 +112,11 @@
           <div class="bg-surface-container-lowest rounded-xl p-space-lg md:p-space-xl shadow-md">
 
             <div class="flex items-center justify-between mb-space-lg">
-              <span class="font-label-md text-label-md text-on-surface-variant uppercase tracking-wider">معلومات المسار والجدول الزمني</span>
-              <span class="font-label-sm text-label-sm text-on-surface-variant bg-surface-container-low px-space-sm py-0.5 rounded">توقيت محلي دقيق</span>
+              <span class="font-label-md text-label-md text-on-surface-variant uppercase tracking-wider">معلومات المسار
+                والجدول الزمني</span>
+              <span
+                class="font-label-sm text-label-sm text-on-surface-variant bg-surface-container-low px-space-sm py-0.5 rounded">توقيت
+                محلي دقيق</span>
             </div>
 
             <div class="grid grid-cols-1 md:grid-cols-2 gap-space-xl relative">
@@ -116,12 +128,17 @@
                   <span class="font-label-md text-label-md font-bold uppercase">محطة الإقلاع</span>
                 </div>
 
-                <span class="font-headline-lg text-headline-lg text-primary font-bold mt-1">{{ flight.departureTime }}</span>
-                <span class="font-headline-sm text-headline-sm text-on-surface font-semibold">{{ flight.originName }}</span>
+                <span class="font-headline-lg text-headline-lg text-primary font-bold mt-1">{{ flight.departureTime
+                  }}</span>
+                <span class="font-headline-sm text-headline-sm text-on-surface font-semibold">{{ flight.originName
+                  }}</span>
 
                 <div class="inline-flex items-center gap-space-xs mt-1">
-                  <span class="px-2 py-0.5 bg-surface-container text-primary font-label-md text-label-md font-bold rounded">{{ flight.originCode }}</span>
-                  <span class="font-body-sm text-body-sm text-on-surface-variant">{{ flight.originCity }} {{ flight.originCountry }}</span>
+                  <span
+                    class="px-2 py-0.5 bg-surface-container text-primary font-label-md text-label-md font-bold rounded">{{
+                    flight.originCode }}</span>
+                  <span class="font-body-sm text-body-sm text-on-surface-variant">{{ flight.originCity }} - {{
+                    flight.originCountry }}</span>
                 </div>
               </div>
 
@@ -132,19 +149,25 @@
                   <span class="font-label-md text-label-md font-bold uppercase">محطة الوصول</span>
                 </div>
 
-                <span class="font-headline-lg text-headline-lg text-primary font-bold mt-1">{{ flight.arrivalTime }}</span>
-                <span class="font-headline-sm text-headline-sm text-on-surface font-semibold">{{ flight.destinationName }}</span>
+                <span class="font-headline-lg text-headline-lg text-primary font-bold mt-1">{{ flight.arrivalTime
+                  }}</span>
+                <span class="font-headline-sm text-headline-sm text-on-surface font-semibold">{{ flight.destinationName
+                  }}</span>
 
                 <div class="inline-flex items-center gap-space-xs mt-1">
-                  <span class="px-2 py-0.5 bg-surface-container text-primary font-label-md text-label-md font-bold rounded">{{ flight.destinationCode }}</span>
-                  <span class="font-body-sm text-body-sm text-on-surface-variant">{{ flight.destinationCity }} {{ flight.destinationCountry }}</span>
+                  <span
+                    class="px-2 py-0.5 bg-surface-container text-primary font-label-md text-label-md font-bold rounded">{{
+                    flight.destinationCode }}</span>
+                  <span class="font-body-sm text-body-sm text-on-surface-variant">{{ flight.destinationCity }} - {{
+                    flight.destinationCountry }}</span>
                 </div>
               </div>
 
             </div>
 
             <!-- Departure Date -->
-            <div class="mt-space-xl pt-space-lg flex flex-wrap items-center justify-between gap-space-md bg-surface-container-low/40 p-space-md rounded-lg">
+            <div
+              class="mt-space-xl pt-space-lg flex flex-wrap items-center justify-between gap-space-md bg-surface-container-low/40 p-space-md rounded-lg">
               <div class="flex items-center gap-space-sm">
                 <span class="material-symbols-outlined text-primary text-xl">event_available</span>
                 <span class="font-label-md text-label-md text-on-surface-variant">تاريخ المغادرة:</span>
@@ -159,7 +182,8 @@
 
             <div class="flex items-center justify-between mb-space-lg">
               <div>
-                <span class="font-label-md text-label-md text-on-surface-variant uppercase tracking-wider block">سعة الطائرة والمقاعد المتاحة</span>
+                <span class="font-label-md text-label-md text-on-surface-variant uppercase tracking-wider block">سعة
+                  الطائرة والمقاعد المتاحة</span>
                 <h2 class="font-headline-sm text-headline-sm text-primary font-bold mt-0.5">درجات السفر المتوفرة</h2>
               </div>
 
@@ -169,10 +193,12 @@
             <div class="grid grid-cols-1 md:grid-cols-2 gap-space-lg">
 
               <!-- Business Class -->
-              <div class="bg-[#0b1b3d] text-white p-space-lg rounded-xl shadow-lg flex flex-col justify-between relative overflow-hidden">
+              <div
+                class="bg-[#0b1b3d] text-white p-space-lg rounded-xl shadow-lg flex flex-col justify-between relative overflow-hidden">
 
                 <div class="flex items-center justify-between mb-space-md">
-                  <span class="font-label-md text-label-md text-[#f59e0b] uppercase font-bold tracking-wider">درجة رجال الأعمال (Business)</span>
+                  <span class="font-label-md text-label-md text-[#f59e0b] uppercase font-bold tracking-wider">درجة رجال
+                    الأعمال (Business)</span>
                   <span class="material-symbols-outlined text-[#f59e0b]">workspace_premium</span>
                 </div>
 
@@ -180,14 +206,17 @@
                   <span class="font-label-md text-label-md text-slate-300 block mb-1">المقاعد المتبقية للحجز</span>
 
                   <div class="flex items-baseline gap-space-xs">
-                    <span class="font-headline-lg text-headline-lg font-bold text-white">{{ flight.businessSeats }}</span>
+                    <span class="font-headline-lg text-headline-lg font-bold text-white">{{ flight.tickets?.find(t =>
+                      t.flightClass === 'رجال الأعمال' || t.flightClass === 'Business')?.availableTickets|| 0 }}</span>
                     <span class="font-body-md text-body-md text-slate-300">مقاعد متاحة فقط</span>
                   </div>
                 </div>
 
-                <div class="pt-space-md bg-white/5 px-space-md py-space-sm rounded-lg flex items-center justify-between">
+                <div
+                  class="pt-space-md bg-white/5 px-space-md py-space-sm rounded-lg flex items-center justify-between">
                   <span class="font-body-sm text-body-sm text-slate-300">المقصورة الأمامية</span>
-                  <span class="font-label-md text-label-md text-emerald-400 font-bold">{{ flight.businessSeats > 0 ? 'مؤكد ومتاح' : 'غير متاح' }}</span>
+                  <span class="font-label-md text-label-md text-emerald-400 font-bold">{{ flight.tickets!.length > 0 ?
+                    'مؤكد ومتاح' : 'غير متاح' }}</span>
                 </div>
 
               </div>
@@ -196,22 +225,29 @@
               <div class="bg-surface-container-low p-space-lg rounded-xl flex flex-col justify-between shadow-sm">
 
                 <div class="flex items-center justify-between mb-space-md">
-                  <span class="font-label-md text-label-md text-on-surface-variant uppercase font-bold tracking-wider">الدرجة الاقتصادية (Economy)</span>
+                  <span
+                    class="font-label-md text-label-md text-on-surface-variant uppercase font-bold tracking-wider">الدرجة
+                    الاقتصادية (Economy)</span>
                   <span class="material-symbols-outlined text-primary">event_seat</span>
                 </div>
 
                 <div class="my-space-md">
-                  <span class="font-label-md text-label-md text-on-surface-variant block mb-1">المقاعد المتبقية للحجز</span>
+                  <span class="font-label-md text-label-md text-on-surface-variant block mb-1">المقاعد المتبقية
+                    للحجز</span>
 
                   <div class="flex items-baseline gap-space-xs">
-                    <span class="font-headline-lg text-headline-lg font-bold text-primary">{{ flight.economySeats }}</span>
+                    <span class="font-headline-lg text-headline-lg font-bold text-primary">{{ flight.tickets?.find(t =>
+                      t.flightClass === 'اقتصادية' || t.flightClass === 'Economy')?.availableTickets || 0
+                      }}</span>
                     <span class="font-body-md text-body-md text-on-surface-variant">مقعداً متاحاً</span>
                   </div>
                 </div>
 
-                <div class="pt-space-md bg-surface-container px-space-md py-space-sm rounded-lg flex items-center justify-between">
+                <div
+                  class="pt-space-md bg-surface-container px-space-md py-space-sm rounded-lg flex items-center justify-between">
                   <span class="font-body-sm text-body-sm text-on-surface-variant">المقصورة الرئيسية</span>
-                  <span class="font-label-md text-label-md text-emerald-700 font-bold">{{ flight.economySeats > 0 ? 'متاح حالياً' : 'غير متاح' }}</span>
+                  <span class="font-label-md text-label-md text-emerald-700 font-bold">{{ flight.tickets!.length > 0 ?
+                    'متاح حالياً' : 'غير متاح' }}</span>
                 </div>
 
               </div>
@@ -227,7 +263,8 @@
           <div class="bg-surface-container-lowest rounded-xl p-space-lg shadow-xl relative overflow-hidden">
 
             <div class="flex items-center justify-between pb-space-md mb-space-md">
-              <span class="font-label-md text-label-md text-on-surface-variant uppercase tracking-wider">تأكيد حجز التذكرة</span>
+              <span class="font-label-md text-label-md text-on-surface-variant uppercase tracking-wider">تأكيد حجز
+                التذكرة</span>
 
               <div class="flex items-center gap-1 text-[#f59e0b]">
                 <span class="material-symbols-outlined text-sm">verified</span>
@@ -266,10 +303,7 @@
             </div>
 
             <!-- Booking Button -->
-            <button
-              type="button"
-              (click)="bookFlight()"
-              [disabled]="!canBook"
+            <button type="button" (click)="bookFlight()" [disabled]="!canBook"
               class="w-full h-14 bg-[#f59e0b] hover:bg-amber-500 active:scale-[0.99] text-[#121316] font-headline-sm text-headline-sm font-bold rounded-lg shadow-lg flex items-center justify-center gap-space-sm transition-all cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed">
 
               <span>{{ canBook ? 'احجز هذه الرحلة' : 'الحجز غير متاح' }}</span>
@@ -282,41 +316,43 @@
 
           </div>
 
-          <!-- Ticket Information -->
+          <!-- Ticket Information
           <div class="bg-surface-container-lowest rounded-xl p-space-lg md:p-space-xl shadow-md">
             <div class="flex items-center justify-between mb-space-lg">
-              <span class="font-label-md text-label-md text-on-surface-variant uppercase tracking-wider">التذاكر المتاحة</span>
-              <span class="text-sm text-on-surface-variant">{{ tickets.length }} فئات</span>
+              <span class="font-label-md text-label-md text-on-surface-variant uppercase tracking-wider">التذاكر
+                المتاحة</span>
+              <span class="text-sm text-on-surface-variant">{{ flight.tickets?.length }} فئات</span>
             </div>
 
-            @if (isLoadingTickets && !tickets.length) {
-              <div class="flex items-center justify-center p-8 text-on-surface-variant gap-3">
-                <span class="inline-block w-5 h-5 border-2 border-primary border-t-tertiary rounded-full animate-spin"></span>
-                <span class="text-sm font-medium">جاري فحص وتحديث فئات التذاكر المتاحة...</span>
-              </div>
-            } @else if (tickets.length) {
-              <div class="grid grid-cols-1 md:grid-cols-2 gap-space-md">
-                @for (ticket of tickets; track ticket.id) {
-                  <div class="border border-outline-variant rounded-lg p-space-md flex flex-col gap-2">
-                    <div class="flex items-center justify-between gap-2">
-                      <span class="font-bold text-primary">{{ ticket.ticketName }}</span>
-                      <span class="text-tertiary font-bold">{{ ticket.flightClass }}</span>
-                    </div>
-                    <p class="text-sm text-on-surface-variant">{{ ticket.ticketDescription }}</p>
-                    <div class="flex items-center justify-between text-sm">
-                      <span>المتاح: {{ ticket.availableTickets }}</span>
-                      <span class="font-bold text-primary">{{ ticket.ticketPrice }} ر.س</span>
-                    </div>
-                    @if (ticket.gateNumber) {
-                      <span class="text-xs text-on-surface-variant">البوابة: {{ ticket.gateNumber }}</span>
-                    }
-                  </div>
+            @if (isLoadingTickets && !flight.tickets?.length) {
+            <div class="flex items-center justify-center p-8 text-on-surface-variant gap-3">
+              <span
+                class="inline-block w-5 h-5 border-2 border-primary border-t-tertiary rounded-full animate-spin"></span>
+              <span class="text-sm font-medium">جاري فحص وتحديث فئات التذاكر المتاحة...</span>
+            </div>
+            } @else if (flight.tickets?.length) {
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-space-md">
+              @for (ticket of flight.tickets; track ticket.id) {
+              <div class="border border-outline-variant rounded-lg p-space-md flex flex-col gap-2">
+                <div class="flex items-center justify-between gap-2">
+                  <span class="font-bold text-primary">{{ ticket.ticketName }}</span>
+                  <span class="text-tertiary font-bold">{{ ticket.flightClass }}</span>
+                </div>
+                <p class="text-sm text-on-surface-variant">{{ ticket.ticketDescription }}</p>
+                <div class="flex items-center justify-between text-sm">
+                  <span>المتاح: {{ ticket.availableTickets }}</span>
+                  <span class="font-bold text-primary">{{ ticket.ticketPrice }} ر.س</span>
+                </div>
+                @if (ticket.gateNumber) {
+                <span class="text-xs text-on-surface-variant">البوابة: {{ ticket.gateNumber }}</span>
                 }
               </div>
+              }
+            </div>
             } @else {
-              <p class="text-sm text-on-surface-variant">لا توجد معلومات تذاكر إضافية مسجلة لهذه الرحلة حالياً.</p>
+            <p class="text-sm text-on-surface-variant">لا توجد معلومات تذاكر إضافية مسجلة لهذه الرحلة حالياً.</p>
             }
-          </div>
+          </div> -->
 
           <!-- Trust Note -->
           <div class="bg-primary-container text-white p-space-md rounded-xl flex items-center gap-space-md shadow-md">
@@ -327,7 +363,8 @@
 
             <div class="flex flex-col">
               <span class="font-label-lg text-label-lg font-bold">سفر آمن ومعتمد</span>
-              <span class="font-body-sm text-body-sm text-slate-300">رحلات معتمدة ومسجلة رسمياً عبر مركز العمليات الجوية.</span>
+              <span class="font-body-sm text-body-sm text-slate-300">رحلات معتمدة ومسجلة رسمياً عبر مركز العمليات
+                الجوية.</span>
             </div>
 
           </div>

@@ -1,4 +1,4 @@
-import { ChangeDetectorRef, Component, inject, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -6,12 +6,8 @@ import { ActivatedRoute, Router } from '@angular/router';
 import {
   Airport,
   Flight,
-  FlightFilters,
-  FlightStatus,
   FlightService
 } from '../../../../core/services/flight.service';
-
-//import { FlightService } from '../../../../core/services/flight.service';
 
 @Component({
   selector: 'app-available-flights',
@@ -19,18 +15,19 @@ import {
   imports: [CommonModule, FormsModule],
   templateUrl: './availableflights.html'
 })
-export class AvailableFlightsComponent implements OnInit {
+export class AvailableFlightsComponent implements OnInit, OnDestroy {
   // قيم البحث الحالية
   departureAirport: number | string = '';
   arrivalAirport: number | string = '';
   departureDate = '';
   selectedStatus = 'all';
 
+  // المطارات الحقيقية المستلمة حصراً من قاعدة البيانات
   airports: Airport[] = [];
-  isLoading = false;
+  isLoading = true; // تبدأ بـ true دائماً لضمان شاشة التحميل (Reloading) لبضع ثوانٍ قبل عرض البيانات الحقيقية
   errorMessage = '';
 
-  // القائمتان: قائمة البيانات الحقيقية من السيرفر، وقائمة العرض السريع والمسح
+  // القائمتان: قائمة البيانات الحقيقية من السيرفر، وقائمة العرض السريع والمفلترة
   allFlights: Flight[] = [];
   displayedFlights: Flight[] = [];
 
@@ -43,53 +40,23 @@ export class AvailableFlightsComponent implements OnInit {
     { label: 'غادرت', value: 'Departed', dotClass: 'bg-emerald-600' },
     { label: 'وصلت', value: 'Arrived', dotClass: 'bg-emerald-600' }
   ];
-  private readonly cdr = inject(ChangeDetectorRef);
-  // Flights initially loaded from shared mock data.
-  flights: Flight[] = [];
 
-  // Flights displayed to the user.
-  filteredFlights: Flight[] = [];
+  private filterTimer: ReturnType<typeof setTimeout> | null = null;
+  private loadTimer: ReturnType<typeof setTimeout> | null = null;
 
-  // API loading state.
-  // isLoading = true;
+  constructor(
+    private readonly router: Router,
+    private readonly route: ActivatedRoute,
+    private readonly flightService: FlightService
+  ) {}
 
-  // API error message.
-  loadError = '';
-
-  // constructor(
-  //   private router: Router,
-  //   private flightService: FlightService
-  // ) { }
-
-  // Load actual flights from the database.
   ngOnInit(): void {
     this.isLoading = true;
-    this.loadError = '';
 
-    this.flightService.getFlights().subscribe({
-      next: flights => {
-        this.flights = flights;
-        this.applyFilters();
-        this.isLoading = false;
-        this.cdr.markForCheck();
-      },
-      error: error => {
-        console.error('Error loading flights:', error);
-
-        // Keep the existing mock data if the API fails.
-        this.flights = [];
-        this.applyFilters();
-
-        this.loadError = 'تعذر تحميل الرحلات من الخادم. يتم عرض البيانات التجريبية.';
-        this.isLoading = false;
-        this.cdr.markForCheck();
-      }
-    });
-    // 1. جلب المطارات المعتمدة
-
+    // 1. جلب المطارات الحقيقية من قاعدة البيانات عبر الـ API
     this.flightService.getAllAirports().subscribe({
       next: airports => {
-        this.airports = airports;
+        this.airports = airports || [];
         this.resolveQueryParams();
       },
       error: () => {
@@ -97,34 +64,18 @@ export class AvailableFlightsComponent implements OnInit {
       }
     });
 
+    // 2. تحميل الرحلات الحقيقية من قاعدة البيانات مع إعادة التحميل لبضع ثوانٍ
     this.loadFlights();
-
-    // // 2. تحميل الرحلات الحقيقية
-    // this.loadFlights();
-    // }
   }
 
-  constructor(
-    private readonly router: Router,
-    private readonly route: ActivatedRoute,
-    private readonly flightService: FlightService
-  ) { }
-
-  // ngOnInit(): void {
-  //   // 1. جلب المطارات المعتمدة
-  //   this.flightService.getAllAirports().subscribe({
-  //     next: airports => {
-  //       this.airports = airports;
-  //       this.resolveQueryParams();
-  //     },
-  //     error: () => {
-  //       this.resolveQueryParams();
-  //     }
-  //   });
-
-  //   // 2. تحميل الرحلات الحقيقية
-  //   this.loadFlights();
-  // }
+  ngOnDestroy(): void {
+    if (this.filterTimer) {
+      clearTimeout(this.filterTimer);
+    }
+    if (this.loadTimer) {
+      clearTimeout(this.loadTimer);
+    }
+  }
 
   // تبديل مطار المغادرة مع مطار الوصول
   swapAirports(): void {
@@ -134,36 +85,63 @@ export class AvailableFlightsComponent implements OnInit {
     this.applyFilters();
   }
 
-  // البحث عن الرحلات حسب المدخلات (طلب إلى السيرفر)
+  // البحث والتصفية عبر الفورم مع إظهار شاشة إعادة التحميل (Reload) لبضع ثوانٍ ثم عرض الكروت
   applyFilters(): void {
-    this.loadFlights();
+    if (this.filterTimer) {
+      clearTimeout(this.filterTimer);
+    }
+
+    this.isLoading = true;
+
+    // إظهار شاشة إعادة التحميل لمدة ثانية لتأكيد تنفيذ البحث وعرض الكروت المفلترة
+    this.filterTimer = setTimeout(() => {
+      this.applyLocalFilter();
+      this.isLoading = false;
+    }, 850);
   }
 
-  // تصفية الرحلات فورياً وسريعاً في الذاكرة دون طلب شبكة جديد
+  // تصفية سريعة حسب حالة الرحلة مع إعادة تحميل سلسة
   filterByStatus(status: string): void {
     this.selectedStatus = status;
-    this.applyLocalFilter();
+
+    if (this.filterTimer) {
+      clearTimeout(this.filterTimer);
+    }
+
+    this.isLoading = true;
+    this.filterTimer = setTimeout(() => {
+      this.applyLocalFilter();
+      this.isLoading = false;
+    }, 500);
   }
 
-  // إعادة البحث والفلاتر إلى الوضع الافتراضي ومسح التصفية فورياً
+  // إعادة ضبط حقول البحث واستعادة جميع الرحلات الحقيقية
   resetFilters(): void {
     this.departureAirport = '';
     this.arrivalAirport = '';
     this.departureDate = '';
     this.selectedStatus = 'all';
-    this.displayedFlights = [...this.allFlights];
+
+    if (this.filterTimer) {
+      clearTimeout(this.filterTimer);
+    }
+
+    this.isLoading = true;
+    this.filterTimer = setTimeout(() => {
+      this.displayedFlights = [...this.allFlights];
+      this.isLoading = false;
+    }, 500);
   }
 
-  // الانتقال إلى صفحة تفاصيل الرحلة
+  // الانتقال إلى صفحة تفاصيل الرحلة مع حفظها فوراً في الكاش لتسريع العرض
   viewFlightDetails(flight: Flight): void {
-    // التأكد من حفظ الرحلة في الكاش للعرض الفوري (0ms)
     this.flightService.cacheFlight(flight);
     void this.router.navigate(['/flight-details', flight.id]);
   }
 
   // الانتقال إلى صفحة حجز الرحلة
   bookFlight(flight: Flight): void {
-    if (flight.status === 'Cancelled' || flight.status === 'ملغاة') {
+    if (this.isFlightCancelled(flight)) {
       return;
     }
 
@@ -177,42 +155,86 @@ export class AvailableFlightsComponent implements OnInit {
     });
   }
 
-  // جلب الرحلات الحقيقية من API
+  isFlightCancelled(flight: Flight): boolean {
+    return flight.status === 'Cancelled' || flight.status === 'ملغاة';
+  }
+
+  // جلب الرحلات الحقيقية فقط من قاعدة البيانات عبر الـ API مع إعادة التحميل لبضع ثوانٍ
   loadFlights(): void {
     this.isLoading = true;
     this.errorMessage = '';
 
-    const filters: FlightFilters = {
-      departureAirportId: this.departureAirport || undefined,
-      arrivalAirportId: this.arrivalAirport || undefined,
-      departureDate: this.departureDate || undefined
-    };
+    if (this.loadTimer) {
+      clearTimeout(this.loadTimer);
+    }
 
-    this.flightService.getFlights(filters).subscribe({
+    const startTime = Date.now();
+
+    this.flightService.getFlights().subscribe({
       next: flights => {
-        // تحديث القائمة الأساسية
-        this.allFlights = flights;
-        // تحديث قائمة العرض السريع وفق الفلاتر المحلية
-        this.applyLocalFilter();
-        this.isLoading = false;
+        // تخزين البيانات الحقيقية فقط من قاعدة البيانات
+        this.allFlights = flights || [];
+        this.flightService.cacheFlights(this.allFlights);
+
+        // إبقاء شاشة إعادة التحميل لبضع ثوانٍ (بحد أدنى 1.2 ثانية) كما طُلب
+        const elapsed = Date.now() - startTime;
+        const remainingDelay = Math.max(0, 1200 - elapsed);
+
+        this.loadTimer = setTimeout(() => {
+          this.applyLocalFilter();
+          this.isLoading = false;
+        }, remainingDelay);
       },
       error: error => {
-        this.isLoading = false;
         this.allFlights = [];
         this.displayedFlights = [];
         this.errorMessage =
           error.error?.message ||
           error.message ||
-          'تعذر تحميل بيانات الرحلات من الخادم. يرجى التحقق من اتصال الـ API وحاول مرة أخرى.';
+          'تعذر تحميل بيانات الرحلات من قاعدة البيانات. يرجى التحقق من اتصال الـ API وتشغيل السيرفر.';
+
+        const elapsed = Date.now() - startTime;
+        const remainingDelay = Math.max(0, 1000 - elapsed);
+
+        this.loadTimer = setTimeout(() => {
+          this.isLoading = false;
+        }, remainingDelay);
       }
     });
   }
 
-  // تصفية سريعة في الذاكرة على القائمة الحقيقية allFlights
+  // تصفية سريعة في الذاكرة على القائمة الحقيقية allFlights لتحديث displayedFlights
   private applyLocalFilter(): void {
     let result = [...this.allFlights];
 
-    // تصفية حسب الحالة إن تم تحديدها
+    // 1. تصفية مطار المغادرة
+    const depAirport = this.findAirport(this.departureAirport);
+    if (depAirport) {
+      result = result.filter(f =>
+        this.matchesAirport(f.originCode, f.origin, f.originName, f.originCity, depAirport)
+      );
+    }
+
+    // 2. تصفية مطار الوصول
+    const arrAirport = this.findAirport(this.arrivalAirport);
+    if (arrAirport) {
+      result = result.filter(f =>
+        this.matchesAirport(f.destinationCode, f.destination, f.destinationName, f.destinationCity, arrAirport)
+      );
+    }
+
+    // 3. تصفية تاريخ المغادرة
+    if (this.departureDate) {
+      result = result.filter(f => {
+        if (!f.departureDate) return false;
+        const flightDate = f.departureDate.includes('T')
+          ? f.departureDate.split('T')[0]
+          : f.departureDate;
+        return flightDate === this.departureDate;
+      });
+    }
+
+    // 4. تصفية حالة الرحلة
     if (this.selectedStatus && this.selectedStatus !== 'all') {
       const target = this.selectedStatus.toLowerCase();
       const statusMap: Record<string, string> = {
@@ -264,5 +286,33 @@ export class AvailableFlightsComponent implements OnInit {
       a => a.code.toUpperCase() === code || String(a.id) === code
     );
     return found ? found.id : value;
+  }
+
+  private findAirport(value: number | string): Airport | null {
+    if (!value) return null;
+    const strVal = String(value).trim().toLowerCase();
+    const found = this.airports.find(
+      a => String(a.id).toLowerCase() === strVal ||
+           a.code.toLowerCase() === strVal ||
+           a.name.toLowerCase().includes(strVal)
+    );
+    return found || null;
+  }
+
+  private matchesAirport(code: string, origin: string, name: string, city: string, airport: Airport): boolean {
+    const targetCode = (airport.code || '').trim().toLowerCase();
+    const targetName = (airport.name || '').trim().toLowerCase();
+    const targetCity = (airport.city || '').trim().toLowerCase();
+
+    const c = (code || '').trim().toLowerCase();
+    const o = (origin || '').trim().toLowerCase();
+    const n = (name || '').trim().toLowerCase();
+    const ct = (city || '').trim().toLowerCase();
+
+    if (targetCode && (c === targetCode || o === targetCode)) return true;
+    if (targetName && (n.includes(targetName) || targetName.includes(n))) return true;
+    if (targetCity && (ct.includes(targetCity) || targetCity.includes(ct))) return true;
+
+    return false;
   }
 }

@@ -108,10 +108,13 @@ export class FlightService {
         return this.http.get<any>(url).pipe(
             map((raw: any) => ({
                 id: raw.id ?? raw.Id,
-                number: raw.number ?? raw.Number ?? raw.flightNumber ?? raw.FlightNumber,
-                airline: raw.airline ?? raw.Airline,
-                code: raw.code ?? raw.Code,
-                status: raw.status ?? raw.Status,
+                number: raw.flightNumber ?? raw.FlightNumber ?? raw.number ?? raw.Number,
+                airline: raw.airlineName ?? raw.AirlineName ?? raw.airline ?? raw.Airline,
+                code: raw.airlineCode ?? raw.AirlineCode ?? raw.code ?? raw.Code,
+                aircraft: raw.airPlaneModel ?? raw.AirPlaneModel ?? raw.aircraft ?? raw.Aircraft,
+                registration: raw.airPlaneRegistration ?? raw.AirPlaneRegistration ?? raw.registration ?? raw.Registration,
+                arrivalTime: raw.landingTime ?? raw.LandingTime ?? raw.arrivalTime ?? raw.ArrivalTime,
+                status: this.readStatus(raw),
                 statusClass: raw.statusClass ?? raw.StatusClass,
                 statusDot: raw.statusDot ?? raw.StatusDot,
                 origin: raw.origin ?? raw.Origin,
@@ -123,12 +126,10 @@ export class FlightService {
                 destinationName: raw.destinationName ?? raw.DestinationName,
                 destinationCity: raw.destinationCity ?? raw.DestinationCity,
                 departureTime: raw.departureTime ?? raw.DepartureTime,
-                arrivalTime: raw.arrivalTime ?? raw.ArrivalTime,
                 departureDate: raw.departureDate ?? raw.DepartureDate,
-                aircraft: raw.aircraft ?? raw.Aircraft,
-                registration: raw.registration ?? raw.Registration,
                 economySeats: raw.economySeats ?? raw.EconomySeats ?? 0,
                 businessSeats: raw.businessSeats ?? raw.BusinessSeats ?? 0,
+                
             }))
         );
     }

@@ -1,10 +1,11 @@
 
 import { CommonModule } from '@angular/common';
 import { HttpErrorResponse } from '@angular/common/http';
-import { Component, OnInit, inject } from '@angular/core';
+import {ChangeDetectorRef, Component, OnInit, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { ActivatedRoute, RouterLink } from '@angular/router';
+import {Router, ActivatedRoute, RouterLink } from '@angular/router';
 import { forkJoin } from 'rxjs';
+
 
 import {
   FlightService,
@@ -37,6 +38,8 @@ export class BookingComponent implements OnInit {
   private readonly passengerService = inject(PassengerService);
   private readonly ticketBookingService = inject(TicketBookingService);
   private readonly userService = inject(UserService);
+  private readonly cdr = inject(ChangeDetectorRef);
+  private readonly router = inject(Router);
 
   // Data
   flight: BackendFlight | null = null;
@@ -82,19 +85,33 @@ export class BookingComponent implements OnInit {
    * Load one flight directly from the backend using its database ID.
    */
   loadFlight(flightId: number): void {
+    console.log('1. Starting flight request. ID:', flightId);
+
+    this.isLoading = true;
+    this.loadError = '';
+
     this.flightService.getFlightRecordById(flightId).subscribe({
+
       next: (flight) => {
+        console.log('2. Flight API response:', flight);
+
         this.flight = flight;
 
-        console.log('Flight received:', flight);
-        console.log('Flight ID:', this.flight?.id);
-        console.log('Flight number:', this.flight?.number);
+        console.log('3. Flight assigned:', this.flight);
+        console.log('4. Flight number:', this.flight.number);
 
         this.loadBookingOptions();
       },
+
       error: (error) => {
-        console.error('Failed to receive flight:', error);
+        console.error('Flight API request failed:', error);
+
+        this.flight = null;
+        this.isLoading = false;
+        this.loadError = 'تعذر تحميل بيانات الرحلة من الخادم.';
+        this.cdr.markForCheck();
       }
+
     });
   }
 
@@ -150,6 +167,7 @@ export class BookingComponent implements OnInit {
 
         console.log('9. Booking options loaded successfully');
         console.log(this.isLoading)
+        this.cdr.markForCheck();
       },
 
       error: (error: HttpErrorResponse) => {
@@ -272,11 +290,13 @@ export class BookingComponent implements OnInit {
 
         this.isSubmitting = false;
         this.showConfirmationModal = true;
+        this.cdr.markForCheck();
       },
 
       error: (error: HttpErrorResponse) => {
         this.isSubmitting = false;
         this.bookingError = this.getApiErrorMessage(error);
+        this.cdr.markForCheck();
       }
 
     });
@@ -285,25 +305,30 @@ export class BookingComponent implements OnInit {
   private getApiErrorMessage(error: HttpErrorResponse): string {
 
     if (error.status === 0) {
+      this.cdr.markForCheck();
       return 'تعذر الاتصال بالخادم. تأكد من تشغيل Web API.';
     }
 
     if (typeof error.error === 'string' && error.error.trim()) {
+      this.cdr.markForCheck();
       return error.error;
     }
 
     if (error.status === 400) {
+      this.cdr.markForCheck();
       return 'تعذر إتمام الحجز. تحقق من البيانات أو توفر المقاعد.';
     }
 
     if (error.status === 401) {
+      this.cdr.markForCheck();
       return 'يرجى تسجيل الدخول مرة أخرى.';
     }
-
+    this.cdr.markForCheck();
     return 'حدث خطأ غير متوقع. حاول مرة أخرى.';
   }
 
   closeConfirmation(): void {
     this.showConfirmationModal = false;
+    this.router.navigate(['/']);
   }
 }

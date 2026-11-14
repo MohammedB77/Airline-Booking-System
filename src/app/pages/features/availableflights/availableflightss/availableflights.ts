@@ -1,5 +1,5 @@
 
-import { Component, OnInit } from '@angular/core';
+import {inject,ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
@@ -53,7 +53,7 @@ export class AvailableFlightsComponent implements OnInit {
       dotClass: 'bg-error'
     }
   ];
-
+  private readonly cdr = inject(ChangeDetectorRef);
   // Flights initially loaded from shared mock data.
   flights: Flight[] = [];
 
@@ -81,6 +81,7 @@ export class AvailableFlightsComponent implements OnInit {
         this.flights = flights;
         this.applyFilters();
         this.isLoading = false;
+        this.cdr.markForCheck();
       },
       error: error => {
         console.error('Error loading flights:', error);
@@ -91,6 +92,7 @@ export class AvailableFlightsComponent implements OnInit {
 
         this.loadError = 'تعذر تحميل الرحلات من الخادم. يتم عرض البيانات التجريبية.';
         this.isLoading = false;
+        this.cdr.markForCheck();
       }
     });
   }

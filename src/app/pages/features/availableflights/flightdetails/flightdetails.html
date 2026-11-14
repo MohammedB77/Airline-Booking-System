@@ -1,5 +1,22 @@
 
-<main class="w-full pt-20 bg-surface min-h-[calc(100vh-280px)]" dir="rtl">
+@if (isLoading && !flight) {
+  <main class="min-h-[60vh] flex flex-col items-center justify-center p-8" dir="rtl">
+    <div class="w-12 h-12 border-4 border-primary border-t-tertiary rounded-full animate-spin mb-4"></div>
+    <p class="text-on-surface-variant font-medium">جاري تحميل تفاصيل الرحلة المعتمدة...</p>
+  </main>
+} @else if (errorMessage && !flight) {
+  <main class="min-h-[60vh] flex flex-col items-center justify-center p-8 text-center" dir="rtl">
+    <div class="w-16 h-16 rounded-full bg-red-100 text-error flex items-center justify-center mb-4">
+      <span class="material-symbols-outlined text-3xl">error</span>
+    </div>
+    <h2 class="text-xl font-bold text-primary mb-2">تعذر عرض تفاصيل الرحلة</h2>
+    <p class="text-on-surface-variant mb-6 max-w-md">{{ errorMessage }}</p>
+    <a routerLink="/flights" class="px-6 py-2.5 bg-primary text-white rounded-lg font-semibold hover:bg-secondary transition-all">
+      العودة إلى جدول الرحلات
+    </a>
+  </main>
+} @else if (flight) {
+<main class="w-full bg-surface min-h-[calc(100vh-280px)]" dir="rtl">
 
   <div class="flex flex-col w-full">
 
@@ -37,13 +54,13 @@
 
               <div class="flex items-center gap-space-md">
                 <div class="w-14 h-14 rounded-xl bg-primary-container text-tertiary flex items-center justify-center font-headline-md text-headline-md font-bold shadow-inner">
-                  MDR
+                  {{ flight.code }}
                 </div>
 
                 <div class="flex flex-col">
                   <span class="font-label-md text-label-md text-on-surface-variant uppercase tracking-wider">شركة الطيران الرسمية</span>
-                  <h1 class="font-headline-md text-headline-md text-primary font-bold">طيران مَدار (Madar Airlines)</h1>
-                  <span class="font-body-sm text-body-sm text-on-surface-variant">الرمز التشغيلي: MDR • الناقل الوطني الحديث</span>
+                  <h1 class="font-headline-md text-headline-md text-primary font-bold">{{ flight.airline }}</h1>
+                  <span class="font-body-sm text-body-sm text-on-surface-variant">الرمز التشغيلي: {{ flight.code }}</span>
                 </div>
               </div>
 
@@ -104,7 +121,7 @@
 
                 <div class="inline-flex items-center gap-space-xs mt-1">
                   <span class="px-2 py-0.5 bg-surface-container text-primary font-label-md text-label-md font-bold rounded">{{ flight.originCode }}</span>
-                  <span class="font-body-sm text-body-sm text-on-surface-variant">{{ flight.originCity }}</span>
+                  <span class="font-body-sm text-body-sm text-on-surface-variant">{{ flight.originCity }} {{ flight.originCountry }}</span>
                 </div>
               </div>
 
@@ -120,7 +137,7 @@
 
                 <div class="inline-flex items-center gap-space-xs mt-1">
                   <span class="px-2 py-0.5 bg-surface-container text-primary font-label-md text-label-md font-bold rounded">{{ flight.destinationCode }}</span>
-                  <span class="font-body-sm text-body-sm text-on-surface-variant">{{ flight.destinationCity }}</span>
+                  <span class="font-body-sm text-body-sm text-on-surface-variant">{{ flight.destinationCity }} {{ flight.destinationCountry }}</span>
                 </div>
               </div>
 
@@ -265,6 +282,42 @@
 
           </div>
 
+          <!-- Ticket Information -->
+          <div class="bg-surface-container-lowest rounded-xl p-space-lg md:p-space-xl shadow-md">
+            <div class="flex items-center justify-between mb-space-lg">
+              <span class="font-label-md text-label-md text-on-surface-variant uppercase tracking-wider">التذاكر المتاحة</span>
+              <span class="text-sm text-on-surface-variant">{{ tickets.length }} فئات</span>
+            </div>
+
+            @if (isLoadingTickets && !tickets.length) {
+              <div class="flex items-center justify-center p-8 text-on-surface-variant gap-3">
+                <span class="inline-block w-5 h-5 border-2 border-primary border-t-tertiary rounded-full animate-spin"></span>
+                <span class="text-sm font-medium">جاري فحص وتحديث فئات التذاكر المتاحة...</span>
+              </div>
+            } @else if (tickets.length) {
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-space-md">
+                @for (ticket of tickets; track ticket.id) {
+                  <div class="border border-outline-variant rounded-lg p-space-md flex flex-col gap-2">
+                    <div class="flex items-center justify-between gap-2">
+                      <span class="font-bold text-primary">{{ ticket.ticketName }}</span>
+                      <span class="text-tertiary font-bold">{{ ticket.flightClass }}</span>
+                    </div>
+                    <p class="text-sm text-on-surface-variant">{{ ticket.ticketDescription }}</p>
+                    <div class="flex items-center justify-between text-sm">
+                      <span>المتاح: {{ ticket.availableTickets }}</span>
+                      <span class="font-bold text-primary">{{ ticket.ticketPrice }} ر.س</span>
+                    </div>
+                    @if (ticket.gateNumber) {
+                      <span class="text-xs text-on-surface-variant">البوابة: {{ ticket.gateNumber }}</span>
+                    }
+                  </div>
+                }
+              </div>
+            } @else {
+              <p class="text-sm text-on-surface-variant">لا توجد معلومات تذاكر إضافية مسجلة لهذه الرحلة حالياً.</p>
+            }
+          </div>
+
           <!-- Trust Note -->
           <div class="bg-primary-container text-white p-space-md rounded-xl flex items-center gap-space-md shadow-md">
 
@@ -274,7 +327,7 @@
 
             <div class="flex flex-col">
               <span class="font-label-lg text-label-lg font-bold">سفر آمن ومعتمد</span>
-              <span class="font-body-sm text-body-sm text-slate-300">بيانات الرحلة المعروضة لأغراض تجريبية.</span>
+              <span class="font-body-sm text-body-sm text-slate-300">رحلات معتمدة ومسجلة رسمياً عبر مركز العمليات الجوية.</span>
             </div>
 
           </div>
@@ -285,3 +338,4 @@
     </div>
   </div>
 </main>
+}

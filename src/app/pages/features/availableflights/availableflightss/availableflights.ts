@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, inject, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -11,7 +11,7 @@ import {
   FlightService
 } from '../../../../core/services/flight.service';
 
-import { FlightService } from '../../../../core/services/flight.service';
+//import { FlightService } from '../../../../core/services/flight.service';
 
 @Component({
   selector: 'app-available-flights',
@@ -51,22 +51,22 @@ export class AvailableFlightsComponent implements OnInit {
   filteredFlights: Flight[] = [];
 
   // API loading state.
-  isLoading = true;
+  // isLoading = true;
 
   // API error message.
   loadError = '';
 
-  constructor(
-    private router: Router,
-    private flightService: FlightService
-  ) { }
+  // constructor(
+  //   private router: Router,
+  //   private flightService: FlightService
+  // ) { }
 
   // Load actual flights from the database.
   ngOnInit(): void {
     this.isLoading = true;
     this.loadError = '';
 
-    this.flightService.getApiFlights().subscribe({
+    this.flightService.getFlights().subscribe({
       next: flights => {
         this.flights = flights;
         this.applyFilters();
@@ -77,7 +77,7 @@ export class AvailableFlightsComponent implements OnInit {
         console.error('Error loading flights:', error);
 
         // Keep the existing mock data if the API fails.
-        this.flights = flightsData;
+        this.flights = [];
         this.applyFilters();
 
         this.loadError = 'تعذر تحميل الرحلات من الخادم. يتم عرض البيانات التجريبية.';
@@ -91,23 +91,23 @@ export class AvailableFlightsComponent implements OnInit {
     private readonly router: Router,
     private readonly route: ActivatedRoute,
     private readonly flightService: FlightService
-  ) {}
+  ) { }
 
-  ngOnInit(): void {
-    // 1. جلب المطارات المعتمدة
-    this.flightService.getAllAirports().subscribe({
-      next: airports => {
-        this.airports = airports;
-        this.resolveQueryParams();
-      },
-      error: () => {
-        this.resolveQueryParams();
-      }
-    });
+  // ngOnInit(): void {
+  //   // 1. جلب المطارات المعتمدة
+  //   this.flightService.getAllAirports().subscribe({
+  //     next: airports => {
+  //       this.airports = airports;
+  //       this.resolveQueryParams();
+  //     },
+  //     error: () => {
+  //       this.resolveQueryParams();
+  //     }
+  //   });
 
-    // 2. تحميل الرحلات الحقيقية
-    this.loadFlights();
-  }
+  //   // 2. تحميل الرحلات الحقيقية
+  //   this.loadFlights();
+  // }
 
   // تبديل مطار المغادرة مع مطار الوصول
   swapAirports(): void {

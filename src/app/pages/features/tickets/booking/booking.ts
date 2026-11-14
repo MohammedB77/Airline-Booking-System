@@ -1,15 +1,15 @@
 
 import { CommonModule } from '@angular/common';
 import { HttpErrorResponse } from '@angular/common/http';
-import {ChangeDetectorRef, Component, OnInit, inject } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import {Router, ActivatedRoute, RouterLink } from '@angular/router';
+import { Router, ActivatedRoute, RouterLink } from '@angular/router';
 import { forkJoin } from 'rxjs';
 
 
 import {
   FlightService,
-  type BackendFlight,
+  type FlightDetails,
   type Ticket
 } from '../../../../core/services/flight.service';
 
@@ -42,7 +42,7 @@ export class BookingComponent implements OnInit {
   private readonly router = inject(Router);
 
   // Data
-  flight: BackendFlight | null = null;
+  flight: FlightDetails | null = null;
   passengers: Passenger[] = [];
   tickets: Ticket[] = [];
 
@@ -90,7 +90,7 @@ export class BookingComponent implements OnInit {
     this.isLoading = true;
     this.loadError = '';
 
-    this.flightService.getFlightRecordById(flightId).subscribe({
+    this.flightService.getFlightById(flightId).subscribe({
 
       next: (flight) => {
         console.log('2. Flight API response:', flight);
@@ -98,7 +98,7 @@ export class BookingComponent implements OnInit {
         this.flight = flight;
 
         console.log('3. Flight assigned:', this.flight);
-        console.log('4. Flight number:', this.flight.number);
+        console.log('4. Flight number:', this.flight.flight.number);
 
         this.loadBookingOptions();
       },
@@ -123,7 +123,7 @@ export class BookingComponent implements OnInit {
     console.log('3. Entered loadBookingOptions');
 
     const userId = this.userService.currentUser()?.id;
-    const flightId = this.flight?.id;
+    const flightId = this.flight?.flight.id;
 
     console.log('4. Current user ID:', userId);
     console.log('5. Flight ID:', flightId);
@@ -144,7 +144,7 @@ export class BookingComponent implements OnInit {
 
     forkJoin({
       passengers: this.passengerService.getAll(),
-      tickets: this.flightService.getTicketsForFlight(flightId)
+      tickets: this.flightService.getFlightById(flightId)
     }).subscribe({
 
       next: ({ passengers, tickets }) => {
@@ -156,7 +156,7 @@ export class BookingComponent implements OnInit {
           passenger => passenger.userId === userId
         );
 
-        this.tickets = tickets.filter(
+        this.tickets = tickets.tickets.filter(
           ticket => ticket.availableTickets > 0
         );
 

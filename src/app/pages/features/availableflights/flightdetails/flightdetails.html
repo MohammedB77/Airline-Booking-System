@@ -187,48 +187,74 @@
                 <h2 class="font-headline-sm text-headline-sm text-primary font-bold mt-0.5">درجات السفر المتوفرة</h2>
               </div>
 
-              <span class="material-symbols-outlined text-on-surface-variant">airline_seat_recline_extra</span>
+              <!-- Button to update tickets status in cards -->
+              <button type="button" (click)="refreshTicketsStatus()" [disabled]="isLoadingTickets"
+                title="تحديث حالة وعدد التذاكر من قاعدة البيانات"
+                class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-surface-container hover:bg-surface-container-high text-primary text-xs md:text-sm font-semibold transition-all cursor-pointer shadow-sm active:scale-95 disabled:opacity-60">
+                <span class="material-symbols-outlined text-base" [class.animate-spin]="isLoadingTickets">sync</span>
+                <span>{{ isLoadingTickets ? 'جاري التحديث...' : 'تحديث حالة التذاكر' }}</span>
+              </button>
             </div>
 
             <div class="grid grid-cols-1 md:grid-cols-2 gap-space-lg">
 
-              <!-- Business Class -->
+              <!-- Business Class Card -->
               <div
                 class="bg-[#0b1b3d] text-white p-space-lg rounded-xl shadow-lg flex flex-col justify-between relative overflow-hidden">
 
                 <div class="flex items-center justify-between mb-space-md">
                   <span class="font-label-md text-label-md text-[#f59e0b] uppercase font-bold tracking-wider">درجة رجال
                     الأعمال (Business)</span>
-                  <span class="material-symbols-outlined text-[#f59e0b]">workspace_premium</span>
+                  <div class="flex items-center gap-2">
+                    <button type="button" (click)="refreshTicketsStatus()" [disabled]="isLoadingTickets"
+                      title="تحديث حالة درجة رجال الأعمال"
+                      class="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-white/10 hover:bg-white/20 text-xs text-[#f59e0b] font-medium transition-colors cursor-pointer">
+                      <span class="material-symbols-outlined text-sm"
+                        [class.animate-spin]="isLoadingTickets">sync</span>
+                      <span class="hidden sm:inline">تحديث</span>
+                    </button>
+                    <span class="material-symbols-outlined text-[#f59e0b]">workspace_premium</span>
+                  </div>
                 </div>
 
                 <div class="my-space-md">
                   <span class="font-label-md text-label-md text-slate-300 block mb-1">المقاعد المتبقية للحجز</span>
 
                   <div class="flex items-baseline gap-space-xs">
-                    <span class="font-headline-lg text-headline-lg font-bold text-white">{{ flight.tickets?.find(t =>
-                      t.flightClass === 'رجال الأعمال' || t.flightClass === 'Business')?.availableTickets|| 0 }}</span>
-                    <span class="font-body-md text-body-md text-slate-300">مقاعد متاحة فقط</span>
+                    <span class="font-headline-lg text-headline-lg font-bold text-white">{{ businessTicketsCount
+                      }}</span>
+                    <span class="font-body-md text-body-md text-slate-300">مقاعد متاحة</span>
                   </div>
                 </div>
 
                 <div
                   class="pt-space-md bg-white/5 px-space-md py-space-sm rounded-lg flex items-center justify-between">
                   <span class="font-body-sm text-body-sm text-slate-300">المقصورة الأمامية</span>
-                  <span class="font-label-md text-label-md text-emerald-400 font-bold">{{ flight.tickets!.length > 0 ?
-                    'مؤكد ومتاح' : 'غير متاح' }}</span>
+                  <span class="font-label-md text-label-md font-bold"
+                    [ngClass]="businessTicketsCount > 0 ? 'text-emerald-400' : 'text-rose-400'">
+                    {{ businessTicketsCount > 0 ? 'مؤكد ومتاح' : 'غير متاح' }}
+                  </span>
                 </div>
 
               </div>
 
-              <!-- Economy Class -->
+              <!-- Economy Class Card -->
               <div class="bg-surface-container-low p-space-lg rounded-xl flex flex-col justify-between shadow-sm">
 
                 <div class="flex items-center justify-between mb-space-md">
                   <span
                     class="font-label-md text-label-md text-on-surface-variant uppercase font-bold tracking-wider">الدرجة
                     الاقتصادية (Economy)</span>
-                  <span class="material-symbols-outlined text-primary">event_seat</span>
+                  <div class="flex items-center gap-2">
+                    <button type="button" (click)="refreshTicketsStatus()" [disabled]="isLoadingTickets"
+                      title="تحديث حالة الدرجة الاقتصادية"
+                      class="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-surface-container hover:bg-surface-container-high text-xs text-primary font-medium transition-colors cursor-pointer">
+                      <span class="material-symbols-outlined text-sm"
+                        [class.animate-spin]="isLoadingTickets">sync</span>
+                      <span class="hidden sm:inline">تحديث</span>
+                    </button>
+                    <span class="material-symbols-outlined text-primary">event_seat</span>
+                  </div>
                 </div>
 
                 <div class="my-space-md">
@@ -236,8 +262,7 @@
                     للحجز</span>
 
                   <div class="flex items-baseline gap-space-xs">
-                    <span class="font-headline-lg text-headline-lg font-bold text-primary">{{ flight.tickets?.find(t =>
-                      t.flightClass === 'اقتصادية' || t.flightClass === 'Economy')?.availableTickets || 0
+                    <span class="font-headline-lg text-headline-lg font-bold text-primary">{{ economyTicketsCount
                       }}</span>
                     <span class="font-body-md text-body-md text-on-surface-variant">مقعداً متاحاً</span>
                   </div>
@@ -246,13 +271,117 @@
                 <div
                   class="pt-space-md bg-surface-container px-space-md py-space-sm rounded-lg flex items-center justify-between">
                   <span class="font-body-sm text-body-sm text-on-surface-variant">المقصورة الرئيسية</span>
-                  <span class="font-label-md text-label-md text-emerald-700 font-bold">{{ flight.tickets!.length > 0 ?
-                    'متاح حالياً' : 'غير متاح' }}</span>
+                  <span class="font-label-md text-label-md font-bold"
+                    [ngClass]="economyTicketsCount > 0 ? 'text-emerald-700' : 'text-error'">
+                    {{ economyTicketsCount > 0 ? 'متاح حالياً' : 'غير متاح' }}
+                  </span>
                 </div>
 
               </div>
 
             </div>
+          </div>
+
+          <!-- Detailed Ticket Cards Section (فئات التذاكر المتاحة والمقاعد) -->
+          <div class="bg-surface-container-lowest rounded-xl p-space-lg md:p-space-xl shadow-md">
+            <div class="flex items-center justify-between mb-space-lg">
+              <div>
+                <span class="font-label-md text-label-md text-on-surface-variant uppercase tracking-wider block">بيانات
+                  التذاكر من قاعدة البيانات</span>
+                <h2 class="font-headline-sm text-headline-sm text-primary font-bold mt-0.5">فئات التذاكر المتاحة</h2>
+              </div>
+
+              <div class="flex items-center gap-2">
+                <span class="text-xs px-2.5 py-1 bg-surface-container rounded-full text-on-surface-variant font-bold">
+                  {{ tickets.length }} فئات مسجلة
+                </span>
+                <button type="button" (click)="refreshTicketsStatus()" [disabled]="isLoadingTickets"
+                  title="تحديث كروت التذاكر"
+                  class="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg bg-surface-container hover:bg-surface-container-high text-primary text-xs font-semibold transition-all cursor-pointer shadow-sm active:scale-95 disabled:opacity-60">
+                  <span class="material-symbols-outlined text-sm" [class.animate-spin]="isLoadingTickets">sync</span>
+                  <span>{{ isLoadingTickets ? 'جاري التحديث...' : 'تحديث الكروت' }}</span>
+                </button>
+              </div>
+            </div>
+
+            @if (tickets.length > 0) {
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-space-md">
+              @for (ticket of tickets; track ticket.id) {
+              <div
+                class="border border-outline-variant/60 hover:border-primary/50 transition-all rounded-xl p-space-md flex flex-col justify-between gap-3 bg-surface-container-low/30 shadow-xs">
+                <div>
+                  <div class="flex items-center justify-between gap-2 mb-1">
+                    <h3 class="font-bold text-primary text-base">{{ ticket.ticketName }}</h3>
+                    <span class="px-2.5 py-0.5 rounded text-xs font-bold"
+                      [ngClass]="isBusinessClass(ticket.flightClass) ? 'bg-[#0b1b3d] text-[#f59e0b]' : 'bg-primary/10 text-primary'">
+                      {{ ticket.flightClass }}
+                    </span>
+                  </div>
+                  @if (ticket.ticketDescription) {
+                  <p class="text-sm text-on-surface-variant line-clamp-2">{{ ticket.ticketDescription }}</p>
+                  }
+                </div>
+
+                <div class="pt-2 border-t border-outline-variant/40 flex items-center justify-between">
+                  <div class="flex items-center gap-1.5 text-sm font-semibold"
+                    [ngClass]="ticket.availableTickets > 0 ? 'text-emerald-700' : 'text-error'">
+                    <span class="material-symbols-outlined text-base">
+                      {{ ticket.availableTickets > 0 ? 'confirmation_number' : 'block' }}
+                    </span>
+                    <!-- <span class="font-bold">
+                      {{ ticket.availableTickets > 0 ? (ticket.availableTickets + ' تذكرة متاحة') : 'نفدت التذاكر' }}
+                    </span> -->
+                  </div>
+
+                  <div class="flex items-center gap-3">
+                    @if (ticket.ticketPrice > 0) {
+                    <div class="text-right">
+                      <span class="text-xs text-on-surface-variant block">السعر</span>
+                      <span class="font-bold text-lg text-primary">{{ ticket.ticketPrice }} $</span>
+                    </div>
+                    }
+
+                    <button type="button" (click)="refreshTicketsStatus()" [disabled]="isLoadingTickets"
+                      title="تحديث حالة هذه التذكرة"
+                      class="w-8 h-8 rounded-lg bg-surface-container hover:bg-surface-container-high flex items-center justify-center text-primary transition-all cursor-pointer">
+                      <span class="material-symbols-outlined text-base"
+                        [class.animate-spin]="isLoadingTickets">sync</span>
+                    </button>
+                  </div>
+                </div>
+
+                @if (ticket.boardingTime || ticket.gateNumber) {
+                <div
+                  class="text-xs text-on-surface-variant flex items-center justify-between bg-surface-container/60 px-2.5 py-1 rounded">
+                  @if (ticket.boardingTime) {
+                  <span>صعود الطائرة: {{ ticket.boardingTime }}</span>
+                  }
+                  @if (ticket.gateNumber) {
+                  <span>البوابة: {{ ticket.gateNumber }}</span>
+                  }
+                </div>
+                }
+              </div>
+              }
+            </div>
+            } @else {
+            <div
+              class="bg-surface-container-low/40 p-6 rounded-xl text-center flex flex-col items-center gap-3 border border-outline-variant/40">
+              <span
+                class="material-symbols-outlined text-3xl text-on-surface-variant">airline_seat_recline_normal</span>
+              <p class="text-sm font-semibold text-primary">المقاعد المتاحة معتمدة مباشرة من سعة الطائرة المسجلة بقاعدة
+                البيانات</p>
+              <p class="text-xs text-on-surface-variant">
+                رجال الأعمال: <span class="font-bold text-primary">{{ businessTicketsCount }}</span> مقعد |
+                الدرجة الاقتصادية: <span class="font-bold text-primary">{{ economyTicketsCount }}</span> مقعد
+              </p>
+              <button type="button" (click)="refreshTicketsStatus()" [disabled]="isLoadingTickets"
+                class="mt-2 inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-primary text-white text-xs font-semibold hover:bg-secondary transition-all cursor-pointer shadow-sm">
+                <span class="material-symbols-outlined text-sm" [class.animate-spin]="isLoadingTickets">sync</span>
+                <span>فحص وتحديث التذاكر من قاعدة البيانات</span>
+              </button>
+            </div>
+            }
           </div>
 
         </div>
@@ -315,44 +444,6 @@
             </p>
 
           </div>
-
-          <!-- Ticket Information
-          <div class="bg-surface-container-lowest rounded-xl p-space-lg md:p-space-xl shadow-md">
-            <div class="flex items-center justify-between mb-space-lg">
-              <span class="font-label-md text-label-md text-on-surface-variant uppercase tracking-wider">التذاكر
-                المتاحة</span>
-              <span class="text-sm text-on-surface-variant">{{ flight.tickets?.length }} فئات</span>
-            </div>
-
-            @if (isLoadingTickets && !flight.tickets?.length) {
-            <div class="flex items-center justify-center p-8 text-on-surface-variant gap-3">
-              <span
-                class="inline-block w-5 h-5 border-2 border-primary border-t-tertiary rounded-full animate-spin"></span>
-              <span class="text-sm font-medium">جاري فحص وتحديث فئات التذاكر المتاحة...</span>
-            </div>
-            } @else if (flight.tickets?.length) {
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-space-md">
-              @for (ticket of flight.tickets; track ticket.id) {
-              <div class="border border-outline-variant rounded-lg p-space-md flex flex-col gap-2">
-                <div class="flex items-center justify-between gap-2">
-                  <span class="font-bold text-primary">{{ ticket.ticketName }}</span>
-                  <span class="text-tertiary font-bold">{{ ticket.flightClass }}</span>
-                </div>
-                <p class="text-sm text-on-surface-variant">{{ ticket.ticketDescription }}</p>
-                <div class="flex items-center justify-between text-sm">
-                  <span>المتاح: {{ ticket.availableTickets }}</span>
-                  <span class="font-bold text-primary">{{ ticket.ticketPrice }} ر.س</span>
-                </div>
-                @if (ticket.gateNumber) {
-                <span class="text-xs text-on-surface-variant">البوابة: {{ ticket.gateNumber }}</span>
-                }
-              </div>
-              }
-            </div>
-            } @else {
-            <p class="text-sm text-on-surface-variant">لا توجد معلومات تذاكر إضافية مسجلة لهذه الرحلة حالياً.</p>
-            }
-          </div> -->
 
           <!-- Trust Note -->
           <div class="bg-primary-container text-white p-space-md rounded-xl flex items-center gap-space-md shadow-md">

@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, ActivatedRoute, RouterLink } from '@angular/router';
 import { Flight, FlightService, Ticket } from '../../../../core/services/flight.service';
@@ -19,7 +19,8 @@ export class FlightdetailsComponent implements OnInit {
   constructor(
     private readonly router: Router,
     private readonly route: ActivatedRoute,
-    private readonly flightService: FlightService
+    private readonly flightService: FlightService,
+    private readonly cdr: ChangeDetectorRef
   ) { }
 
   ngOnInit(): void {
@@ -65,34 +66,44 @@ export class FlightdetailsComponent implements OnInit {
 
   // عدد التذاكر / المقاعد المتاحة لدرجة رجال الأعمال
   get businessTicketsCount(): number {
-    const ticket = this.tickets.find(t => this.isBusinessClass(t.flightClass)) ||
-      this.flight?.tickets?.find(t => this.isBusinessClass(t.flightClass));
+    const list = this.tickets.length > 0 ? this.tickets : (this.flight?.tickets || []);
+    const matching = list.filter(t => this.isBusinessClass(t.flightClass));
 
-    if (ticket && ticket.availableTickets !== undefined && ticket.availableTickets > 0) {
-      return ticket.availableTickets;
+    if (matching.length > 0) {
+      return matching.reduce((sum, t) => sum + (t.availableTickets || 0), 0);
     }
 
     if (this.flight?.businessSeats && this.flight.businessSeats > 0) {
       return this.flight.businessSeats;
     }
 
-    return ticket?.availableTickets ?? 0;
+    return 0;
   }
 
   // عدد التذاكر / المقاعد المتاحة للدرجة الاقتصادية
   get economyTicketsCount(): number {
-    const ticket = this.tickets.find(t => this.isEconomyClass(t.flightClass)) ||
-      this.flight?.tickets?.find(t => this.isEconomyClass(t.flightClass));
+    const list = this.tickets.length > 0 ? this.tickets : (this.flight?.tickets || []);
+    const matching = list.filter(t => this.isEconomyClass(t.flightClass));
 
-    if (ticket && ticket.availableTickets !== undefined && ticket.availableTickets > 0) {
-      return ticket.availableTickets;
+    if (matching.length > 0) {
+      return matching.reduce((sum, t) => sum + (t.availableTickets || 0), 0);
     }
 
     if (this.flight?.economySeats && this.flight.economySeats > 0) {
       return this.flight.economySeats;
     }
 
-    return ticket?.availableTickets ?? 0;
+    return 0;
+  }
+
+  get businessTicket(): Ticket | undefined {
+    const list = this.tickets.length > 0 ? this.tickets : (this.flight?.tickets || []);
+    return list.find(t => this.isBusinessClass(t.flightClass));
+  }
+
+  get economyTicket(): Ticket | undefined {
+    const list = this.tickets.length > 0 ? this.tickets : (this.flight?.tickets || []);
+    return list.find(t => this.isEconomyClass(t.flightClass));
   }
 
   // إجمالي المقاعد أو التذاكر المتاحة للحجز
@@ -110,12 +121,66 @@ export class FlightdetailsComponent implements OnInit {
     return this.totalAvailableTickets > 0;
   }
 
-  // زر تحديث التذاكر وكروت المقاعد المتاحة (Refresh Button)
-  refreshTickets(): void {
+  // تحديث حالة وتفاصيل التذاكر في الكروت وإعادة رسم المكون مباشرة
+  refreshTicketsStatus(): void {
     if (!this.flight || this.isLoadingTickets) {
       return;
     }
-    this.loadFlightDetails(this.flight.id);
+    const flightId = this.flight.id;
+    this.isLoadingTickets = true;
+    this.cdr.detectChanges();
+
+    this.flightService.getFlightById(flightId).subscribe({
+      next: response => {
+        this.flight = response.flight;
+        if (response.tickets && response.tickets.length > 0) {
+          this.tickets = response.tickets;
+          this.isLoadingTickets = false;
+          this.cdr.detectChanges();
+        } else {
+          // جلب التذاكر من جدول التذاكر مباشرة لضمان الحصول على البيانات الحقيقية من قاعدة البيانات
+          this.flightService.getTicketsByFlightId(flightId).subscribe({
+            next: directTickets => {
+              if (directTickets && directTickets.length > 0) {
+                this.tickets = directTickets;
+                if (this.flight) {
+                  this.flight.tickets = directTickets;
+                }
+              }
+              this.isLoadingTickets = false;
+              this.cdr.detectChanges();
+            },
+            error: () => {
+              this.isLoadingTickets = false;
+              this.cdr.detectChanges();
+            }
+          });
+        }
+      },
+      error: () => {
+        this.flightService.getTicketsByFlightId(flightId).subscribe({
+          next: directTickets => {
+            if (directTickets && directTickets.length > 0) {
+              this.tickets = directTickets;
+              if (this.flight) {
+                this.flight.tickets = directTickets;
+              }
+            }
+            this.isLoadingTickets = false;
+            this.cdr.detectChanges();
+          },
+          error: () => {
+            this.isLoadingTickets = false;
+            this.cdr.detectChanges();
+          }
+        });
+      }
+    });
+  }
+
+  // متوافق مع الاستدعاء القديم
+  refreshTickets(): void {
+    this.refreshTicketsStatus();
   }
 
   loadFlightDetails(numericId: number): void {
@@ -123,9 +188,31 @@ export class FlightdetailsComponent implements OnInit {
     this.flightService.getFlightById(numericId).subscribe({
       next: response => {
         this.flight = response.flight;
-        this.tickets = response.tickets || [];
-        this.isLoading = false;
-        this.isLoadingTickets = false;
+        if (response.tickets && response.tickets.length > 0) {
+          this.tickets = response.tickets;
+          this.isLoading = false;
+          this.isLoadingTickets = false;
+          this.cdr.detectChanges();
+        } else {
+          this.flightService.getTicketsByFlightId(numericId).subscribe({
+            next: directTickets => {
+              if (directTickets && directTickets.length > 0) {
+                this.tickets = directTickets;
+                if (this.flight) {
+                  this.flight.tickets = directTickets;
+                }
+              }
+              this.isLoading = false;
+              this.isLoadingTickets = false;
+              this.cdr.detectChanges();
+            },
+            error: () => {
+              this.isLoading = false;
+              this.isLoadingTickets = false;
+              this.cdr.detectChanges();
+            }
+          });
+        }
       },
       error: error => {
         this.isLoadingTickets = false;
@@ -134,6 +221,7 @@ export class FlightdetailsComponent implements OnInit {
         } else {
           this.isLoading = false;
         }
+        this.cdr.detectChanges();
       }
     });
   }
@@ -146,11 +234,13 @@ export class FlightdetailsComponent implements OnInit {
           this.flight = response.flight;
           this.tickets = response.tickets || [];
           this.isLoading = false;
+          this.cdr.detectChanges();
         } else if (!this.flight) {
           this.isLoading = false;
           this.errorMessage = 'لم يتم العثور على تفاصيل الرحلة المطلوبة.';
         }
         this.isLoadingTickets = false;
+        this.cdr.detectChanges();
       },
       error: error => {
         this.isLoadingTickets = false;
@@ -159,6 +249,7 @@ export class FlightdetailsComponent implements OnInit {
         } else {
           this.isLoading = false;
         }
+        this.cdr.detectChanges();
       }
     });
   }

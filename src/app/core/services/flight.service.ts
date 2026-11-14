@@ -159,6 +159,21 @@ export class FlightService {
   }
 
   /**
+   * جلب التذاكر الخاصة برحلة معينة مباشرة من قاعدة البيانات.
+   */
+  getTicketsByFlightId(flightId: number): Observable<Ticket[]> {
+    const url = `${environment.apiUrl}/Ticket/GetAll`;
+    return this.http.get<unknown>(url).pipe(
+      timeout(6000),
+      map(response => {
+        const tickets = this.unwrapArray(response).map(item => this.toTicket(item));
+        return tickets.filter(t => t.flightId === flightId);
+      }),
+      catchError(() => of([]))
+    );
+  }
+
+  /**
    * جلب تفاصيل رحلة بواسطة المعرف مع دعم العرض الفوري من الكاش لتجنب التعليق.
    */
   getFlightById(flightId: number): Observable<FlightDetails> {
@@ -317,8 +332,8 @@ export class FlightService {
       'DestinationAirport'
     ]);
 
-    const code = this.readString(item, ['airlineCode', 'AirlineCode', 'code', 'Code']) || 'MDR';
-    const number = this.readString(item, ['flightNumber', 'FlightNumber', 'number', 'Number']) || 'MDR-101';
+    const code = this.readString(item, ['airlineCode', 'AirlineCode', 'code', 'Code']);
+    const number = this.readString(item, ['flightNumber', 'FlightNumber', 'number', 'Number']);
     const flightId = this.readNumber(item, ['id', 'Id']);
 
     // معالجة التذاكر المرفقة بالرحلة إن وجدت
@@ -340,18 +355,18 @@ export class FlightService {
     }
 
     if (economySeats === 0) {
-      economySeats = this.readNumber(item, ['economySeats', 'EconomySeats', 'availableEconomySeats', 'AvailableEconomySeats']) || 40;
+      economySeats = this.readNumber(item, ['economySeats', 'EconomySeats', 'availableEconomySeats', 'AvailableEconomySeats']);
     }
     if (businessSeats === 0) {
-      businessSeats = this.readNumber(item, ['businessSeats', 'BusinessSeats', 'availableBusinessSeats', 'AvailableBusinessSeats']) || 8;
+      businessSeats = this.readNumber(item, ['businessSeats', 'BusinessSeats', 'availableBusinessSeats', 'AvailableBusinessSeats']);
     }
 
     return {
       id: flightId,
       number,
-      airline: this.readString(item, ['airlineName', 'AirlineName', 'airline', 'Airline']) || 'طيران مَدار',
+      airline: this.readString(item, ['airlineName', 'AirlineName', 'airline', 'Airline']),
       code,
-      logo: code ? code.slice(0, 2) : 'مـ',
+      logo: code ? code.slice(0, 2) : '',
       logoClass: 'bg-primary-container text-tertiary',
       status,
       statusClass: this.statusClass(status),
@@ -369,8 +384,8 @@ export class FlightService {
       departureTime: this.readTime(item, ['departureTime', 'DepartureTime']),
       arrivalTime: this.readTime(item, ['landingTime', 'LandingTime', 'arrivalTime', 'ArrivalTime']),
       departureDate: this.readDate(item, ['departureDate', 'DepartureDate']),
-      aircraft: this.readString(item, ['airPlaneModel', 'AirPlaneModel', 'aircraft', 'Aircraft', 'aircraftType']) || 'طائرة مَدار',
-      registration: this.readString(item, ['airPlaneRegistration', 'AirPlaneRegistration', 'registration', 'Registration']) || '7O-MDR',
+      aircraft: this.readString(item, ['airPlaneModel', 'AirPlaneModel', 'aircraft', 'Aircraft', 'aircraftType']),
+      registration: this.readString(item, ['airPlaneRegistration', 'AirPlaneRegistration', 'registration', 'Registration']),
       economySeats,
       businessSeats,
       tickets
@@ -398,11 +413,11 @@ export class FlightService {
     return {
       id: this.readNumber(item, ['id', 'Id']),
       flightId: this.readNumber(item, ['flightId', 'FlightId']),
-      ticketName: this.readString(item, ['ticketName', 'TicketName']) || 'تذكرة طيران',
+      ticketName: this.readString(item, ['ticketName', 'TicketName']),
       availableTickets: this.readNumber(item, ['availableTickets', 'AvailableTickets']),
       ticketDescription: this.readString(item, ['ticketDescription', 'TicketDescription']),
-      flightClass: this.readString(item, ['flightClass', 'FlightClass']) || 'الدرجة الاقتصادية',
-      ticketPrice: this.readNumber(item, ['ticketPrice', 'TicketPrice']) || 350,
+      flightClass: this.readString(item, ['flightClass', 'FlightClass']),
+      ticketPrice: this.readNumber(item, ['ticketPrice', 'TicketPrice']),
       checkInTime: this.readString(item, ['checkInTime', 'CheckInTime']),
       boardingTime: this.readString(item, ['boardingTime', 'BoardingTime']),
       gateNumber: this.readString(item, ['gateNumber', 'GateNumber'])

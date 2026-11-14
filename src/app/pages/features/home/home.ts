@@ -1,55 +1,57 @@
-import { Component } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { Component, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
+import { Airport, FlightService } from '../../../core/services/flight.service';
 import { UserService } from '../../../core/services/user.service';
 
 @Component({
   selector: 'app-home',
   standalone: true,
-  imports: [FormsModule, RouterLink],
+  imports: [CommonModule, FormsModule, RouterLink],
   templateUrl: './home.html'
 })
-export class HomeComponent {
-
-  // قيم البحث الافتراضية كما ظهرت في تصميم Stitch.
+export class HomeComponent implements OnInit {
+  // قيم البحث الافتراضية
   departureAirport = 'SAH';
   arrivalAirport = 'CAI';
-  departureDate = '2025-06-15';
+  departureDate = '';
+  airports: Airport[] = [];
 
   constructor(
-    private router: Router,
+    private readonly router: Router,
+    private readonly flightService: FlightService,
     readonly userService: UserService
   ) {}
 
-  // تبديل مطار المغادرة والوصول إذا كان الخياران متاحين في القائمتين.
-  swapAirports(): void {
+  ngOnInit(): void {
+    const today = new Date();
+    this.departureDate = today.toISOString().split('T')[0];
 
-    const currentDeparture = this.departureAirport;
-    const currentArrival = this.arrivalAirport;
-
-    const departureOptions = ['SAH', 'ADE', 'RIY', 'GXF'];
-    const arrivalOptions = ['CAI', 'JED', 'AMM', 'DXB', 'ADE', 'SAH'];
-
-    const canSwap =
-      departureOptions.includes(currentArrival) &&
-      arrivalOptions.includes(currentDeparture);
-
-    if (canSwap) {
-      this.departureAirport = currentArrival;
-      this.arrivalAirport = currentDeparture;
-      return;
-    }
-
-    // الانتقال للخيار التالي إذا تعذر التبديل المباشر.
-    const currentIndex = arrivalOptions.indexOf(this.arrivalAirport);
-    const nextIndex = (currentIndex + 1) % arrivalOptions.length;
-
-    this.arrivalAirport = arrivalOptions[nextIndex];
+    this.flightService.getAllAirports().subscribe({
+      next: airports => {
+        this.airports = airports;
+        if (airports.length >= 2) {
+          if (!this.airports.some(a => a.code === this.departureAirport)) {
+            this.departureAirport = airports[0].code;
+          }
+          if (!this.airports.some(a => a.code === this.arrivalAirport)) {
+            this.arrivalAirport = airports[1].code;
+          }
+        }
+      }
+    });
   }
 
-  // الانتقال إلى صفحة الرحلات مع تمرير بيانات البحث.
-  onSearch(): void {
+  // تبديل مطار المغادرة والوصول
+  swapAirports(): void {
+    const currentDeparture = this.departureAirport;
+    this.departureAirport = this.arrivalAirport;
+    this.arrivalAirport = currentDeparture;
+  }
 
+  // الانتقال إلى صفحة الرحلات مع تمرير بيانات البحث
+  onSearch(): void {
     if (
       !this.departureAirport ||
       !this.arrivalAirport ||
@@ -59,7 +61,7 @@ export class HomeComponent {
       return;
     }
 
-    this.router.navigate(['/flights'], {
+    void this.router.navigate(['/flights'], {
       queryParams: {
         departure: this.departureAirport,
         arrival: this.arrivalAirport,

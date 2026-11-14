@@ -1,9 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, ActivatedRoute, RouterLink } from '@angular/router';
-
-// استيراد نوع الرحلة والبيانات المشتركة.
-import { Flight, flightsData } from '../flights-data';
+import { Flight, FlightService, Ticket } from '../../../../core/services/flight.service';
 
 @Component({
   selector: 'app-flightdetails',
@@ -12,52 +10,123 @@ import { Flight, flightsData } from '../flights-data';
   templateUrl: './flightdetails.html'
 })
 export class FlightdetailsComponent implements OnInit {
-
-  // الرحلة المعروضة في الصفحة.
-  flight: Flight = flightsData[0];
+  flight: Flight | null = null;
+  tickets: Ticket[] = [];
+  isLoading = true;
+  isLoadingTickets = false;
+  errorMessage = '';
 
   constructor(
-    private router: Router,
-    private route: ActivatedRoute
+    private readonly router: Router,
+    private readonly route: ActivatedRoute,
+    private readonly flightService: FlightService
   ) {}
 
   ngOnInit(): void {
+    const param =
+      this.route.snapshot.paramMap.get('flightId') ||
+      this.route.snapshot.paramMap.get('id') ||
+      this.route.snapshot.queryParamMap.get('flightId') ||
+      this.route.snapshot.queryParamMap.get('id') ||
+      this.route.snapshot.queryParamMap.get('flightNumber') ||
+      '';
+    const numericId = Number(param);
 
-    // متابعة رقم الرحلة الموجود في الرابط.
-    this.route.paramMap.subscribe(params => {
-
-      const flightNumber = params.get('flightNumber');
-
-      // البحث عن الرحلة المطابقة لرقمها.
-      const selectedFlight = flightsData.find(
-        flight => flight.number === flightNumber
-      );
-
-      // عرض بيانات الرحلة التي تم العثور عليها.
-      if (selectedFlight) {
-        this.flight = selectedFlight;
+    if (Number.isInteger(numericId) && numericId > 0) {
+      // 1. فحص فوري للذاكرة المؤقتة (عرض فوري في 0ms دون أي انتظار)
+      const cached = this.flightService.getCachedFlight(numericId);
+      if (cached) {
+        this.flight = cached;
+        if (cached.tickets && cached.tickets.length > 0) {
+          this.tickets = cached.tickets;
+        }
+        this.isLoading = false;
       }
-    });
+
+      // 2. طلب تفاصيل الرحلة وفئات التذاكر من السيرفر
+      this.isLoadingTickets = true;
+      this.flightService.getFlightById(numericId).subscribe({
+        next: response => {
+          this.flight = response.flight;
+          this.tickets = response.tickets;
+          this.isLoading = false;
+          this.isLoadingTickets = false;
+        },
+        error: error => {
+          this.isLoadingTickets = false;
+          // إذا كانت الرحلة معروضة بالفعل من الكاش لا نظهر شاشة الخطأ
+          if (!this.flight) {
+            this.handleError(error);
+          } else {
+            this.isLoading = false;
+          }
+        }
+      });
+    } else if (param.trim()) {
+      // البحث برقم الرحلة
+      const cached = this.flightService.getCachedFlightByNumber(param);
+      if (cached) {
+        this.flight = cached;
+        if (cached.tickets && cached.tickets.length > 0) {
+          this.tickets = cached.tickets;
+        }
+        this.isLoading = false;
+      }
+
+      this.isLoadingTickets = true;
+      this.flightService.getFlightByNumber(param).subscribe({
+        next: response => {
+          if (response) {
+            this.flight = response.flight;
+            this.tickets = response.tickets;
+            this.isLoading = false;
+          } else if (!this.flight) {
+            this.isLoading = false;
+            this.errorMessage = 'لم يتم العثور على تفاصيل الرحلة المطلوبة.';
+          }
+          this.isLoadingTickets = false;
+        },
+        error: error => {
+          this.isLoadingTickets = false;
+          if (!this.flight) {
+            this.handleError(error);
+          } else {
+            this.isLoading = false;
+          }
+        }
+      });
+    } else {
+      this.isLoading = false;
+      this.errorMessage = 'رقم أو معرّف الرحلة غير صحيح.';
+    }
   }
 
-  // التحقق من إمكانية حجز الرحلة.
   get canBook(): boolean {
     return (
+      !!this.flight &&
+      this.flight.status !== 'Cancelled' &&
       this.flight.status !== 'ملغاة' &&
-      (this.flight.businessSeats > 0 || this.flight.economySeats > 0)
+      (this.tickets.length === 0 || this.tickets.some(ticket => ticket.availableTickets > 0))
     );
   }
 
-  // الانتقال إلى صفحة الحجز وتمرير رقم الرحلة.
   bookFlight(): void {
-    if (!this.canBook) {
+    if (!this.flight || !this.canBook) {
       return;
     }
 
-    this.router.navigate(['/booking'], {
+    this.flightService.cacheFlight(this.flight);
+    void this.router.navigate(['/booking'], {
       queryParams: {
+        flightId: this.flight.id,
         flightNumber: this.flight.number
       }
     });
+  }
+
+  private handleError(error: { error?: { message?: string }; message?: string }): void {
+    this.isLoading = false;
+    this.errorMessage =
+      error.error?.message || error.message || 'تعذر تحميل تفاصيل الرحلة من الخادم.';
   }
 }

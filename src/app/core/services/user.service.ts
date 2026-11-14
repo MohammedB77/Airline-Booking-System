@@ -2,6 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable, PLATFORM_ID, signal, inject } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
 import { map, Observable, tap } from 'rxjs';
+import { environment } from '../../../environments/environment';
 
 export interface User {
   id?: number;
@@ -34,7 +35,7 @@ export class UserService {
 
   login(credentials: LoginRequest): Observable<User> {
     return this.http
-      .post<unknown>('https://localhost:7210/api/User/Login', credentials)
+      .post<unknown>(`${environment.apiUrl}/User/Login`, credentials)
       .pipe(
         map((response) => this.normalizeUser(response)),
         tap((user) => {
@@ -46,7 +47,7 @@ export class UserService {
 
   register(userInfo: RegisterRequest): Observable<unknown> {
     return this.http.post<unknown>(
-      'https://localhost:7210/api/User/Create',
+      `${environment.apiUrl}/User/Create`,
       userInfo
     );
   }

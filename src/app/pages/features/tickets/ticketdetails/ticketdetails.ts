@@ -1,53 +1,10 @@
 import { CommonModule } from '@angular/common';
-import { Component, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, DestroyRef, OnInit, inject } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { ActivatedRoute, RouterLink } from '@angular/router';
+import { catchError, map, of, switchMap } from 'rxjs';
+import { Ticket, TicketService } from '../../../../core/services/ticket.service';
 
-// شكل بيانات التذكرة المعروضة في الصفحة
-interface TicketDetails {
-  ticketNumber: string;
-  flightNumber: string;
-  airline: string;
-  airlineCode: string;
-  status: string;
-  statusClass: string;
-
-  originCode: string;
-  originCity: string;
-  originAirport: string;
-  departureTime: string;
-
-  destinationCode: string;
-  destinationCity: string;
-  destinationAirport: string;
-  arrivalTime: string;
-
-  aircraft: string;
-  aircraftModel: string;
-  registration: string;
-
-  checkInTime: string;
-  boardingTime: string;
-  gate: string;
-  terminal: string;
-
-  firstName: string;
-  familyName: string;
-  nationality: string;
-  birthDate: string;
-  gender: string;
-  passportNumber: string;
-  phone: string;
-
-  bookingDate: string;
-  ticketStatus: string;
-  travelClass: string;
-  seat: string;
-  seatType: string;
-  price: number;
-  currency: string;
-}
-
-// مكوّن صفحة تفاصيل التذكرة
 @Component({
   selector: 'app-ticketdetails',
   standalone: true,
@@ -55,217 +12,93 @@ interface TicketDetails {
   templateUrl: './ticketdetails.html'
 })
 export class TicketdetailsComponent implements OnInit {
+  private readonly route = inject(ActivatedRoute);
+  private readonly ticketService = inject(TicketService);
+  private readonly destroyRef = inject(DestroyRef);
+  private readonly changeDetector = inject(ChangeDetectorRef);
 
-  // بيانات التذكرة الحالية
-  ticket: TicketDetails | null = null;
-
-  // بيانات تجريبية للتذاكر
-  private ticketsData: TicketDetails[] = [
-    {
-      ticketNumber: 'TKT-10492',
-      flightNumber: 'MDR-101',
-      airline: 'طيران مَدار',
-      airlineCode: 'MDR',
-      status: 'مؤكدة',
-      statusClass: 'confirmed',
-
-      originCode: 'SAH',
-      originCity: 'صنعاء',
-      originAirport: 'مطار صنعاء الدولي',
-      departureTime: '08:00 ص',
-
-      destinationCode: 'CAI',
-      destinationCity: 'القاهرة',
-      destinationAirport: 'مطار القاهرة الدولي',
-      arrivalTime: '11:30 ص',
-
-      aircraft: 'Airbus A320neo',
-      aircraftModel: 'Airbus A320neo',
-      registration: '7O-MDR',
-
-      checkInTime: '06:30 ص',
-      boardingTime: '07:15 ص',
-      gate: 'بوابة G04',
-      terminal: 'الصالة الدولية 1',
-
-      firstName: 'أحمد',
-      familyName: 'الزبيدي',
-      nationality: 'يمني',
-      birthDate: '1990/03/15',
-      gender: 'ذكر',
-      passportNumber: 'YEM789456',
-      phone: '+967 771 234 567',
-
-      bookingDate: '2025/05/10',
-      ticketStatus: 'مؤكدة ومدفوعة بالكامل',
-      travelClass: 'الدرجة الاقتصادية',
-      seat: '14B',
-      seatType: 'ممر طائرة (Aisle)',
-      price: 280,
-      currency: 'USD'
-    },
-    {
-      ticketNumber: 'TKT-10884',
-      flightNumber: 'MDR-204',
-      airline: 'طيران مَدار',
-      airlineCode: 'MDR',
-      status: 'مؤكدة',
-      statusClass: 'confirmed',
-
-      originCode: 'ADE',
-      originCity: 'عدن',
-      originAirport: 'مطار عدن الدولي',
-      departureTime: '02:15 م',
-
-      destinationCode: 'DXB',
-      destinationCity: 'دبي',
-      destinationAirport: 'مطار دبي الدولي',
-      arrivalTime: '06:30 م',
-
-      aircraft: 'Airbus A321neo',
-      aircraftModel: 'Airbus A321neo',
-      registration: '7O-MDB',
-
-      checkInTime: '12:45 م',
-      boardingTime: '01:30 م',
-      gate: 'غير محددة',
-      terminal: 'غير محددة',
-
-      firstName: '—',
-      familyName: '—',
-      nationality: '—',
-      birthDate: '—',
-      gender: '—',
-      passportNumber: '—',
-      phone: '—',
-
-      bookingDate: '—',
-      ticketStatus: 'مؤكدة',
-      travelClass: 'درجة رجال الأعمال',
-      seat: '02A',
-      seatType: 'غير محدد',
-      price: 640,
-      currency: 'USD'
-    },
-    {
-      ticketNumber: 'TKT-09311',
-      flightNumber: 'MDR-305',
-      airline: 'طيران مَدار',
-      airlineCode: 'MDR',
-      status: 'ملغاة',
-      statusClass: 'cancelled',
-
-      originCode: 'SAH',
-      originCity: 'صنعاء',
-      originAirport: 'مطار صنعاء الدولي',
-      departureTime: '10:00 ص',
-
-      destinationCode: 'AMM',
-      destinationCity: 'عمّان',
-      destinationAirport: 'مطار الملكة علياء الدولي',
-      arrivalTime: '01:45 م',
-
-      aircraft: '—',
-      aircraftModel: '—',
-      registration: '—',
-
-      checkInTime: '—',
-      boardingTime: '—',
-      gate: '—',
-      terminal: '—',
-
-      firstName: '—',
-      familyName: '—',
-      nationality: '—',
-      birthDate: '—',
-      gender: '—',
-      passportNumber: '—',
-      phone: '—',
-
-      bookingDate: '—',
-      ticketStatus: 'تم إلغاء التذكرة',
-      travelClass: 'الدرجة الاقتصادية',
-      seat: '21C',
-      seatType: '—',
-      price: 310,
-      currency: 'USD'
-    }
-  ];
-
-  constructor(private route: ActivatedRoute) {}
+  ticket: ReturnType<TicketdetailsComponent['toDetails']> | null = null;
+  isLoading = true;
+  errorMessage = '';
 
   ngOnInit(): void {
-    // قراءة رقم التذكرة من الرابط
-    this.route.paramMap.subscribe(params => {
-      const ticketNumber = params.get('ticketNumber');
+    this.route.paramMap.pipe(
+      switchMap(params => {
+        this.ticket = null;
+        this.isLoading = true;
+        this.errorMessage = '';
 
-      // البحث عن التذكرة المطلوبة
-      this.ticket =
-        this.ticketsData.find(
-          item => item.ticketNumber === ticketNumber
-        ) ?? null;
+        const id = Number(params.get('ticketNumber'));
+
+        if (!Number.isInteger(id) || id <= 0 || id > 2147483647) {
+          this.errorMessage = 'معرّف التذكرة غير صالح.';
+          return of(null);
+        }
+
+        return this.ticketService.getById(id).pipe(
+          map(ticket => this.toDetails(ticket)),
+          catchError(error => {
+            this.errorMessage = error.status === 404
+              ? 'لم يتم العثور على التذكرة.'
+              : 'تعذّر تحميل تفاصيل التذكرة.';
+
+            return of(null);
+          })
+        );
+      }),
+      takeUntilDestroyed(this.destroyRef)
+    ).subscribe(ticket => {
+      this.ticket = ticket;
+      this.isLoading = false;
+      this.changeDetector.markForCheck();
     });
   }
 
-  // طباعة تفاصيل التذكرة
   printTicket(): void {
     window.print();
   }
 
-  // مشاركة رابط التذكرة
-  async shareTicket(): Promise<void> {
-    if (!this.ticket) return;
+  private toDetails(ticket: Ticket) {
+    const unavailable = '—';
+    const status = 'الحالة غير متوفرة';
 
-    const ticketUrl = window.location.href;
-
-    if (navigator.share) {
-      try {
-        await navigator.share({
-          title: 'تفاصيل التذكرة',
-          text: `تذكرة رقم ${this.ticket.ticketNumber}`,
-          url: ticketUrl
-        });
-      } catch (error) {
-        // تجاهل إلغاء المستخدم لعملية المشاركة
-      }
-    } else if (navigator.clipboard) {
-      await navigator.clipboard.writeText(ticketUrl);
-      alert('تم نسخ رابط التذكرة');
-    } else {
-      alert('المشاركة غير مدعومة في هذا المتصفح');
-    }
-  }
-
-  // تنزيل تفاصيل التذكرة كملف نصي مؤقت
-  downloadTicket(): void {
-    if (!this.ticket) return;
-
-    const content = `
-تفاصيل التذكرة الإلكترونية
-رقم التذكرة: ${this.ticket.ticketNumber}
-رقم الرحلة: ${this.ticket.flightNumber}
-شركة الطيران: ${this.ticket.airline}
-الحالة: ${this.ticket.status}
-من: ${this.ticket.originCity} (${this.ticket.originCode})
-إلى: ${this.ticket.destinationCity} (${this.ticket.destinationCode})
-وقت المغادرة: ${this.ticket.departureTime}
-وقت الوصول: ${this.ticket.arrivalTime}
-درجة السفر: ${this.ticket.travelClass}
-رقم المقعد: ${this.ticket.seat}
-السعر: ${this.ticket.price} ${this.ticket.currency}
-    `;
-
-    const file = new Blob([content], {
-      type: 'text/plain;charset=utf-8'
-    });
-
-    const url = URL.createObjectURL(file);
-    const link = document.createElement('a');
-
-    link.href = url;
-    link.download = `${this.ticket.ticketNumber}.txt`;
-    link.click();
-
-    URL.revokeObjectURL(url);
+    return {
+      ticketNumber: String(ticket.id),
+      name: ticket.ticketName,
+      flightNumber: String(ticket.flightId),
+      airline: unavailable,
+      airlineCode: unavailable,
+      status,
+      statusClass: 'unknown' as 'unknown' | 'cancelled',
+      originCode: unavailable,
+      originCity: unavailable,
+      originAirport: unavailable,
+      departureTime: unavailable,
+      destinationCode: unavailable,
+      destinationCity: unavailable,
+      destinationAirport: unavailable,
+      arrivalTime: unavailable,
+      aircraft: unavailable,
+      aircraftModel: unavailable,
+      registration: unavailable,
+      checkInTime: ticket.checkInTime || unavailable,
+      boardingTime: ticket.boardingTime || unavailable,
+      gate: ticket.gateNumber || unavailable,
+      terminal: unavailable,
+      firstName: unavailable,
+      familyName: unavailable,
+      nationality: unavailable,
+      birthDate: unavailable,
+      gender: unavailable,
+      passportNumber: unavailable,
+      phone: unavailable,
+      bookingDate: unavailable,
+      ticketStatus: status,
+      travelClass: ticket.flightClass,
+      seat: unavailable,
+      seatType: unavailable,
+      price: ticket.ticketPrice,
+      currency: 'USD'
+    };
   }
 }

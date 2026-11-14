@@ -142,15 +142,14 @@
                 <span class="material-symbols-outlined absolute right-3 text-on-surface-variant text-lg pointer-events-none">flight_takeoff</span>
 
                 <select
-                  class="w-full h-[52px] pr-10 pl-3 rounded-xl bg-surface-container-low border border-outline-variant text-on-surface font-label-lg text-label-lg focus:outline-none focus:ring-2 focus:ring-primary/20 focus:bg-white"
+                  class="w-full h-[52px] pr-10 pl-3 rounded-xl bg-surface-container-low border border-outline-variant text-on-surface font-label-lg text-label-lg focus:outline-none focus:ring-2 focus:ring-primary/20 focus:bg-white cursor-pointer"
                   id="departureAirport"
                   name="departureAirport"
                   [(ngModel)]="departureAirport">
 
-                  <option value="SAH">مطار صنعاء الدولي (SAH)</option>
-                  <option value="ADE">مطار عدن الدولي (ADE)</option>
-                  <option value="RIY">مطار الريان الدولي - المكلا (RIY)</option>
-                  <option value="GXF">مطار سيئون الدولي (GXF)</option>
+                  <option *ngFor="let airport of airports" [value]="airport.code">
+                    {{ airport.name }} ({{ airport.code }})
+                  </option>
                 </select>
               </div>
             </div>
@@ -176,17 +175,14 @@
                 <span class="material-symbols-outlined absolute right-3 text-on-surface-variant text-lg pointer-events-none">flight_land</span>
 
                 <select
-                  class="w-full h-[52px] pr-10 pl-3 rounded-xl bg-surface-container-low border border-outline-variant text-on-surface font-label-lg text-label-lg focus:outline-none focus:ring-2 focus:ring-primary/20 focus:bg-white"
+                  class="w-full h-[52px] pr-10 pl-3 rounded-xl bg-surface-container-low border border-outline-variant text-on-surface font-label-lg text-label-lg focus:outline-none focus:ring-2 focus:ring-primary/20 focus:bg-white cursor-pointer"
                   id="arrivalAirport"
                   name="arrivalAirport"
                   [(ngModel)]="arrivalAirport">
 
-                  <option value="CAI">مطار القاهرة الدولي (CAI)</option>
-                  <option value="JED">مطار الملك عبد العزيز بجدة (JED)</option>
-                  <option value="AMM">مطار الملكة علياء الدولي (AMM)</option>
-                  <option value="DXB">مطار دبي الدولي (DXB)</option>
-                  <option value="ADE">مطار عدن الدولي (ADE)</option>
-                  <option value="SAH">مطار صنعاء الدولي (SAH)</option>
+                  <option *ngFor="let airport of airports" [value]="airport.code">
+                    {{ airport.name }} ({{ airport.code }})
+                  </option>
                 </select>
               </div>
             </div>

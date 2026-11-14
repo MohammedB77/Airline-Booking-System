@@ -11,6 +11,8 @@ import {
   FlightService
 } from '../../../../core/services/flight.service';
 
+import { FlightService } from '../../../../core/services/flight.service';
+
 @Component({
   selector: 'app-available-flights',
   standalone: true,
@@ -41,6 +43,49 @@ export class AvailableFlightsComponent implements OnInit {
     { label: 'غادرت', value: 'Departed', dotClass: 'bg-emerald-600' },
     { label: 'وصلت', value: 'Arrived', dotClass: 'bg-emerald-600' }
   ];
+  private readonly cdr = inject(ChangeDetectorRef);
+  // Flights initially loaded from shared mock data.
+  flights: Flight[] = [];
+
+  // Flights displayed to the user.
+  filteredFlights: Flight[] = [];
+
+  // API loading state.
+  isLoading = true;
+
+  // API error message.
+  loadError = '';
+
+  constructor(
+    private router: Router,
+    private flightService: FlightService
+  ) { }
+
+  // Load actual flights from the database.
+  ngOnInit(): void {
+    this.isLoading = true;
+    this.loadError = '';
+
+    this.flightService.getApiFlights().subscribe({
+      next: flights => {
+        this.flights = flights;
+        this.applyFilters();
+        this.isLoading = false;
+        this.cdr.markForCheck();
+      },
+      error: error => {
+        console.error('Error loading flights:', error);
+
+        // Keep the existing mock data if the API fails.
+        this.flights = flightsData;
+        this.applyFilters();
+
+        this.loadError = 'تعذر تحميل الرحلات من الخادم. يتم عرض البيانات التجريبية.';
+        this.isLoading = false;
+        this.cdr.markForCheck();
+      }
+    });
+  }
 
   constructor(
     private readonly router: Router,

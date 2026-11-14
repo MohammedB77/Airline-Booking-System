@@ -1,53 +1,41 @@
-
-
-<!-- Main Content -->
 <main dir="rtl" class="w-full pt-20 bg-surface min-h-[calc(100vh-280px)]">
-
   <div class="flex flex-col w-full">
 
-    <!-- Hero Section -->
+    <!-- رأس الصفحة -->
     <section class="relative w-full overflow-hidden bg-primary-container text-on-primary">
-
       <div class="absolute -top-24 -left-24 w-96 h-96 rounded-full bg-tertiary/10 blur-3xl pointer-events-none"></div>
       <div class="absolute bottom-0 right-1/4 w-80 h-80 rounded-full bg-white/5 blur-2xl pointer-events-none"></div>
 
       <div class="max-w-[1280px] mx-auto px-margin md:px-margin-tablet lg:px-margin-desktop pt-space-xl pb-space-xl relative z-10">
-
         <div class="flex flex-col md:flex-row md:items-end justify-between gap-space-md">
-
           <div class="space-y-space-xs">
-
             <div class="inline-flex items-center gap-space-xs bg-white/10 backdrop-blur-md px-space-sm py-1 rounded-full text-on-primary">
               <span class="material-symbols-outlined text-sm text-tertiary">confirmation_number</span>
-              <span class="font-label-sm text-label-sm tracking-widest">سجل الحجوزات الرسمي</span>
+              <span class="font-label-sm text-label-sm tracking-widest">تذاكر طيران مَدار</span>
             </div>
 
             <h1 class="font-headline-lg text-headline-lg font-bold text-on-primary tracking-tight">
               تذاكري
             </h1>
-
-            <p class="font-body-md text-body-md text-on-primary-container max-w-xl">
-              استعراض وإدارة جميع وثائق السفر الصادرة عبر خطوط مَدار الجوية بدقة وتفاصيل مسارات الرحلات المعتمدة.
-            </p>
-
           </div>
 
-          <!-- Ticket Filters -->
+          <!-- الفلاتر -->
           <div class="flex items-center gap-1.5 bg-white/10 backdrop-blur-md p-1.5 rounded-xl border border-white/10">
-
             <button
               type="button"
               (click)="filterTickets('all')"
+              [attr.aria-pressed]="selectedFilter === 'all'"
               [ngClass]="selectedFilter === 'all'
                 ? 'bg-white/20 text-white font-bold shadow-sm'
                 : 'text-on-primary-container hover:text-white'"
               class="font-label-md text-label-md px-space-md py-1.5 rounded-lg transition-all">
-              الكل ({{ tickets.length }})
+              الكل ({{ tickets().length }})
             </button>
 
             <button
               type="button"
               (click)="filterTickets('confirmed')"
+              [attr.aria-pressed]="selectedFilter === 'confirmed'"
               [ngClass]="selectedFilter === 'confirmed'
                 ? 'bg-white/20 text-white font-bold shadow-sm'
                 : 'text-on-primary-container hover:text-white'"
@@ -58,22 +46,19 @@
             <button
               type="button"
               (click)="filterTickets('cancelled')"
+              [attr.aria-pressed]="selectedFilter === 'cancelled'"
               [ngClass]="selectedFilter === 'cancelled'
                 ? 'bg-white/20 text-white font-bold shadow-sm'
                 : 'text-on-primary-container hover:text-white'"
               class="font-label-md text-label-md px-space-md py-1.5 rounded-lg transition-all">
               الملغاة ({{ cancelledCount }})
             </button>
-
           </div>
-
         </div>
 
-        <!-- Total Tickets -->
+        <!-- إجمالي التذاكر -->
         <div class="mt-space-lg max-w-md">
-
           <div class="bg-white/10 backdrop-blur-md rounded-xl p-space-md border border-white/10">
-
             <div class="flex items-center justify-between">
               <span class="font-label-sm text-label-sm text-on-primary-container">إجمالي التذاكر</span>
               <span class="material-symbols-outlined text-tertiary text-lg">airplane_ticket</span>
@@ -81,47 +66,48 @@
 
             <div class="mt-space-sm flex items-baseline gap-space-xs">
               <span class="font-headline-lg text-headline-lg font-bold text-on-primary">
-                {{ tickets.length }}
+                {{ tickets().length }}
               </span>
               <span class="font-body-sm text-body-sm text-on-primary-container">تذاكر مسجلة</span>
             </div>
-
           </div>
-
         </div>
-
       </div>
     </section>
 
-    <!-- Tickets List -->
+    <!-- قائمة التذاكر -->
     <section class="max-w-[1280px] mx-auto w-full px-margin md:px-margin-tablet lg:px-margin-desktop py-space-xl">
-
       <div class="flex flex-col gap-space-lg">
 
-        <!-- Ticket Cards -->
-        <div class="flex flex-col gap-space-lg">
+        <p *ngIf="isLoading()" role="status" class="text-center text-on-surface-variant">
+          جارٍ تحميل التذاكر...
+        </p>
 
+        <p *ngIf="errorMessage()" role="alert" class="text-center text-error">
+          {{ errorMessage() }}
+        </p>
+
+        <div class="flex flex-col gap-space-lg">
           <article
             *ngFor="let ticket of filteredTickets"
             class="bg-surface-container-lowest rounded-xl shadow-md hover:shadow-xl transition-all duration-300 overflow-hidden border border-outline-variant/60"
             [ngClass]="ticket.statusKey === 'cancelled' ? 'opacity-90' : ''">
 
-            <!-- Ticket Header -->
+            <!-- رأس بطاقة التذكرة -->
             <div
               class="px-space-md md:px-space-lg py-space-sm flex flex-wrap items-center justify-between gap-space-sm"
-              [ngClass]="ticket.statusKey === 'confirmed'
-                ? 'bg-primary text-on-primary'
-                : 'bg-secondary-container text-on-secondary-container'">
+              [ngClass]="ticket.statusKey === 'cancelled'
+                ? 'bg-secondary-container text-on-secondary-container'
+                : 'bg-primary text-on-primary'">
 
               <div class="flex items-center gap-space-md">
-
                 <span
                   class="w-2.5 h-2.5 rounded-full"
-                  [ngClass]="ticket.statusKey === 'confirmed' ? 'bg-amber-400' : 'bg-error'">
+                  [ngClass]="ticket.statusKey === 'cancelled' ? 'bg-error' : 'bg-amber-400'">
                 </span>
 
                 <div class="flex items-baseline gap-space-xs">
-                  <span class="font-label-sm text-label-sm text-on-primary-container">رقم التذكرة:</span>
+                  <span class="font-label-sm text-label-sm">رقم التذكرة:</span>
                   <span class="font-headline-sm text-headline-sm font-bold tracking-wider">
                     {{ ticket.id }}
                   </span>
@@ -130,25 +116,27 @@
                 <span class="text-white/20">/</span>
 
                 <div class="flex items-center gap-1.5">
-                  <span class="font-label-sm text-label-sm">الناقل:</span>
+                  <span class="font-label-sm text-label-sm">اسم التذكرة:</span>
                   <span class="font-label-md text-label-md font-medium">
-                    {{ ticket.airline }}
+                    {{ ticket.ticketName }}
                   </span>
                 </div>
-
               </div>
 
               <div class="flex items-center gap-space-md">
-
                 <span
                   class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full font-label-sm text-label-sm"
                   [ngClass]="ticket.statusKey === 'confirmed'
                     ? 'bg-emerald-500/20 text-emerald-300'
-                    : 'bg-error/15 text-error'">
+                    : ticket.statusKey === 'cancelled'
+                      ? 'bg-error/15 text-error'
+                      : 'bg-white/10 text-on-primary'">
 
                   <span
                     class="w-1.5 h-1.5 rounded-full"
-                    [ngClass]="ticket.statusKey === 'confirmed' ? 'bg-emerald-400' : 'bg-error'">
+                    [ngClass]="ticket.statusKey === 'confirmed'
+                      ? 'bg-emerald-400'
+                      : ticket.statusKey === 'cancelled' ? 'bg-error' : 'bg-outline'">
                   </span>
 
                   {{ ticket.status }}
@@ -156,167 +144,112 @@
 
                 <span
                   class="font-headline-sm text-headline-sm font-bold"
-                  [ngClass]="ticket.statusKey === 'confirmed'
-                    ? 'text-amber-400'
-                    : 'text-on-secondary-container line-through'">
-                  ${{ ticket.price }}
+                  [ngClass]="ticket.statusKey === 'cancelled'
+                    ? 'text-on-secondary-container line-through'
+                    : 'text-amber-400'">
+                  ${{ ticket.ticketPrice }}
                 </span>
-
               </div>
-
             </div>
 
-            <!-- Ticket Details -->
+            <!-- تفاصيل البطاقة -->
             <div class="p-space-md md:p-space-lg grid grid-cols-1 lg:grid-cols-12 gap-space-lg items-center">
 
-              <!-- Flight Route -->
               <div class="lg:col-span-8 grid grid-cols-1 md:grid-cols-3 gap-space-md items-center">
 
-                <!-- Departure -->
+                <!-- تسجيل الوصول -->
                 <div class="text-right">
-
-                  <div class="font-label-sm text-label-sm text-on-surface-variant">مطار المغادرة</div>
-
-                  <div class="font-headline-md text-headline-md font-bold text-on-surface mt-0.5">
-                    {{ ticket.origin }}
-                  </div>
-
-                  <div class="font-label-lg text-label-lg font-medium text-on-surface">
-                    {{ ticket.originName }}
+                  <div class="font-label-sm text-label-sm text-on-surface-variant">
+                    تسجيل الوصول
                   </div>
 
                   <div class="inline-flex items-center gap-1 mt-2 text-primary font-bold font-headline-sm text-headline-sm bg-surface-container-low px-2.5 py-1 rounded">
                     <span class="material-symbols-outlined text-sm text-tertiary">schedule</span>
-                    {{ ticket.departureTime }}
+                    {{ ticket.checkInTime ? (ticket.checkInTime | date:'short') : '—' }}
                   </div>
-
                 </div>
 
-                <!-- Flight Path -->
+                <!-- الرحلة والبوابة -->
                 <div class="flex flex-col items-center justify-center p-space-sm bg-surface-container-low/60 rounded-xl relative">
-
                   <div class="flex items-center justify-center gap-2 text-primary font-bold mb-1">
-
                     <span class="font-label-md text-label-md">
-                      {{ ticket.flightNumber }}
+                      معرّف الرحلة {{ ticket.flightId }}
                     </span>
 
                     <span
                       class="material-symbols-outlined text-base"
-                      [ngClass]="ticket.statusKey === 'confirmed' ? 'text-tertiary' : 'text-error'">
-                      {{ ticket.statusKey === 'confirmed' ? 'flight_takeoff' : 'cancel' }}
+                      [ngClass]="ticket.statusKey === 'cancelled' ? 'text-error' : 'text-tertiary'">
+                      {{ ticket.statusKey === 'cancelled' ? 'cancel' : 'flight_takeoff' }}
                     </span>
-
                   </div>
 
                   <div class="w-full flex items-center justify-between px-3 text-xs text-on-surface-variant">
-
                     <span class="w-2 h-2 rounded-full bg-primary"></span>
-
                     <span class="flex-1 h-0.5 bg-outline mx-2 border-b border-dashed border-primary"></span>
-
                     <span class="w-2 h-2 rounded-full bg-primary"></span>
-
                   </div>
 
-                  <div class="mt-2 font-label-sm text-label-sm text-on-surface-variant flex items-center gap-1">
-
-                    <span class="material-symbols-outlined text-xs text-secondary">timelapse</span>
-
-                    {{ ticket.duration }}
-
-                    <span *ngIf="ticket.statusKey === 'confirmed'">• مباشر</span>
-
+                  <div class="mt-2 font-label-sm text-label-sm text-on-surface-variant">
+                    البوابة {{ ticket.gateNumber || '—' }}
                   </div>
-
                 </div>
 
-                <!-- Arrival -->
+                <!-- الصعود للطائرة -->
                 <div class="text-right md:text-left">
-
-                  <div class="font-label-sm text-label-sm text-on-surface-variant">مطار الوصول</div>
-
-                  <div class="font-headline-md text-headline-md font-bold text-on-surface mt-0.5">
-                    {{ ticket.destination }}
-                  </div>
-
-                  <div class="font-label-lg text-label-lg font-medium text-on-surface">
-                    {{ ticket.destinationName }}
+                  <div class="font-label-sm text-label-sm text-on-surface-variant">
+                    الصعود للطائرة
                   </div>
 
                   <div class="inline-flex items-center gap-1 mt-2 text-primary font-bold font-headline-sm text-headline-sm bg-surface-container-low px-2.5 py-1 rounded">
                     <span class="material-symbols-outlined text-sm text-tertiary">schedule</span>
-                    {{ ticket.arrivalTime }}
+                    {{ ticket.boardingTime ? (ticket.boardingTime | date:'short') : '—' }}
                   </div>
-
                 </div>
-
               </div>
 
-              <!-- Cabin and Seat -->
+              <!-- الدرجة وعدد التذاكر المتاحة -->
               <div class="lg:col-span-4 bg-surface-container-low p-space-md rounded-xl flex flex-col justify-between gap-space-md">
-
                 <div class="grid grid-cols-2 gap-space-sm">
 
                   <div class="bg-surface-container-lowest p-space-sm rounded-lg shadow-sm border border-outline-variant/60">
-
                     <span class="font-label-sm text-label-sm text-on-surface-variant block">
                       درجة السفر
                     </span>
 
-                    <span
-                      class="font-label-lg text-label-lg font-bold mt-1 flex items-center gap-1"
-                      [ngClass]="ticket.cabin === 'رجال الأعمال' ? 'text-amber-700' : 'text-primary'">
-
-                      <span class="material-symbols-outlined text-sm">
-                        {{ ticket.cabin === 'رجال الأعمال' ? 'workspace_premium' : 'airline_seat_recline_normal' }}
-                      </span>
-
-                      {{ ticket.cabin }}
-
+                    <span class="font-label-lg text-label-lg font-bold mt-1 flex items-center gap-1 text-primary">
+                      <span class="material-symbols-outlined text-sm">airline_seat_recline_normal</span>
+                      {{ ticket.flightClass }}
                     </span>
-
                   </div>
 
                   <div class="bg-surface-container-lowest p-space-sm rounded-lg shadow-sm border border-outline-variant/60">
-
                     <span class="font-label-sm text-label-sm text-on-surface-variant block">
-                      رقم المقعد
+                      التذاكر المتاحة
                     </span>
 
                     <span class="font-headline-sm text-headline-sm font-bold text-primary mt-0.5 block text-center">
-                      {{ ticket.seat }}
+                      {{ ticket.availableTickets }}
                     </span>
-
                   </div>
-
                 </div>
 
-                <!-- Ticket Details Button -->
                 <button
                   type="button"
                   (click)="openTicketModal(ticket)"
                   class="w-full bg-primary hover:bg-secondary text-on-primary py-2.5 px-space-md rounded-lg font-label-lg text-label-lg transition-colors flex items-center justify-center gap-2 group shadow-sm">
-
                   عرض تفاصيل التذكرة
-
                   <span class="material-symbols-outlined text-sm group-hover:-translate-x-1 transition-transform">
                     arrow_forward
                   </span>
-
                 </button>
-
               </div>
-
             </div>
-
           </article>
-
         </div>
 
-        <!-- No Tickets -->
+        <!-- القائمة الفارغة -->
         <div
-          *ngIf="filteredTickets.length === 0"
+          *ngIf="!isLoading() && !errorMessage() && filteredTickets.length === 0"
           class="bg-surface-container-lowest p-space-xl rounded-xl text-center flex flex-col items-center gap-space-md shadow-sm border border-outline-variant/60">
 
           <div class="w-16 h-16 rounded-full bg-surface-container-low flex items-center justify-center text-on-surface-variant">
@@ -327,187 +260,141 @@
             لا توجد تذاكر في هذه القائمة
           </h3>
 
-          <p class="font-body-md text-body-md text-on-surface-variant">
-            لا توجد تذاكر تطابق حالة التصفية المحددة.
+          <p
+            *ngIf="selectedFilter !== 'all' && tickets().length > 0"
+            class="font-body-md text-body-md text-on-surface-variant">
+            حالة الحجز غير متوفرة في بيانات التذاكر الحالية.
           </p>
-
         </div>
-
       </div>
-
     </section>
-
   </div>
 
-  <!-- Ticket Details Modal -->
+  <!-- نافذة تفاصيل التذكرة -->
   <div
-    *ngIf="isModalOpen && selectedTicket as ticket"
+    *ngIf="selectedTicket as ticket"
     class="fixed inset-0 z-[60] flex items-center justify-center bg-black/60 backdrop-blur-sm p-4"
-    (click)="closeTicketModal()">
+    (click)="closeTicketModal()"
+    (keydown.escape)="closeTicketModal()">
 
     <div
-      class="bg-surface-container-lowest w-full max-w-lg rounded-2xl shadow-2xl overflow-hidden"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="ticket-details-title"
+      class="bg-surface-container-lowest w-full max-w-lg max-h-[90vh] overflow-y-auto rounded-2xl shadow-2xl"
       (click)="$event.stopPropagation()">
 
-      <!-- Modal Header -->
       <div class="bg-primary px-space-lg py-space-md text-on-primary flex items-center justify-between">
-
         <div class="flex items-center gap-space-sm">
-
           <div class="w-8 h-8 rounded-lg bg-white/10 flex items-center justify-center text-amber-400">
             <span class="material-symbols-outlined text-base">flight_takeoff</span>
           </div>
 
           <div>
-            <h3 class="font-headline-sm text-headline-sm font-bold">
-              تفاصيل وثيقة السفر
+            <h3 id="ticket-details-title" class="font-headline-sm text-headline-sm font-bold">
+              تفاصيل التذكرة
             </h3>
 
             <p class="font-label-sm text-label-sm text-on-primary-container">
               {{ ticket.id }}
             </p>
           </div>
-
         </div>
 
         <button
           type="button"
+          aria-label="إغلاق تفاصيل التذكرة"
           (click)="closeTicketModal()"
           class="w-8 h-8 flex items-center justify-center rounded-full hover:bg-white/10 transition-colors text-on-primary">
-
           <span class="material-symbols-outlined text-lg">close</span>
-
         </button>
-
       </div>
 
-      <!-- Modal Content -->
       <div class="p-space-lg space-y-space-md">
-
-        <div class="flex items-center justify-between bg-surface-container-low p-space-md rounded-xl">
-
+        <div class="flex flex-wrap items-center justify-between gap-space-sm bg-surface-container-low p-space-md rounded-xl">
           <div>
-            <span class="font-label-sm text-label-sm text-on-surface-variant block">
-              شركة الطيران
-            </span>
-
-            <span class="font-label-lg text-label-lg font-bold text-primary">
-              {{ ticket.airline }}
-            </span>
+            <span class="font-label-sm text-label-sm text-on-surface-variant block">اسم التذكرة</span>
+            <span class="font-label-lg text-label-lg font-bold text-primary">{{ ticket.ticketName }}</span>
           </div>
 
           <div>
-            <span class="font-label-sm text-label-sm text-on-surface-variant block">
-              رقم الرحلة
-            </span>
-
-            <span class="font-headline-sm text-headline-sm font-bold text-primary">
-              {{ ticket.flightNumber }}
-            </span>
+            <span class="font-label-sm text-label-sm text-on-surface-variant block">معرّف الرحلة</span>
+            <span class="font-headline-sm text-headline-sm font-bold text-primary">{{ ticket.flightId }}</span>
           </div>
 
           <div class="text-left">
-            <span class="font-label-sm text-label-sm text-on-surface-variant block">
-              الحالة
-            </span>
-
+            <span class="font-label-sm text-label-sm text-on-surface-variant block">الحالة</span>
             <span
               class="inline-flex px-2 py-0.5 rounded-full font-label-sm text-label-sm"
               [ngClass]="ticket.statusKey === 'confirmed'
                 ? 'bg-emerald-100 text-emerald-800'
-                : 'bg-red-100 text-red-800'">
-
+                : ticket.statusKey === 'cancelled'
+                  ? 'bg-red-100 text-red-800'
+                  : 'bg-surface-container-lowest text-on-surface-variant'">
               {{ ticket.status }}
+            </span>
+          </div>
+        </div>
 
+        <p *ngIf="ticket.ticketDescription" class="font-body-md text-body-md text-on-surface">
+          {{ ticket.ticketDescription }}
+        </p>
+
+        <div class="space-y-space-sm border-y border-surface-container py-space-md">
+          <div class="flex justify-between items-center">
+            <span class="font-body-md text-body-md text-on-surface-variant">وقت تسجيل الوصول</span>
+            <span class="font-label-lg text-label-lg font-bold text-primary">
+              {{ ticket.checkInTime ? (ticket.checkInTime | date:'short') : '—' }}
             </span>
           </div>
 
+          <div class="flex justify-between items-center">
+            <span class="font-body-md text-body-md text-on-surface-variant">وقت الصعود للطائرة</span>
+            <span class="font-label-lg text-label-lg font-bold text-primary">
+              {{ ticket.boardingTime ? (ticket.boardingTime | date:'short') : '—' }}
+            </span>
+          </div>
+
+          <div class="flex justify-between items-center">
+            <span class="font-body-md text-body-md text-on-surface-variant">رقم البوابة</span>
+            <span class="font-label-lg text-label-lg font-bold text-primary">
+              {{ ticket.gateNumber || '—' }}
+            </span>
+          </div>
         </div>
 
-        <!-- Route Information -->
-        <div class="space-y-space-sm border-y border-surface-container py-space-md">
-
-          <div class="flex justify-between items-center">
-            <span class="font-body-md text-body-md text-on-surface-variant">مطار المغادرة</span>
-            <span class="font-label-lg text-label-lg font-bold text-on-surface">{{ ticket.originName }} ({{ ticket.origin }})</span>
-          </div>
-
-          <div class="flex justify-between items-center">
-            <span class="font-body-md text-body-md text-on-surface-variant">وقت المغادرة</span>
-            <span class="font-label-lg text-label-lg font-bold text-primary">{{ ticket.departureTime }}</span>
-          </div>
-
-          <div class="flex justify-between items-center">
-            <span class="font-body-md text-body-md text-on-surface-variant">مطار الوصول</span>
-            <span class="font-label-lg text-label-lg font-bold text-on-surface">{{ ticket.destinationName }} ({{ ticket.destination }})</span>
-          </div>
-
-          <div class="flex justify-between items-center">
-            <span class="font-body-md text-body-md text-on-surface-variant">وقت الوصول</span>
-            <span class="font-label-lg text-label-lg font-bold text-primary">{{ ticket.arrivalTime }}</span>
-          </div>
-
-        </div>
-
-        <!-- Cabin, Seat and Price -->
         <div class="grid grid-cols-3 gap-space-sm text-center">
-
           <div class="bg-surface-container-low p-space-sm rounded-lg">
             <span class="font-label-sm text-label-sm text-on-surface-variant block">درجة السفر</span>
             <span class="font-label-md text-label-md font-bold text-primary mt-1 block">
-              {{ ticket.cabin }}
+              {{ ticket.flightClass }}
             </span>
           </div>
 
           <div class="bg-surface-container-low p-space-sm rounded-lg">
-            <span class="font-label-sm text-label-sm text-on-surface-variant block">رقم المقعد</span>
+            <span class="font-label-sm text-label-sm text-on-surface-variant block">التذاكر المتاحة</span>
             <span class="font-headline-sm text-headline-sm font-bold text-primary mt-1 block">
-              {{ ticket.seat }}
+              {{ ticket.availableTickets }}
             </span>
           </div>
 
           <div class="bg-surface-container-low p-space-sm rounded-lg">
             <span class="font-label-sm text-label-sm text-on-surface-variant block">سعر التذكرة</span>
             <span class="font-headline-sm text-headline-sm font-bold text-amber-600 mt-1 block">
-              ${{ ticket.price }}
+              ${{ ticket.ticketPrice }}
             </span>
           </div>
-
         </div>
-
       </div>
 
-      <!-- Modal Footer -->
-      <div class="bg-surface-container-low px-space-lg py-space-md flex flex-col sm:flex-row items-center gap-space-sm justify-between">
-
-        <a
-          [routerLink]="['/ticket-details', ticket.ticketNumber || ticket.id]"
-          class="w-full sm:w-auto inline-flex items-center justify-center gap-1.5 px-space-md py-2.5 bg-tertiary hover:bg-amber-500 text-secondary font-bold font-label-md text-label-md rounded-lg shadow-sm transition-all">
-          <span class="material-symbols-outlined text-base">receipt_long</span>
-          <span>عرض صفحة التذكرة والطباعة</span>
-        </a>
-
-        <div class="flex items-center gap-2 w-full sm:w-auto justify-end">
-          <button
-            *ngIf="ticket.statusKey === 'confirmed'"
-            type="button"
-            (click)="cancelTicket(ticket)"
-            class="w-full sm:w-auto px-space-md py-2 bg-red-50 hover:bg-red-100 text-error font-semibold font-label-sm text-label-sm rounded-lg transition-colors">
-            إلغاء التذكرة
-          </button>
-
-          <button
-            type="button"
-            (click)="closeTicketModal()"
-            class="w-full sm:w-auto bg-surface-container hover:bg-surface-container-high text-primary px-space-md py-2 rounded-lg font-label-sm text-label-sm transition-colors">
-            إغلاق
-          </button>
-        </div>
-
+      <div class="bg-surface-container-low px-space-lg py-space-md flex justify-end">
+        <button
+          type="button"
+          (click)="closeTicketModal()"
+          class="w-full bg-primary hover:bg-secondary text-on-primary py-2.5 rounded-lg font-label-lg text-label-lg transition-colors">
+          إغلاق النافذة
+        </button>
       </div>
-
     </div>
-
   </div>
-
 </main>

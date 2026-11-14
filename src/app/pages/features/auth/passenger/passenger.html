@@ -1,0 +1,579 @@
+
+<main dir="rtl" class="min-h-screen bg-[#F8FAFC] pt-8 pb-16">
+
+  <div class="relative w-full overflow-hidden">
+
+    <!-- Decorative Background -->
+    <div class="absolute -top-32 -left-32 w-96 h-96 bg-blue-100/30 rounded-full blur-3xl pointer-events-none"></div>
+    <div class="absolute top-48 -right-32 w-80 h-80 bg-amber-100/30 rounded-full blur-3xl pointer-events-none"></div>
+
+    <div class="relative max-w-[1280px] mx-auto px-4 md:px-8 lg:px-12">
+
+      <!-- Breadcrumb -->
+      <div class="flex flex-wrap items-center gap-2 mb-8 text-sm text-[#475569]">
+
+        <a routerLink="/home" class="hover:text-[#0B1B3D]">
+          الرئيسية
+        </a>
+
+        <span>/</span>
+
+        <a class="hover:text-[#0B1B3D]">
+          إنشاء حساب جديد
+        </a>
+
+        <span>/</span>
+
+        <span class="text-[#0B1B3D] font-semibold">
+          استكمال بيانات المسافر
+        </span>
+
+      </div>
+
+      <!-- Registration Status -->
+      <div class="bg-white border border-[#E2E8F0] rounded-xl p-5 md:p-6 shadow-sm mb-8">
+
+        <div class="flex flex-col md:flex-row items-center justify-between gap-5">
+
+          <div class="flex items-center gap-3 w-full">
+
+            <div class="w-11 h-11 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center shrink-0">
+              <span class="material-symbols-outlined text-2xl">
+                verified
+              </span>
+            </div>
+
+            <div>
+              <div class="flex flex-wrap items-center gap-2 mb-1">
+
+                <span class="text-xs px-2 py-1 rounded bg-amber-100 text-amber-800 font-semibold">
+                  الخطوة 2 من 2
+                </span>
+
+                <h2 class="text-lg font-bold text-[#0B1B3D]">
+                  استكمال بيانات المسافر
+                </h2>
+
+              </div>
+
+              <p class="text-sm text-[#64748B]">
+                تم إنشاء حسابك بنجاح! يرجى استكمال بياناتك الشخصية لإتمام التسجيل.
+              </p>
+            </div>
+
+          </div>
+
+          <!-- Progress -->
+          <div class="flex items-center gap-3 shrink-0">
+
+            <div class="flex items-center gap-2">
+
+              <div class="w-7 h-7 rounded-full bg-emerald-500 text-white flex items-center justify-center">
+                <span class="material-symbols-outlined text-base">check</span>
+              </div>
+
+              <span class="text-xs font-semibold text-[#0F172A]">
+                إنشاء الحساب
+              </span>
+            </div>
+
+            <div class="w-8 h-0.5 bg-emerald-500"></div>
+
+            <div class="flex items-center gap-2">
+
+              <div class="w-7 h-7 rounded-full bg-amber-500 text-white flex items-center justify-center font-bold text-xs">
+                2
+              </div>
+
+              <span class="text-xs font-bold text-[#0B1B3D]">
+                بيانات المسافر
+              </span>
+            </div>
+
+          </div>
+
+        </div>
+      </div>
+
+      <!-- Page Heading -->
+      <div class="mb-8 max-w-3xl">
+
+        <h1 class="text-2xl md:text-3xl font-bold text-[#0B1B3D] mb-3">
+          بيانات المسافر الشخصية
+        </h1>
+
+        <p class="text-sm md:text-base text-[#64748B] leading-7">
+          يرجى استكمال وتدقيق بياناتك الشخصية بدقة لتسهيل إصدار تذاكر السفر
+          وتأكيد وثائق صعود الطائرة.
+        </p>
+
+      </div>
+
+      <!-- Passenger Form -->
+      <div class="max-w-3xl">
+
+        <form
+          #passengerForm="ngForm"
+          (ngSubmit)="onSubmit(passengerForm)"
+          class="bg-white rounded-xl shadow-sm border border-[#E2E8F0] overflow-hidden"
+          novalidate
+        >
+
+          <!-- Form Header -->
+          <div class="bg-[#F1F5F9]/80 p-5 md:p-7 border-b border-[#E2E8F0]">
+
+            <div class="flex items-center justify-between gap-3">
+
+              <div class="flex items-center gap-3">
+
+                <div class="w-11 h-11 rounded-lg bg-[#0F254E] text-white flex items-center justify-center">
+                  <span class="material-symbols-outlined text-2xl">
+                    badge
+                  </span>
+                </div>
+
+                <div>
+                  <h2 class="text-lg font-bold text-[#0B1B3D]">
+                    وثيقة السفر وهوية المسافر
+                  </h2>
+
+                  <p class="text-xs text-[#64748B] mt-1">
+                    أدخل بياناتك كما تظهر في وثيقة السفر الرسمية.
+                  </p>
+                </div>
+
+              </div>
+
+              <span class="hidden sm:inline-block bg-amber-100 text-amber-800 text-xs font-semibold px-3 py-2 rounded">
+                إلزامي للمطارات
+              </span>
+
+            </div>
+          </div>
+
+          <!-- Form Fields -->
+          <div class="p-5 md:p-8">
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+
+              <!-- First Name -->
+              <div class="flex flex-col gap-2">
+
+                <label for="firstName" class="text-sm font-semibold text-[#0F172A]">
+                  الاسم الأول (كما في الجواز)
+                  <span class="text-red-600">*</span>
+                </label>
+
+                <div class="relative">
+
+                  <span class="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 text-[#475569]">
+                    person
+                  </span>
+
+                  <input
+                    id="firstName"
+                    name="firstName"
+                    type="text"
+                    [(ngModel)]="passenger.firstName"
+                    #firstName="ngModel"
+                    required
+                    maxlength="50"
+                    placeholder="مثال: أحمد"
+                    class="w-full h-[52px] pr-11 pl-4 border border-[#CBD5E1] rounded-md text-sm outline-none focus:border-[#0B1B3D] focus:ring-2 focus:ring-[#0B1B3D]/10 transition"
+                    [class.border-red-500]="firstName.invalid && (firstName.touched || submitted)"
+                  />
+
+                </div>
+
+                <span class="text-xs text-[#64748B]">
+                  أدخل الاسم الأول المطابق لجواز السفر.
+                </span>
+
+                <span
+                  *ngIf="firstName.invalid && (firstName.touched || submitted)"
+                  class="text-xs text-red-600"
+                >
+                  الاسم الأول مطلوب وبحد أقصى 50 حرفاً.
+                </span>
+
+              </div>
+
+              <!-- Last Name -->
+              <div class="flex flex-col gap-2">
+
+                <label for="lastName" class="text-sm font-semibold text-[#0F172A]">
+                  اسم العائلة / اللقب
+                  <span class="text-red-600">*</span>
+                </label>
+
+                <div class="relative">
+
+                  <span class="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 text-[#475569]">
+                    badge
+                  </span>
+
+                  <input
+                    id="lastName"
+                    name="lastName"
+                    type="text"
+                    [(ngModel)]="passenger.lastName"
+                    #lastName="ngModel"
+                    required
+                    maxlength="50"
+                    placeholder="مثال: الشرعبي"
+                    class="w-full h-[52px] pr-11 pl-4 border border-[#CBD5E1] rounded-md text-sm outline-none focus:border-[#0B1B3D] focus:ring-2 focus:ring-[#0B1B3D]/10 transition"
+                    [class.border-red-500]="lastName.invalid && (lastName.touched || submitted)"
+                  />
+
+                </div>
+
+                <span class="text-xs text-[#64748B]">
+                  اللقب أو الاسم الأخير الرسمي للمسافر.
+                </span>
+
+                <span
+                  *ngIf="lastName.invalid && (lastName.touched || submitted)"
+                  class="text-xs text-red-600"
+                >
+                  اسم العائلة مطلوب وبحد أقصى 50 حرفاً.
+                </span>
+
+              </div>
+
+              <!-- Date of Birth -->
+              <div class="flex flex-col gap-2">
+
+                <label for="dateOfBirth" class="text-sm font-semibold text-[#0F172A]">
+                  تاريخ الميلاد
+                  <span class="text-red-600">*</span>
+                </label>
+
+                <div class="relative">
+
+                  <span class="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 text-[#475569]">
+                    calendar_today
+                  </span>
+
+                  <input
+                    id="dateOfBirth"
+                    name="dateOfBirth"
+                    type="date"
+                    [(ngModel)]="passenger.dateOfBirth"
+                    #dateOfBirth="ngModel"
+                    required
+                    [max]="maxDate"
+                    class="w-full h-[52px] pr-11 pl-4 border border-[#CBD5E1] rounded-md text-sm outline-none focus:border-[#0B1B3D] focus:ring-2 focus:ring-[#0B1B3D]/10 transition"
+                    [class.border-red-500]="dateOfBirth.invalid && (dateOfBirth.touched || submitted)"
+                  />
+
+                </div>
+
+                <span class="text-xs text-[#64748B]">
+                  أدخل تاريخ ميلادك بالتقويم الميلادي.
+                </span>
+
+                <span
+                  *ngIf="dateOfBirth.invalid && (dateOfBirth.touched || submitted)"
+                  class="text-xs text-red-600"
+                >
+                  تاريخ الميلاد مطلوب ويجب ألا يكون في المستقبل.
+                </span>
+
+              </div>
+
+              <!-- Gender -->
+              <div class="flex flex-col gap-2">
+
+                <label for="gender" class="text-sm font-semibold text-[#0F172A]">
+                  الجنس
+                  <span class="text-red-600">*</span>
+                </label>
+
+                <div class="relative">
+
+                  <span class="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 text-[#475569]">
+                    wc
+                  </span>
+
+                  <select
+                    id="gender"
+                    name="gender"
+                    [(ngModel)]="passenger.gender"
+                    #gender="ngModel"
+                    required
+                    class="w-full h-[52px] pr-11 pl-10 border border-[#CBD5E1] rounded-md text-sm bg-white outline-none appearance-none cursor-pointer focus:border-[#0B1B3D] focus:ring-2 focus:ring-[#0B1B3D]/10 transition"
+                    [class.border-red-500]="gender.invalid && (gender.touched || submitted)"
+                  >
+
+                    <option value="" disabled>اختر الجنس</option>
+                    <option value="male">ذكر</option>
+                    <option value="female">أنثى</option>
+
+                  </select>
+
+                  <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-[#475569] pointer-events-none">
+                    expand_more
+                  </span>
+
+                </div>
+
+                <span class="text-xs text-[#64748B]">
+                  حدد الجنس كما هو مسجل في وثيقة السفر.
+                </span>
+
+                <span
+                  *ngIf="gender.invalid && (gender.touched || submitted)"
+                  class="text-xs text-red-600"
+                >
+                  يرجى اختيار الجنس.
+                </span>
+
+              </div>
+
+              <!-- Nationality -->
+              <div class="flex flex-col gap-2">
+
+                <label for="nationality" class="text-sm font-semibold text-[#0F172A]">
+                  الجنسية
+                  <span class="text-red-600">*</span>
+                </label>
+
+                <div class="relative">
+
+                  <span class="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 text-[#475569]">
+                    flag
+                  </span>
+
+                  <select
+                    id="nationality"
+                    name="nationality"
+                    [(ngModel)]="passenger.nationality"
+                    #nationality="ngModel"
+                    required
+                    class="w-full h-[52px] pr-11 pl-10 border border-[#CBD5E1] rounded-md text-sm bg-white outline-none appearance-none cursor-pointer focus:border-[#0B1B3D] focus:ring-2 focus:ring-[#0B1B3D]/10 transition"
+                  >
+
+                    <option value="YEM">اليمن</option>
+                    <option value="SAU">المملكة العربية السعودية</option>
+                    <option value="ARE">الإمارات العربية المتحدة</option>
+                    <option value="OMN">سلطنة عُمان</option>
+                    <option value="JOR">المملكة الأردنية الهاشمية</option>
+                    <option value="EGY">جمهورية مصر العربية</option>
+                    <option value="QAT">دولة قطر</option>
+                    <option value="KWT">دولة الكويت</option>
+                    <option value="BHR">مملكة البحرين</option>
+                    <option value="OTHER">دولة أخرى</option>
+
+                  </select>
+
+                  <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-[#475569] pointer-events-none">
+                    expand_more
+                  </span>
+
+                </div>
+
+                <span class="text-xs text-[#64748B]">
+                  اختر جنسيتك المسجلة.
+                </span>
+
+              </div>
+
+              <!-- Phone Number -->
+              <div class="flex flex-col gap-2">
+
+                <label for="phoneNumber" class="text-sm font-semibold text-[#0F172A]">
+                  رقم الهاتف والتواصل
+                  <span class="text-red-600">*</span>
+                </label>
+
+                <div class="flex items-center gap-2" dir="ltr">
+
+                  <div class="w-24 h-[52px] shrink-0 flex items-center justify-center bg-[#E2E8F0] text-[#0B1B3D] text-sm font-semibold rounded-md border border-[#CBD5E1]">
+                    +967 🇾🇪
+                  </div>
+
+                  <input
+                    id="phoneNumber"
+                    name="phoneNumber"
+                    type="tel"
+                    [(ngModel)]="passenger.phoneNumber"
+                    #phoneNumber="ngModel"
+                    required
+                    pattern="[0-9]{9}"
+                    maxlength="9"
+                    inputmode="numeric"
+                    placeholder="771234567"
+                    class="w-full h-[52px] px-4 border border-[#CBD5E1] rounded-md text-sm outline-none focus:border-[#0B1B3D] focus:ring-2 focus:ring-[#0B1B3D]/10 transition"
+                    [class.border-red-500]="phoneNumber.invalid && (phoneNumber.touched || submitted)"
+                  />
+
+                </div>
+
+                <span class="text-xs text-[#64748B]">
+                  أدخل رقم هاتف يمني مكوناً من 9 أرقام.
+                </span>
+
+                <span
+                  *ngIf="phoneNumber.invalid && (phoneNumber.touched || submitted)"
+                  class="text-xs text-red-600"
+                >
+                  يرجى إدخال رقم هاتف صحيح مكون من 9 أرقام.
+                </span>
+
+              </div>
+
+              <!-- Passport Number -->
+              <div class="md:col-span-2 flex flex-col gap-2">
+
+                <label for="passportNumber" class="text-sm font-semibold text-[#0F172A]">
+                  رقم جواز السفر
+                  <span class="text-red-600">*</span>
+                </label>
+
+                <div class="relative">
+
+                  <span class="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 text-[#475569]">
+                    travel_explore
+                  </span>
+
+                  <input
+                    id="passportNumber"
+                    name="passportNumber"
+                    type="text"
+                    [(ngModel)]="passenger.passportNumber"
+                    #passportNumber="ngModel"
+                    required
+                    maxlength="50"
+                    placeholder="مثال: 08492011"
+                    dir="ltr"
+                    class="w-full h-[52px] pr-11 pl-4 border border-[#CBD5E1] rounded-md text-sm font-semibold tracking-wider outline-none focus:border-[#0B1B3D] focus:ring-2 focus:ring-[#0B1B3D]/10 transition"
+                    [class.border-red-500]="passportNumber.invalid && (passportNumber.touched || submitted)"
+                  />
+
+                </div>
+
+                <div class="p-4 bg-[#F1F5F9] rounded-md flex items-start gap-2 mt-1">
+
+                  <span class="material-symbols-outlined text-[#475569] text-lg">
+                    info
+                  </span>
+
+                  <p class="text-xs text-[#475569] leading-6">
+                    تأكد من إدخال الرمز والأرقام بدقة كما تظهر في وثيقة السفر الرسمية
+                    لتجنب أي تأخير أثناء إجراءات السفر.
+                  </p>
+
+                </div>
+
+                <span
+                  *ngIf="passportNumber.invalid && (passportNumber.touched || submitted)"
+                  class="text-xs text-red-600"
+                >
+                  رقم جواز السفر مطلوب.
+                </span>
+
+              </div>
+
+            </div>
+
+            <!-- Form Message -->
+            <div
+              *ngIf="formMessage"
+              class="mt-6 p-3 rounded-md text-sm"
+              role="status"
+              aria-live="polite"
+              [ngClass]="messageType === 'success'
+                ? 'bg-blue-50 text-blue-800 border border-blue-200'
+                : 'bg-red-50 text-red-700 border border-red-200'"
+            >
+              {{ formMessage }}
+            </div>
+
+          </div>
+
+          <!-- Action Buttons -->
+          <div class="bg-[#F1F5F9]/60 border-t border-[#E2E8F0] p-5 md:p-7">
+
+            <div class="flex flex-col-reverse sm:flex-row items-center justify-between gap-4">
+
+              <!-- Reset Button -->
+              <button
+                type="button"
+                (click)="resetForm(passengerForm)"
+                [disabled]="isSaving"
+                [class.opacity-60]="isSaving"
+                class="w-full sm:w-auto px-6 h-12 flex items-center justify-center gap-2 bg-white text-[#0B1B3D] border border-[#CBD5E1] rounded-md text-sm font-semibold hover:bg-[#E2E8F0] transition"
+              >
+
+                <span class="material-symbols-outlined text-lg">
+                  refresh
+                </span>
+
+                إعادة ضبط البيانات
+
+              </button>
+
+              <!-- Submit Button -->
+              <button
+                type="submit"
+                [disabled]="isSaving"
+                [class.opacity-60]="isSaving"
+                class="w-full sm:w-auto px-8 h-12 flex items-center justify-center gap-2 bg-gradient-to-l from-[#D97706] to-[#F59E0B] text-[#0B1B3D] rounded-md text-sm font-bold shadow-md hover:shadow-lg hover:from-[#B45309] hover:to-[#D97706] transition"
+              >
+
+                <span class="material-symbols-outlined text-xl">
+                  check_circle
+                </span>
+
+                {{ isSaving ? 'جارٍ حفظ البيانات...' : 'حفظ ومتابعة إلى الصفحة الرئيسية' }}
+
+                <span class="material-symbols-outlined text-lg">
+                  arrow_back
+                </span>
+
+              </button>
+
+            </div>
+
+            <div class="flex items-center justify-center gap-2 mt-5 text-xs text-[#64748B] text-center">
+
+              <span class="material-symbols-outlined text-lg text-amber-600">
+                flight_takeoff
+              </span>
+
+              عند حفظ البيانات سيتم توجيهك إلى الصفحة الرئيسية.
+
+            </div>
+
+          </div>
+
+        </form>
+
+        <!-- Privacy Information -->
+        <div class="bg-white border border-[#E2E8F0] rounded-lg shadow-sm p-5 mt-6 flex items-center gap-3">
+
+          <span class="material-symbols-outlined text-[#0B1B3D] text-3xl">
+            verified_user
+          </span>
+
+          <div>
+
+            <h3 class="text-sm font-bold text-[#0B1B3D]">
+              حماية الخصوصية وموثوقية الهوية الرقمية
+            </h3>
+
+            <p class="text-xs text-[#64748B] mt-1 leading-6">
+              يتم التعامل مع بياناتك الشخصية وفق آليات حماية وخصوصية النظام.
+            </p>
+
+          </div>
+
+        </div>
+
+      </div>
+
+    </div>
+
+  </div>
+
+</main>

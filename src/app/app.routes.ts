@@ -9,12 +9,14 @@ import { BookingComponent } from './pages/features/tickets/booking/booking';
 import { MainLayoutComponent } from './Layout/main-layout';
 import { FlightdetailsComponent } from './pages/features/availableflights/flightdetails/flightdetails';
 import { MyticketsComponent } from './pages/features/tickets/mytickets/mytickets';
+import { PassengerComponent } from './pages/features/auth/passenger/passenger';
 
 export const routes: Routes = [
   {
     path: '',
     component: MainLayoutComponent,
     children: [
+      
       {
         path: '',
         redirectTo: 'home',
@@ -33,6 +35,11 @@ export const routes: Routes = [
         component: HomeComponent
       },
       {
+        path: 'passenger',
+        component: PassengerComponent
+      },
+
+      {
         path: 'flights',
         component: AvailableFlightsComponent
       },
@@ -40,24 +47,17 @@ export const routes: Routes = [
         path: 'booking',
         component: BookingComponent
       },
+
       {
         path: 'mytickets',
         component: MyticketsComponent
       },
-      {
-        path: 'my-tickets',
-        redirectTo: 'mytickets',
-        pathMatch: 'full'
-      },
-      {
-        path: 'my-bookings',
-        redirectTo: 'mytickets',
-        pathMatch: 'full'
-      },
+
       {
         path: 'ticket-details/:ticketNumber',
         component: TicketdetailsComponent
       },
+
       {
         path: 'flight-details/:flightId',
         component: FlightdetailsComponent

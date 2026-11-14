@@ -85,6 +85,23 @@ export class AvailableFlightsComponent implements OnInit {
         this.cdr.markForCheck();
       }
     });
+    // 1. جلب المطارات المعتمدة
+
+    this.flightService.getAllAirports().subscribe({
+      next: airports => {
+        this.airports = airports;
+        this.resolveQueryParams();
+      },
+      error: () => {
+        this.resolveQueryParams();
+      }
+    });
+
+    this.loadFlights();
+
+    // // 2. تحميل الرحلات الحقيقية
+    // this.loadFlights();
+    // }
   }
 
   constructor(

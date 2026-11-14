@@ -150,7 +150,7 @@ export class BookingComponent implements OnInit {
       next: ({ passengers, tickets }) => {
 
         console.log('7. Passengers received:', passengers);
-        console.log('8. Tickets received:', tickets);
+        console.log('8. Tickets received:', tickets.tickets);
 
         this.passengers = passengers.filter(
           passenger => passenger.userId === userId
